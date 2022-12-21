@@ -1,0 +1,17 @@
+Class and Method names should always be in Pascal Case
+Method argument and Local variables should always be in Camel Case
+Avoid the use of underscore while naming identifiers
+Avoid the use of System data types and prefer using the Predefined data types.
+Always prefix an interface with letter I.
+Always use the using keyword when working with disposable types. It automatically disposes the object when program flow leaves the scope.
+using(var conn = new SqlConnection(connectionString))
+{
+// use the connection and the stream
+using (var dr = cmd.ExecuteReader())
+{
+//
+}
+}
+Always declare the properties as private so as to achieve Encapsulation and ensure data hiding.
+Constants should always be declared in UPPER_CASE.
+Use a try-catch statement for most exception handling.
