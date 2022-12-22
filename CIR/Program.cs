@@ -1,3 +1,9 @@
+using CIR.Application.Interfaces;
+using CIR.Application.Services;
+using CIR.Common.Data;
+using CIR.Data.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -8,7 +14,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 //add dbcontext
-//builder.Services.AddDbContext<APIDbContext>(item => item.UseSqlServer(connectionString));
+var connectionString = builder.Configuration.GetConnectionString("CIR");
+builder.Services.AddDbContext<CIRDbContext>(item => item.UseSqlServer(connectionString));
+
+builder.Services.AddScoped<ILoginService, LoginService>();
+builder.Services.AddScoped<ILoginRepository, LoginRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
