@@ -16,7 +16,7 @@ namespace CIR.Data.Data
 
         User ILoginRepository.Login(Application.ViewModel.LoginModel model)
         {
-            return _CIRDBContext.Users.FirstOrDefault((u) => u.UserName == model.UserName);
+            return _CIRDBContext.Users.FirstOrDefault((u) => u.UserName == model.UserName && u.Password == model.Password);
             
         }
     }

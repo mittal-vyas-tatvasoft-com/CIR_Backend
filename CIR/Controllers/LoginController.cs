@@ -1,6 +1,11 @@
 ﻿using CIR.Application.Interfaces;
 using CIR.Application.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace CIR.Controllers
 {
@@ -9,10 +14,12 @@ namespace CIR.Controllers
     public class LoginController : Controller
     {
         private readonly ILoginService _loginService;
+        private readonly AppSettings _appSettings;
 
-        public LoginController(ILoginService loginService)
+        public LoginController(ILoginService loginService, IOptions<AppSettings> settings)
         {
             _loginService = loginService;
+            _appSettings = settings.Value;
         }
 
         [HttpPost]
@@ -23,13 +30,53 @@ namespace CIR.Controllers
                 var user = _loginService.Login(value);
                 if (user != null)
                 {
-                    return Ok(ModelState);
+                    var token = await GenerateJwtToken(user);
+                    if (token != null)
+                        return Ok(token);
+                    else
+                        return BadRequest(new { message = "Token not generated" });
                 } else
                 {
-                    return NotFound();
+                    return NotFound(new { message = "Username or password is incorrect" });
                 }
             }
             return BadRequest();
         }
+
+        private async Task<string> GenerateJwtToken(CIR.Application.Entities.User user)
+        {
+            string jwtToken = string.Empty;
+            try
+            {
+                // generate token that is valid for 20 minutes
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes(_appSettings.AuthKey);
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new[]
+                        {
+                        new Claim("Id", user.Id.ToString()),
+                        new Claim("UserName", user.UserName),
+                        new Claim("FirstName", user.FirstName),
+                        new Claim("LastName", user.LastName),
+                    }),
+                    Expires = DateTime.UtcNow.AddMinutes(20),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                };
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                jwtToken = tokenHandler.WriteToken(token);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return await Task.Run(() =>
+            {
+                return jwtToken;
+            });
+        }
+
+
+
     }
 }

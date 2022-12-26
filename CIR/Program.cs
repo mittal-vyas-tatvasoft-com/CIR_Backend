@@ -1,8 +1,11 @@
+using CIR;
 using CIR.Application.Interfaces;
 using CIR.Application.Services;
 using CIR.Common.Data;
 using CIR.Data.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +19,9 @@ builder.Services.AddSwaggerGen();
 //add dbcontext
 var connectionString = builder.Configuration.GetConnectionString("CIR");
 builder.Services.AddDbContext<CIRDbContext>(item => item.UseSqlServer(connectionString));
+
+var appSettings = builder.Configuration.GetSection("AppSettings");
+builder.Services.Configure<AppSettings>(appSettings);
 
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<ILoginRepository, LoginRepository>();
