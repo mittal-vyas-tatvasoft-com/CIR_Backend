@@ -1,10 +1,10 @@
-﻿using AMPCore.Application.Interfaces;
+﻿using CIR.Core.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace AMPCore.Application.Specifications
+namespace CIR.Core.Specifications
 {
     public abstract class BaseSpecification<T> : ISpecification<T>
     {

@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CIR", "CIR\CIR.csproj", "{BB9BF0F0-5A87-4818-882F-E2F0207B61A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CIR", "CIR\CIR.csproj", "{BB9BF0F0-5A87-4818-882F-E2F0207B61A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CIR.Application", "CIR.Application\CIR.Application.csproj", "{B2D2B8FE-92C7-4F96-AC68-53BE8A1D79AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CIR.Application", "CIR.Application\CIR.Application.csproj", "{B2D2B8FE-92C7-4F96-AC68-53BE8A1D79AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CIR.Data", "CIR.Data\CIR.Data.csproj", "{3D34D42C-6491-4E23-94BA-B94833D29498}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CIR.Data", "CIR.Data\CIR.Data.csproj", "{3D34D42C-6491-4E23-94BA-B94833D29498}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CIR.Common", "CIR.Common\CIR.Common.csproj", "{6881069D-C51F-442C-9999-0FE424C13493}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CIR.Common", "CIR.Common\CIR.Common.csproj", "{6881069D-C51F-442C-9999-0FE424C13493}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CIR.Core", "CIR.Core\CIR.Core.csproj", "{5041ACAC-17AA-4850-897C-A456B8735E71}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{6881069D-C51F-442C-9999-0FE424C13493}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6881069D-C51F-442C-9999-0FE424C13493}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6881069D-C51F-442C-9999-0FE424C13493}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5041ACAC-17AA-4850-897C-A456B8735E71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5041ACAC-17AA-4850-897C-A456B8735E71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5041ACAC-17AA-4850-897C-A456B8735E71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5041ACAC-17AA-4850-897C-A456B8735E71}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

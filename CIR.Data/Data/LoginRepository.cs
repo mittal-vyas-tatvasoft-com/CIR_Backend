@@ -1,7 +1,7 @@
-﻿using CIR.Application.Entities;
-using CIR.Application.Interfaces;
-using CIR.Application.ViewModel;
-using CIR.Common.Data;
+﻿using CIR.Common.Data;
+using CIR.Core.Entities;
+using CIR.Core.Interfaces;
+using CIR.Core.ViewModel;
 
 namespace CIR.Data.Data
 {
@@ -14,10 +14,10 @@ namespace CIR.Data.Data
                 throw new ArgumentNullException(nameof(context));
         }
 
-        User ILoginRepository.Login(Application.ViewModel.LoginModel model)
+        User ILoginRepository.Login(LoginModel model)
         {
             return _CIRDBContext.Users.FirstOrDefault((u) => u.UserName == model.UserName && u.Password == model.Password);
-            
+
         }
     }
 }

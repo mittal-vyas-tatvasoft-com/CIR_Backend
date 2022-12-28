@@ -1,11 +1,6 @@
-﻿using CIR.Application.Entities;
-using CIR.Application.Interfaces;
-using CIR.Application.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CIR.Core.Entities;
+using CIR.Core.Interfaces;
+using CIR.Core.ViewModel;
 
 namespace CIR.Application.Services
 {
@@ -16,9 +11,10 @@ namespace CIR.Application.Services
         {
             _loginRepository = loginRepository;
         }
-        public User Login(LoginModel value)
+
+        User ILoginService.Login(LoginModel value)
         {
-            return _loginRepository.Login(value);
+            return _loginRepository.Login(value); ;
         }
     }
 }

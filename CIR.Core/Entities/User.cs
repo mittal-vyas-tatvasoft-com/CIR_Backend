@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CIR.Application.Entities
+namespace CIR.Core.Entities
 {
     public partial class User
     {

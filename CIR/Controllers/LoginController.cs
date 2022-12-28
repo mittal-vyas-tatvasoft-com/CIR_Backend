@@ -1,5 +1,5 @@
-﻿using CIR.Application.Interfaces;
-using CIR.Application.ViewModel;
+﻿using CIR.Core.Interfaces;
+using CIR.Core.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -35,7 +35,8 @@ namespace CIR.Controllers
                         return Ok(token);
                     else
                         return BadRequest(new { message = "Token not generated" });
-                } else
+                }
+                else
                 {
                     return NotFound(new { message = "Username or password is incorrect" });
                 }
@@ -43,7 +44,7 @@ namespace CIR.Controllers
             return BadRequest();
         }
 
-        private async Task<string> GenerateJwtToken(CIR.Application.Entities.User user)
+        private async Task<string> GenerateJwtToken(CIR.Core.Entities.User user)
         {
             string jwtToken = string.Empty;
             try

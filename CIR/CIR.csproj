@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CIR.Application\CIR.Application.csproj" />
     <ProjectReference Include="..\CIR.Common\CIR.Common.csproj" />
+    <ProjectReference Include="..\CIR.Core\CIR.Core.csproj" />
     <ProjectReference Include="..\CIR.Data\CIR.Data.csproj" />
   </ItemGroup>
 

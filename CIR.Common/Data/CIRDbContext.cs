@@ -1,4 +1,4 @@
-﻿using CIR.Application.Entities;
+﻿using CIR.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 
 

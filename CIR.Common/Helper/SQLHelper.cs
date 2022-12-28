@@ -9,7 +9,7 @@ using System.Dynamic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace AMPCore.Data.Helper
+namespace CIR.Data.Helper
 {
     public static class SQLHelper
     {
@@ -88,7 +88,7 @@ namespace AMPCore.Data.Helper
         //    return ds;
         //}
 
-        //public static List<T> RawSqlQuery<T>(AmpCoreContext context, string query, Func<DbDataReader, T> map)
+        //public static List<T> RawSqlQuery<T>(CIRDbContext context, string query, Func<DbDataReader, T> map)
         //{
         //    using (var command = context.Database.GetDbConnection().CreateCommand())
         //    {
@@ -111,7 +111,7 @@ namespace AMPCore.Data.Helper
         //    }
         //}
 
-        //public static object ExecuteScalarCommand(AmpCoreContext context, string query, List<SqlParameter> parameters)
+        //public static object ExecuteScalarCommand(CIRDbContext context, string query, List<SqlParameter> parameters)
         //{
         //    object retValue;
         //    using (var command = context.Database.GetDbConnection().CreateCommand())
@@ -154,6 +154,6 @@ namespace AMPCore.Data.Helper
         //    return dt;
         //}
 
-       
+
     }
 }

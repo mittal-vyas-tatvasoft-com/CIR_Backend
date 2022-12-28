@@ -1,5 +1,5 @@
 using CIR;
-using CIR.Application.Interfaces;
+using CIR.Core.Interfaces;
 using CIR.Application.Services;
 using CIR.Common.Data;
 using CIR.Data.Data;
