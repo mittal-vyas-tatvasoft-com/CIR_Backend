@@ -30,9 +30,9 @@ namespace CIR.Controllers
                 var user = _loginService.Login(value);
                 if (user != null)
                 {
-                    var token = await GenerateJwtToken(user);
-                    if (token != null)
-                        return Ok(token);
+                    var generatedToken = await GenerateJwtToken(user);
+                    if (generatedToken != null)
+                        return Ok(new { token = generatedToken });
                     else
                         return BadRequest(new { message = "Token not generated" });
                 }
