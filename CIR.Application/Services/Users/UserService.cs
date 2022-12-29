@@ -22,9 +22,9 @@ namespace CIR.Application.Services.Users
             return _userRepository.CreateOrUpdateUser(user);
         }
 
-        public async Task<List<User>> AllUsersList()
+        public async Task<List<User>> GetAllUsers()
         {
-            var list = _userRepository.AllUsersList();
+            var list = _userRepository.GetAllUsers();
             return  await list;
         }
 

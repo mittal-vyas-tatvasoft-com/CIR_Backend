@@ -12,7 +12,7 @@ namespace CIR.Core.Interfaces.Users
     {
         Task<User> CreateOrUpdateUser(User user);
 
-        Task<List<User>> AllUsersList();
+        Task<List<User>> GetAllUsers();
 
         Task<User> DeleteUser(int id);
 
