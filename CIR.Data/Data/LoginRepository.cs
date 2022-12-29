@@ -2,6 +2,7 @@
 using CIR.Core.Entities;
 using CIR.Core.Interfaces;
 using CIR.Core.ViewModel;
+using System.Text;
 
 namespace CIR.Data.Data
 {
@@ -13,11 +14,59 @@ namespace CIR.Data.Data
             _CIRDBContext = context ??
                 throw new ArgumentNullException(nameof(context));
         }
-
+       
         User ILoginRepository.Login(LoginModel model)
         {
             return _CIRDBContext.Users.FirstOrDefault((u) => u.UserName == model.UserName && u.Password == model.Password);
 
+        }
+        public string ForgetPassword(ForgotModel forgotModel)
+        {
+            var user = _CIRDBContext.Users.Where(c => c.UserName == forgotModel.UserName && c.Email == forgotModel.Email).FirstOrDefault();
+            if (user != null)
+            {              
+                const string lower = "abcdefghijklmnopqrstuvwxyz";
+                const string upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                const string number = "1234567890";
+                const string special = "!@#$%^&*";
+                int length = 8;
+                var middle = length / 2;
+                StringBuilder res = new StringBuilder();
+                Random rnd = new Random();
+                while (0 < length--)
+                {
+                    if (middle == length)
+                    {
+                        res.Append(number[rnd.Next(number.Length)]);
+                    }
+                    else if (middle - 1 == length)
+                    {
+                        res.Append(special[rnd.Next(special.Length)]);
+                    }
+                    else
+                    {
+                        if (length % 2 == 0)
+                        {
+                            res.Append(lower[rnd.Next(lower.Length)]);
+                        }
+                        else
+                        {
+                            res.Append(upper[rnd.Next(upper.Length)]);
+                        }
+                    }
+                }
+                string newPassword = res.ToString();
+
+                _CIRDBContext.Users.Where(x => x.Id == user.Id).ToList().ForEach((a =>
+                {
+                    a.Password = newPassword;
+                }));
+                _CIRDBContext.SaveChanges();
+
+                return newPassword;
+
+            }            
+            return "";
         }
     }
 }

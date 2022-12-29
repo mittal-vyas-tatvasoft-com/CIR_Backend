@@ -11,7 +11,7 @@ namespace CIR.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LoginController : Controller
+    public class LoginController : ControllerBase
     {
         private readonly ILoginService _loginService;
         private readonly AppSettings _appSettings;
@@ -76,8 +76,21 @@ namespace CIR.Controllers
                 return jwtToken;
             });
         }
-
-
+       
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgetPassword(ForgotModel forgotModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var forgotPassword = _loginService.ForgetPassword(forgotModel);
+                if(forgotPassword != "")
+                {
+                    return Ok("Your New Password is : " + forgotPassword);
+                }
+                return NotFound("Not Valid UserName and Email");
+            }
+            return BadRequest();
+        }      
 
     }
 }
