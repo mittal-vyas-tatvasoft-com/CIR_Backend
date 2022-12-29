@@ -8,7 +8,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace CIR.Controllers.Users
 {
-    [Route("api/[controller]")]
+    [Route("api/User")]
     [ApiController]
     [Authorize]
     public class UsersController : ControllerBase
@@ -21,12 +21,12 @@ namespace CIR.Controllers.Users
             _userService = userService;
         }
 
-        [HttpGet("GetAllUsers")]
+        [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
             try
             {
-                var userList = await _userService.AllUsersList();
+                var userList = await _userService.GetAllUsers();
                 return Ok(userList);
             }
             catch (Exception ex)
@@ -35,8 +35,8 @@ namespace CIR.Controllers.Users
             }
         }
 
-        [HttpPost("CreateUser")]
-        public async Task<IActionResult> CreateUser([FromBody] User user)
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] User user)
         {
             if (ModelState.IsValid)
             {
@@ -62,8 +62,8 @@ namespace CIR.Controllers.Users
             return BadRequest();
         }
 
-        [HttpPut("UpdateUser")]
-        public async Task<IActionResult> UpdateUser([FromBody] User user)
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] User user)
         {
             if (ModelState.IsValid)
             {
@@ -89,8 +89,8 @@ namespace CIR.Controllers.Users
             return BadRequest();
         }
 
-        [HttpDelete("DeleteUser{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int id)
         {
             if(id > 0)
             {

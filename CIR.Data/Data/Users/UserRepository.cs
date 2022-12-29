@@ -57,7 +57,7 @@ namespace CIR.Data.Data.Users
             
         }
 
-        public async Task<List<User>> AllUsersList()
+        public async Task<List<User>> GetAllUsers()
         {
             var list = await _CIRDBContext.Users.ToListAsync();            
             return  list;
