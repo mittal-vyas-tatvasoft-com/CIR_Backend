@@ -20,9 +20,9 @@ namespace CIR.Data.Data
             return _CIRDBContext.Users.FirstOrDefault((u) => u.UserName == model.UserName && u.Password == model.Password);
 
         }
-        public string ForgetPassword(ForgotModel forgotModel)
+        public string ForgotPassword(ForgotPasswordModel forgotPasswordModel)
         {
-            var user = _CIRDBContext.Users.Where(c => c.UserName == forgotModel.UserName && c.Email == forgotModel.Email).FirstOrDefault();
+            var user = _CIRDBContext.Users.Where(c => c.UserName == forgotPasswordModel.UserName && c.Email == forgotPasswordModel.Email).FirstOrDefault();
             if (user != null)
             {              
                 const string lower = "abcdefghijklmnopqrstuvwxyz";

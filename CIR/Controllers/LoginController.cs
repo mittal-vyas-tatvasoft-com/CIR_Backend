@@ -78,11 +78,11 @@ namespace CIR.Controllers
         }
        
         [HttpPost("ForgotPassword")]
-        public async Task<IActionResult> ForgetPassword(ForgotModel forgotModel)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordModel forgotPasswordModel)
         {
             if (ModelState.IsValid)
             {
-                var forgotPassword = _loginService.ForgetPassword(forgotModel);
+                var forgotPassword = _loginService.ForgotPassword(forgotPasswordModel);
                 if(forgotPassword != "")
                 {
                     return Ok("Your New Password is : " + forgotPassword);

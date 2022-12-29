@@ -15,9 +15,9 @@ namespace CIR.Application.Services
         {
             return _loginRepository.Login(value); ;
         }
-        public string ForgetPassword(ForgotModel forgotModel)
+        public string ForgotPassword(ForgotPasswordModel forgotPasswordModel)
         {
-            return _loginRepository.ForgetPassword(forgotModel);
+            return _loginRepository.ForgotPassword(forgotPasswordModel);
         }
     }
 }

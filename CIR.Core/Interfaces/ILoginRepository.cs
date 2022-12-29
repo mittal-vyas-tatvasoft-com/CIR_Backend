@@ -6,6 +6,6 @@ namespace CIR.Core.Interfaces
     public interface ILoginRepository
     {
         public User Login(LoginModel model);
-        public string ForgetPassword(ForgotModel forgotModel);
+        public string ForgotPassword(ForgotPasswordModel forgotPasswordModel);
     }
 }
