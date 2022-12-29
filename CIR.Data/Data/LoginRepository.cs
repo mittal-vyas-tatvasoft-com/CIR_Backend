@@ -6,7 +6,7 @@ using System.Text;
 
 namespace CIR.Data.Data
 {
-    public class LoginRepository: ILoginRepository
+    public class LoginRepository : ILoginRepository
     {
         private readonly CIRDbContext _CIRDBContext;
         public LoginRepository(CIRDbContext context)
@@ -14,7 +14,7 @@ namespace CIR.Data.Data
             _CIRDBContext = context ??
                 throw new ArgumentNullException(nameof(context));
         }
-       
+
         User ILoginRepository.Login(LoginModel model)
         {
             return _CIRDBContext.Users.FirstOrDefault((u) => u.UserName == model.UserName && u.Password == model.Password);
@@ -24,7 +24,7 @@ namespace CIR.Data.Data
         {
             var user = _CIRDBContext.Users.Where(c => c.UserName == forgotPasswordModel.UserName && c.Email == forgotPasswordModel.Email).FirstOrDefault();
             if (user != null)
-            {              
+            {
                 const string lower = "abcdefghijklmnopqrstuvwxyz";
                 const string upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
                 const string number = "1234567890";
@@ -60,12 +60,13 @@ namespace CIR.Data.Data
                 _CIRDBContext.Users.Where(x => x.Id == user.Id).ToList().ForEach((a =>
                 {
                     a.Password = newPassword;
-                }));
+                }
+                ));
                 _CIRDBContext.SaveChanges();
 
                 return newPassword;
 
-            }            
+            }
             return "";
         }
     }
