@@ -1,12 +1,17 @@
-﻿using CIR.Common.Data;
+﻿using Azure;
+using CIR.Common.Data;
 using CIR.Core.Entities;
 using CIR.Core.Interfaces.Users;
+using CIR.Core.ViewModel;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CIR.Data.Data.Users
 {
@@ -18,6 +23,12 @@ namespace CIR.Data.Data.Users
         {
             _CIRDBContext = context ??
                throw new ArgumentNullException(nameof(context));
+        }
+
+        public async Task<User> GetUserById(int id)
+        {
+            var user = await _CIRDBContext.Users.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return user;
         }
 
         public async Task<User> CreateOrUpdateUser(User user)
@@ -57,12 +68,6 @@ namespace CIR.Data.Data.Users
             
         }
 
-        public async Task<List<User>> GetAllUsers()
-        {
-            var list = await _CIRDBContext.Users.ToListAsync();            
-            return  list;
-        }
-
         public async Task<User> DeleteUser(int id)
         {
             User user = new()
@@ -83,5 +88,58 @@ namespace CIR.Data.Data.Users
             }
             
         }
+
+        public UsersModel GetFilteredUsers(int displayLength, int displayStart, int sortCol, string sortDir, string? search)
+        {
+            var dictionaryobj = new Dictionary<string, object>
+            {
+                { "DisplayLength", displayLength },
+                { "DisplayStart", displayStart },
+                { "SortCol", sortCol },
+                { "SortDir", sortDir },
+                { "Search", search }
+            };
+
+            DataTable dt = Helper.SQLHelper.ExecuteSqlQueryWithParams("spGetFilteredUsers", dictionaryobj);
+
+            UsersModel usersData = new();
+
+            usersData.Count = Convert.ToInt32(dt.Rows[0]["TotalCount"].ToString());
+            usersData.UsersList = Helper.SQLHelper.ConvertToGenericModelList<User>(dt);
+                       
+            return usersData;
+        }
+
+        public async Task<UsersModel> GetFilteredUsersLinq(int displayLength, int displayStart, string sortCol, string? search, bool sortAscending = true)
+        {
+            UsersModel users = new();
+            IQueryable<User> temp =  users.UsersList.AsQueryable();
+
+            if (string.IsNullOrEmpty(sortCol))
+            {
+                sortCol = "Id";
+            }
+
+            try
+            {
+                users.Count = _CIRDBContext.Users.Where(y => y.UserName.Contains(search) || y.Email.Contains(search) || y.FirstName.Contains(search)).Count();
+
+                temp = sortAscending ? _CIRDBContext.Users.Where(y => y.UserName.Contains(search) || y.Email.Contains(search) || y.FirstName.Contains(search)).OrderBy(x => EF.Property<object>(x, sortCol)).AsQueryable()
+                                     : _CIRDBContext.Users.Where(y => y.UserName.Contains(search) || y.Email.Contains(search) || y.FirstName.Contains(search)).OrderByDescending(x => EF.Property<object>(x, sortCol)).AsQueryable();
+
+                var sortedData = await temp.Skip(displayStart * displayLength).Take(displayLength).ToListAsync();
+                users.UsersList = sortedData;
+
+                return users;
+            }
+            catch
+            {
+                return users;
+            }
+            
+        }
+
+
+
     }
 }

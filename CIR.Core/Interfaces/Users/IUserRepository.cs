@@ -10,11 +10,15 @@ namespace CIR.Core.Interfaces.Users
 {
     public interface IUserRepository
     {
+        Task<User> GetUserById(int id);
+
         Task<User> CreateOrUpdateUser(User user);
 
-        Task<List<User>> GetAllUsers();
-
         Task<User> DeleteUser(int id);
+
+        UsersModel GetFilteredUsers(int displayLength, int displayStart, int sortCol, string sortDir, string search);
+
+        Task<UsersModel> GetFilteredUsersLinq(int displayLength, int displayStart, string? sortCol, string search, bool sortAscending = true);
 
     }
 }
