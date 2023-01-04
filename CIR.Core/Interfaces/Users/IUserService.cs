@@ -1,5 +1,6 @@
 ﻿using CIR.Core.Entities;
 using CIR.Core.ViewModel;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,9 +15,9 @@ namespace CIR.Core.Interfaces.Users
 
         Task<Boolean> UserExists(string email);
 
-        Task<User> CreateOrUpdateUser(User user);
+        Task<IActionResult> CreateOrUpdateUser(User user);
 
-        Task<User> DeleteUser(int id);
+        Task<IActionResult> DeleteUser(int id);
 
         UsersModel GetFilteredUsers(int displayLength, int displayStart, int sortCol, string sortDir, string search);
 

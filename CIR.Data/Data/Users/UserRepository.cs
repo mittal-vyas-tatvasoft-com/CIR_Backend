@@ -4,11 +4,21 @@ using CIR.Core.Entities;
 using CIR.Core.Interfaces.Users;
 using CIR.Core.ViewModel;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using CIR.Common.CustomResponse;
+
 
 namespace CIR.Data.Data.Users
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository: ControllerBase, IUserRepository
     {
         private readonly CIRDbContext _CIRDBContext;
 
@@ -18,11 +28,23 @@ namespace CIR.Data.Data.Users
                throw new ArgumentNullException(nameof(context));
         }
 
+        /// <summary>
+        /// fetches user based on input user id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns> user or null user if not found </returns>
+
         public async Task<User> GetUserById(int id)
         {
             var user = await _CIRDBContext.Users.Where(x => x.Id == id).FirstOrDefaultAsync();
             return user;
         }
+
+        /// <summary>
+        /// this meethod checks if user exists or not based on input user email
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns> if user exists true else false </returns>
 
         public async Task<Boolean> UserExists(string email)
         {
@@ -35,8 +57,14 @@ namespace CIR.Data.Data.Users
             return false;
         }
 
-        public async Task<User> CreateOrUpdateUser(User user)
-        {
+        /// <summary>
+        /// This method is used by create method and update method of user controller
+        /// </summary>
+        /// <param name="user"> new user data or update data for user </param>
+        /// <returns> Ok status if its valid else unprocessable </returns>
+        
+        public async Task<IActionResult> CreateOrUpdateUser(User user)
+        {       
             User newUser = new()
             {
                 Id = user.Id,
@@ -59,20 +87,28 @@ namespace CIR.Data.Data.Users
             if (user.Id > 0)
             {
                 _CIRDBContext.Users.Update(newUser);
-                await _CIRDBContext.SaveChangesAsync();
-                return newUser;
             }
             else
             {
                 _CIRDBContext.Users.Add(newUser);
-                await _CIRDBContext.SaveChangesAsync();
-                return newUser;
             }
 
+            await _CIRDBContext.SaveChangesAsync();
+            if (user.Email != null)
+            {
+                return Ok(new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated });
+            }
 
+            return UnprocessableEntity(new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = false, Message = HttpStatusCodesMessages.UnprocessableEntity });            
         }
 
-        public async Task<User> DeleteUser(int id)
+        /// <summary>
+        /// this metohd updates a column value and disables user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns> deleted/disabled user </returns>
+
+        public async Task<IActionResult> DeleteUser(int id)
         {
             User user = new()
             {
@@ -84,14 +120,25 @@ namespace CIR.Data.Data.Users
             {
                 _CIRDBContext.Entry(user).Property(x => x.Enabled).IsModified = true;
                 await _CIRDBContext.SaveChangesAsync();
-                return user;
+                return Ok(new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = user });
             }
             catch
             {
-                return new User();
+                return UnprocessableEntity(new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = user });
             }
 
         }
+
+        /// <summary>
+        /// This method retuns filtered user list using SP
+        /// </summary>
+        /// <param name="displayLength"> how many row/data we want to fetch(for pagination) </param>
+        /// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
+        /// <param name="sortCol"> name of column which we want to sort</param>
+        /// <param name="search"> word that we want to search in user table </param>
+        /// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
+        /// <returns> filtered list of users </returns>
+
 
         public UsersModel GetFilteredUsers(int displayLength, int displayStart, int sortCol, string sortDir, string? search)
         {
@@ -114,6 +161,17 @@ namespace CIR.Data.Data.Users
             return usersData;
         }
 
+        /// <summary>
+        /// This method retuns filtered user list using LINQ
+        /// </summary>
+        /// <param name="displayLength"> how many row/data we want to fetch(for pagination) </param>
+        /// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
+        /// <param name="sortCol"> name of column which we want to sort</param>
+        /// <param name="search"> word that we want to search in user table </param>
+        /// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
+        /// <returns> filtered list of users </returns>
+
+
         public async Task<UsersModel> GetFilteredUsersLinq(int displayLength, int displayStart, string sortCol, string? search, bool sortAscending = true)
         {
             UsersModel users = new();
@@ -131,7 +189,7 @@ namespace CIR.Data.Data.Users
                 temp = sortAscending ? _CIRDBContext.Users.Where(y => y.UserName.Contains(search) || y.Email.Contains(search) || y.FirstName.Contains(search)).OrderBy(x => EF.Property<object>(x, sortCol)).AsQueryable()
                                      : _CIRDBContext.Users.Where(y => y.UserName.Contains(search) || y.Email.Contains(search) || y.FirstName.Contains(search)).OrderByDescending(x => EF.Property<object>(x, sortCol)).AsQueryable();
 
-                var sortedData = await temp.Skip(displayStart * displayLength).Take(displayLength).ToListAsync();
+                var sortedData = await temp.Skip(displayStart).Take(displayLength).ToListAsync();
                 users.UsersList = sortedData;
 
                 return users;
