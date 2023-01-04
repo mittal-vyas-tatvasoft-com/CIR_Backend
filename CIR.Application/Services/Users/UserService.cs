@@ -25,6 +25,12 @@ namespace CIR.Application.Services.Users
             return  user;
         }
 
+        public async Task<Boolean> UserExists(string email)
+        {            
+            return await _userRepository.UserExists(email);
+        }
+
+
         public Task<User> CreateOrUpdateUser(User user)
         {
             return _userRepository.CreateOrUpdateUser(user);

@@ -31,6 +31,17 @@ namespace CIR.Data.Data.Users
             return user;
         }
 
+        public async Task<Boolean> UserExists(string email)
+        {
+            var checkUserExist = await _CIRDBContext.Users.Where(x => x.Email == email).FirstOrDefaultAsync();
+
+            if(checkUserExist !=null && checkUserExist.Id > 0)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public async Task<User> CreateOrUpdateUser(User user)
         {       
             User newUser = new()

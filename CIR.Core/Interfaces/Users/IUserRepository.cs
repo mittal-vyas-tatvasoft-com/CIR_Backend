@@ -12,6 +12,8 @@ namespace CIR.Core.Interfaces.Users
     {
         Task<User> GetUserById(int id);
 
+        Task<Boolean> UserExists(string email);
+
         Task<User> CreateOrUpdateUser(User user);
 
         Task<User> DeleteUser(int id);
