@@ -8,6 +8,8 @@ using Microsoft.Data.SqlClient;
 using System.Dynamic;
 using System.IO;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using System.Reflection;
 
 namespace CIR.Data.Helper
 {
@@ -154,6 +156,61 @@ namespace CIR.Data.Helper
         //    return dt;
         //}
 
+
+        public static DataTable ExecuteSqlQueryWithParams(string sql, Dictionary<string, object> Params)
+        {
+            DataTable dt = new();
+            try
+            {
+                IConfigurationRoot configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
+                var connectionString = configuration.GetConnectionString("CIR");
+                using (SqlConnection sqlConn = new(connectionString))
+                {
+                    SqlCommand cmd = new(sql, sqlConn);
+                    sqlConn.Open();
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.CommandText = sql;
+
+                    foreach (var procParameter in Params)
+                    {
+                        cmd.Parameters.AddWithValue(procParameter.Key, procParameter.Value);
+                    }
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        da.Fill(dt);
+                    }
+                    
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            return dt;
+        }
+
+        public static List<T> ConvertToGenericModelList<T>(DataTable dt)
+        {
+            dt ??= new DataTable();
+            const BindingFlags flags = BindingFlags.Public | BindingFlags.Instance;
+            var columnNames = dt.Columns.Cast<DataColumn>()
+                .Select(c => c.ColumnName)
+                .ToList();
+            var objectProperties = typeof(T).GetProperties(flags);
+            var targetList = dt.AsEnumerable().Select(dataRow =>
+            {
+                var instanceOfT = Activator.CreateInstance<T>();
+
+                foreach (var properties in objectProperties.Where(properties => columnNames.Contains(properties.Name) && dataRow[properties.Name] != DBNull.Value))
+                {
+                    properties.SetValue(instanceOfT, dataRow[properties.Name], null);
+                }
+                return instanceOfT;
+            }).ToList();
+
+            return targetList;
+        }
 
     }
 }
