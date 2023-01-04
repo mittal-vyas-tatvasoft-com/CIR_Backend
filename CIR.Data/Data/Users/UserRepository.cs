@@ -1,21 +1,14 @@
-﻿using Azure;
-using CIR.Common.Data;
+﻿using CIR.Common.Data;
+using CIR.Common.Helper;
 using CIR.Core.Entities;
 using CIR.Core.Interfaces.Users;
 using CIR.Core.ViewModel;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CIR.Data.Data.Users
 {
-    public class UserRepository: IUserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly CIRDbContext _CIRDBContext;
 
@@ -35,7 +28,7 @@ namespace CIR.Data.Data.Users
         {
             var checkUserExist = await _CIRDBContext.Users.Where(x => x.Email == email).FirstOrDefaultAsync();
 
-            if(checkUserExist !=null && checkUserExist.Id > 0)
+            if (checkUserExist != null && checkUserExist.Id > 0)
             {
                 return true;
             }
@@ -43,10 +36,10 @@ namespace CIR.Data.Data.Users
         }
 
         public async Task<User> CreateOrUpdateUser(User user)
-        {       
+        {
             User newUser = new()
-            {   
-                Id= user.Id,
+            {
+                Id = user.Id,
                 UserName = user.UserName,
                 Email = user.Email,
                 Password = user.Password,
@@ -76,7 +69,7 @@ namespace CIR.Data.Data.Users
                 return newUser;
             }
 
-            
+
         }
 
         public async Task<User> DeleteUser(int id)
@@ -97,7 +90,7 @@ namespace CIR.Data.Data.Users
             {
                 return new User();
             }
-            
+
         }
 
         public UsersModel GetFilteredUsers(int displayLength, int displayStart, int sortCol, string sortDir, string? search)
@@ -111,20 +104,20 @@ namespace CIR.Data.Data.Users
                 { "Search", search }
             };
 
-            DataTable dt = Helper.SQLHelper.ExecuteSqlQueryWithParams("spGetFilteredUsers", dictionaryobj);
+            DataTable dt = SQLHelper.ExecuteSqlQueryWithParams("spGetFilteredUsers", dictionaryobj);
 
             UsersModel usersData = new();
 
             usersData.Count = Convert.ToInt32(dt.Rows[0]["TotalCount"].ToString());
-            usersData.UsersList = Helper.SQLHelper.ConvertToGenericModelList<User>(dt);
-                       
+            usersData.UsersList = SQLHelper.ConvertToGenericModelList<User>(dt);
+
             return usersData;
         }
 
         public async Task<UsersModel> GetFilteredUsersLinq(int displayLength, int displayStart, string sortCol, string? search, bool sortAscending = true)
         {
             UsersModel users = new();
-            IQueryable<User> temp =  users.UsersList.AsQueryable();
+            IQueryable<User> temp = users.UsersList.AsQueryable();
 
             if (string.IsNullOrEmpty(sortCol))
             {
@@ -147,7 +140,7 @@ namespace CIR.Data.Data.Users
             {
                 return users;
             }
-            
+
         }
 
 
