@@ -12,6 +12,8 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using CIR.Core.Interfaces.Users;
 using CIR.Application.Services.Users;
+using CIR.Core.Interfaces.Utilities;
+using CIR.Application.Services.Utilities;
 using CIR.Data.Data.Users;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -58,6 +60,8 @@ builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<ILoginRepository, LoginRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICultureService, CultureService>();
+builder.Services.AddScoped<ICultureRepository, CultureRepository>();
 builder.Services.AddScoped<IThumbnailService, ThumbnailService>();
 builder.Services.AddScoped<IThumbnailRepository, ThumbnailRepository>();
 

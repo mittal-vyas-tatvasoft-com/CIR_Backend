@@ -13,6 +13,12 @@ namespace CIR.Common.Data
             set;
         }
 
+        public DbSet<Culture> Cultures
+        {
+            get;
+            set;
+        }
+
         public DbSet<ImageData> Images 
         { 
             get;
