@@ -58,6 +58,8 @@ builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<ILoginRepository, LoginRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRolesService, RolesService>();
+builder.Services.AddScoped<IRolesRepository, RolesRepository>();
 
 
 //allow origin

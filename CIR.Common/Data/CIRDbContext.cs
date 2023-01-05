@@ -12,6 +12,7 @@ namespace CIR.Common.Data
             get;
             set;
         }
+        public DbSet<Roles> Roles { get; set; }
 
     }
 }
