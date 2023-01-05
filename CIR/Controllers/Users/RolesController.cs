@@ -1,4 +1,5 @@
-﻿using CIR.Core.Entities;
+﻿using CIR.Common.CustomResponse;
+using CIR.Core.Entities;
 using CIR.Core.Interfaces.Users;
 using CIR.Core.ViewModel;
 using Microsoft.AspNetCore.Authorization;
@@ -16,39 +17,39 @@ namespace CIR.Controllers.Users
 		private readonly IRolesService _rolesService;
 		public RolesController(IRolesService rolesService)
 		{
-			_rolesService= rolesService;
+			_rolesService = rolesService;
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> GetAll()
+		public async Task<CustomResponse<List<Roles>>> GetAll()
 		{
 			try
 			{
 				var roleslist = await _rolesService.GetAllRoles();
-				return Ok(roleslist);
+				return new CustomResponse<List<Roles>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = roleslist };
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
-				return BadRequest(new { message = "Error : " + ex });
+				return new CustomResponse<List<Roles>>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = true, Message = HttpStatusCodesMessages.BadRequest };
 			}
 		}
 
 		[HttpGet("{id}")]
-		public async Task<IActionResult> GetById([FromRoute] int id)
+		public async Task<CustomResponse<Roles>> GetById([FromRoute] int id)
 		{
 			try
 			{
 				var roleslist = await _rolesService.GetRoleById(id);
-				return Ok(roleslist);
+				return new CustomResponse<Roles>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = roleslist };
 			}
 			catch (Exception ex)
 			{
-				return BadRequest(new { message = "Error : " + ex });
+				return new CustomResponse<Roles>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = true, Message = HttpStatusCodesMessages.BadRequest };
 			}
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Post([FromBody] RolesModel  roles)
+		public async Task<CustomResponse<long>> Post([FromBody] RolesModel roles)
 		{
 			if (ModelState.IsValid)
 			{
@@ -57,35 +58,35 @@ namespace CIR.Controllers.Users
 					var newrole = await _rolesService.CreateRole(roles);
 					if (newrole != null)
 					{
-						return Ok(newrole);
+						return new CustomResponse<long>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = newrole };
 					}
 					else
 					{
-						return BadRequest(new { message = "Error occured creating new role" });
+						return new CustomResponse<long>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = true, Message = HttpStatusCodesMessages.BadRequest };
 					}
 				}
 				catch (Exception ex)
 				{
-					return BadRequest(new { message = "Error : " + ex + " Invalid input data" }); ;
+					return new CustomResponse<long>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = true, Message = HttpStatusCodesMessages.BadRequest };
 				}
 			}
-				return BadRequest();
+			return new CustomResponse<long>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = true, Message = HttpStatusCodesMessages.BadRequest };
 		}
 
 		[HttpDelete]
-		public async Task<IActionResult> Delete(int roleid)
+		public async Task<CustomResponse<Roles>> Delete(int roleid)
 		{
 			if (roleid > 0)
 			{
 				var deletedrole = await _rolesService.DeleteRole(roleid);
 
-				if (deletedrole.Id > 0 )
+				if (deletedrole.Id > 0)
 				{
-					return Ok(deletedrole);
+					return new CustomResponse<Roles>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = deletedrole };
 				}
-				return BadRequest(new { message = "Invalid input" });
+				return new CustomResponse<Roles>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = true, Message = HttpStatusCodesMessages.BadRequest };
 			}
-			return BadRequest(new { message = "Invalid input" });
+			return new CustomResponse<Roles>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = true, Message = HttpStatusCodesMessages.BadRequest };
 		}
 	}
 }
