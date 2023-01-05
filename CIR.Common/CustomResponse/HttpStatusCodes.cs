@@ -1,11 +1,23 @@
 ﻿namespace CIR.Common.CustomResponse
 {
-    public class HttpStatusCodes
+    public enum HttpStatusCodes
     {
-        public const int Success = 200;
+        Success = 200,
 
-        //public const string Success2 = "200 - OK";
+        CreatedOrUpdated = 201,
 
-        public const int DataNotFound = 400;
+        BadRequest = 400,
+
+        Unauthorized = 401,
+
+        Forbidden = 403,
+
+        NotFound = 404,
+
+        MethodNotAllowed = 405,
+
+        UnprocessableEntity = 422,
+
+        InternalServerError = 500
     }
 }
