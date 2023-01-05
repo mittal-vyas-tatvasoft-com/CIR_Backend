@@ -81,13 +81,13 @@ namespace CIR.Controllers.Users
 		}
 
 		[HttpDelete]
-		public async Task<CustomResponse<string>> Delete(int roleid)
+		public async Task<IActionResult> Delete(int roleid)
 		{
 			if (roleid > 0)
 			{
-				var deletedrole = await _rolesService.DeleteRole(roleid);
+				return await _rolesService.DeleteRole(roleid);
 			}
-			return new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound,Data = " Invalid input" };
+			return new JsonResult(new CustomResponse<String>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Invalid input id" });
 		}
 	}
 }

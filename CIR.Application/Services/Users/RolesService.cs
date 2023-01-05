@@ -1,6 +1,7 @@
 ﻿using CIR.Core.Entities;
 using CIR.Core.Interfaces.Users;
 using CIR.Core.ViewModel;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
@@ -40,7 +41,7 @@ namespace CIR.Application.Services.Users
 		{
 			 await _rolesRepository.UpdateRole(rolesModel);
 		}
-		public async Task<Roles> DeleteRole(long roleid)
+		public async Task<IActionResult> DeleteRole(long roleid)
 		{
 			return await _rolesRepository.DeleteRole(roleid);
 		}

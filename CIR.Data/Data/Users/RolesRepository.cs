@@ -10,10 +10,12 @@ using CIR.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using CIR.Core.ViewModel;
 using Azure;
+using Microsoft.AspNetCore.Mvc;
+using CIR.Common.CustomResponse;
 
 namespace CIR.Data.Data.Users
 {
-	public class RolesRepository : IRolesRepository
+	public class RolesRepository : ControllerBase, IRolesRepository
 	{
 		private readonly CIRDbContext _CIRDbContext;
 		public RolesRepository(CIRDbContext context)
@@ -61,12 +63,19 @@ namespace CIR.Data.Data.Users
 			await _CIRDbContext.SaveChangesAsync();
 		}
 
-		public async Task<Roles> DeleteRole(long roleid)
+		public async Task<IActionResult> DeleteRole(long roleid)
 		{
 			var role = new Roles() { Id = roleid };
-			_CIRDbContext.Roles.Remove(role);
-			await _CIRDbContext.SaveChangesAsync();
-			return new Roles();
+			try
+			{
+				_CIRDbContext.Roles.Remove(role);
+				await _CIRDbContext.SaveChangesAsync();
+				return Ok(new CustomResponse<Roles>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = new Roles() });
+			}
+			catch (Exception ex)
+			{
+				return UnprocessableEntity(new CustomResponse<Roles>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = true, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = new Roles() });
+			}
 		}
 	}
 }

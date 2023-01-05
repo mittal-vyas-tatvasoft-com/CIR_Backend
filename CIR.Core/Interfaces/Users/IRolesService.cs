@@ -1,5 +1,6 @@
 ﻿using CIR.Core.Entities;
 using CIR.Core.ViewModel;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,6 @@ namespace CIR.Core.Interfaces.Users
 		Task<Roles> GetRoleById(long roleid);
 		Task<long> CreateRole(RolesModel roles);
 		Task UpdateRole(RolesModel rolesModel);
-		Task<Roles> DeleteRole(long roleid);
+		Task<IActionResult> DeleteRole(long roleid);
 	}
 }
