@@ -1,14 +1,9 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Core.Entities;
 using CIR.Core.Interfaces.Users;
-using CIR.Common.CustomResponse;
+using CIR.Core.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using System.Net;
-using static System.Net.Mime.MediaTypeNames;
-using CIR.Core.ViewModel;
 
 namespace CIR.Controllers.Users
 {
@@ -26,7 +21,7 @@ namespace CIR.Controllers.Users
             _logger = logger;
         }
 
-   
+
         /// <summary>
         /// This method fetches single user data using user's Id
         /// </summary>
@@ -40,7 +35,7 @@ namespace CIR.Controllers.Users
             {
                 var user = await _userService.GetUserById(id);
                 if (user != null)
-                {  
+                {
                     return new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = user };
                 }
                 return new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = user };
@@ -48,7 +43,7 @@ namespace CIR.Controllers.Users
             }
             catch
             {
-                return new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError};
+                return new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError };
             }
         }
 
@@ -57,7 +52,7 @@ namespace CIR.Controllers.Users
         /// </summary>
         /// <param name="user"> this object contains different parameters as details of a user </param>
         /// <returns > created user </returns>
-                
+
         [HttpPost("[action]")]
         public async Task<IActionResult> Create([FromBody] User user)
         {
@@ -72,7 +67,7 @@ namespace CIR.Controllers.Users
                     }
                     else
                     {
-                         return await _userService.CreateOrUpdateUser(user);
+                        return await _userService.CreateOrUpdateUser(user);
                     }
 
                 }
@@ -91,7 +86,7 @@ namespace CIR.Controllers.Users
         /// </summary>
         /// <param name="user"> this object contains different parameters as details of a user </param>
         /// <returns> updated user </returns>
-       
+
         [HttpPut("[action]")]
         public async Task<IActionResult> Update([FromBody] User user)
         {
@@ -99,7 +94,7 @@ namespace CIR.Controllers.Users
             {
                 try
                 {
-                    return await _userService.CreateOrUpdateUser(user);                    
+                    return await _userService.CreateOrUpdateUser(user);
                 }
                 catch (Exception ex)
                 {

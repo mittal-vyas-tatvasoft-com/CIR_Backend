@@ -1,3 +1,23 @@
+using CIR;
+using CIR.Application.Services;
+using CIR.Application.Services.Common;
+using CIR.Application.Services.GlobalConfig;
+using CIR.Application.Services.Users;
+using CIR.Common.Data;
+using CIR.Common.EmailGeneration;
+using CIR.Common.EMailGeneration;
+using CIR.Core.Interfaces;
+using CIR.Core.Interfaces.Common;
+using CIR.Core.Interfaces.GlobalConfig;
+using CIR.Core.Interfaces.Users;
+using CIR.Data.Data;
+using CIR.Data.Data.Common;
+using CIR.Data.Data.GlobalConfig;
+using CIR.Data.Data.Users;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,11 +65,14 @@ builder.Services.Configure<AppSettings>(appSettings);
 var emailGeneration = builder.Configuration.GetSection("EmailGeneration");
 builder.Services.Configure<EmailModel>(emailGeneration);
 
-
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<ILoginRepository, LoginRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IGlobalCurrencyService, GlobalCurrencyService>();
+builder.Services.AddScoped<IGlobalCurrencyRepository, GlobalCurrencyRepository>();
+builder.Services.AddScoped<ICommonService, CommonService>();
+builder.Services.AddScoped<ICommonRepository, CommonRepository>();
 builder.Services.AddScoped<EmailGeneration>();
 
 
