@@ -11,7 +11,7 @@ namespace CIR.Controllers.Users
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	[Authorize]
+	//[Authorize]
 	public class RolesController : ControllerBase
 	{
 		private readonly IRolesService _rolesService;
@@ -40,7 +40,14 @@ namespace CIR.Controllers.Users
 			try
 			{
 				var roleslist = await _rolesService.GetRoleById(id);
+				if( roleslist == null)
+				{
+					return new CustomResponse<Roles>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound };
+				}
+				else
+				{ 
 				return new CustomResponse<Roles>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = roleslist };
+				}
 			}
 			catch (Exception ex)
 			{
