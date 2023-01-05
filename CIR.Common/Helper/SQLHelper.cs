@@ -172,7 +172,6 @@ namespace CIR.Common.Helper
             }
             catch (Exception ex)
             {
-
                 throw ex;
             }
             return dt;
