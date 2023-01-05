@@ -1,4 +1,5 @@
-﻿using CIR.Core.Interfaces;
+﻿using CIR.Common.CustomResponse;
+using CIR.Core.Interfaces;
 using CIR.Core.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -22,6 +23,11 @@ namespace CIR.Controllers
             _appSettings = settings.Value;
         }
 
+        /// <summary>
+        /// This method takes login user
+        /// </summary>
+        /// <param name="value">this object contains different parameters as details of a login user</param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginModel value)
         {
@@ -32,18 +38,23 @@ namespace CIR.Controllers
                 {
                     var generatedToken = await GenerateJwtToken(user);
                     if (generatedToken != null)
-                        return Ok(new { token = generatedToken });
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = generatedToken });
                     else
-                        return BadRequest(new { message = "Token not generated" });
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Token not generated" });
                 }
                 else
                 {
-                    return NotFound(new { message = "Username or password is incorrect" });
+                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Username or password is incorrect" });
                 }
             }
-            return BadRequest();
+            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
         }
 
+        /// <summary>
+        /// This method takes generate Jwt token
+        /// </summary>
+        /// <param name="user">this object contains different parameters as details of a user</param>
+        /// <returns></returns>
         private async Task<string> GenerateJwtToken(CIR.Core.Entities.User user)
         {
             string jwtToken = string.Empty;
@@ -76,21 +87,59 @@ namespace CIR.Controllers
                 return jwtToken;
             });
         }
-       
+
+        /// <summary>
+        /// This method takes forgot password
+        /// </summary>
+        /// <param name="forgotPasswordModel">this object contains different parameters as details of a forgot password</param>
+        /// <returns></returns>
         [HttpPost("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordModel forgotPasswordModel)
         {
             if (ModelState.IsValid)
             {
-                var forgotPassword = _loginService.ForgotPassword(forgotPasswordModel);
-                if(forgotPassword != "")
+                try
                 {
-                    return Ok("Your New Password is : " + forgotPassword);
+                    var forgotPassword = _loginService.ForgotPassword(forgotPasswordModel);
+                    if (forgotPassword == "Success")
+                    {
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Successfully send new password on your mail,please check once!" });
+                    }
+                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Please enter valid username and email" });
                 }
-                return NotFound("Not Valid UserName and Email");
+                catch (Exception ex)
+                {
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+                }
             }
-            return BadRequest();
-        }      
+            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
+        }
 
+        /// <summary>
+        /// This method takes reset password
+        /// </summary>
+        /// <param name="resetPasswordModel">this object contains different parameters as details of a reset password</param>
+        /// <returns></returns>
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordModel resetPasswordModel)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var resetPassword = _loginService.ResetPassword(resetPasswordModel);
+                    if (resetPassword == "Success")
+                    {
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Password Change Successfully." });
+                    }
+                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "OldPassword InCorrect." });
+                }
+                catch (Exception ex)
+                {
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+                }
+            }
+            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
+        }
     }
 }

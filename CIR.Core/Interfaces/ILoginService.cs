@@ -7,5 +7,6 @@ namespace CIR.Core.Interfaces
     {
         public User Login(LoginModel model);
         public string ForgotPassword(ForgotPasswordModel forgotPasswordModel);
+        public string ResetPassword(ResetPasswordModel resetPasswordModel);
     }
 }

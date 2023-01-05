@@ -1,61 +1,47 @@
 ﻿using CIR.Common.Data;
+using CIR.Common.EMailGeneration;
+using CIR.Common.MailTemplate;
+using CIR.Common.SystemConfig;
 using CIR.Core.Entities;
 using CIR.Core.Interfaces;
 using CIR.Core.ViewModel;
-using System.Text;
+using RandomStringCreator;
 
 namespace CIR.Data.Data
 {
     public class LoginRepository : ILoginRepository
     {
         private readonly CIRDbContext _CIRDBContext;
-        public LoginRepository(CIRDbContext context)
+        private readonly EmailGeneration _emailGeneration;
+        public LoginRepository(CIRDbContext context, EmailGeneration emailGeneration)
         {
             _CIRDBContext = context ??
                 throw new ArgumentNullException(nameof(context));
+            _emailGeneration = emailGeneration;
         }
-
+        /// <summary>
+        /// This method used by login user
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         User ILoginRepository.Login(LoginModel model)
         {
             return _CIRDBContext.Users.FirstOrDefault((u) => u.UserName == model.UserName && u.Password == model.Password);
 
         }
+
+        /// <summary>
+        /// This method used by forgot password
+        /// </summary>
+        /// <param name="forgotPasswordModel"></param>
+        /// <returns>Success status if its valid else failure</returns>
         public string ForgotPassword(ForgotPasswordModel forgotPasswordModel)
         {
             var user = _CIRDBContext.Users.Where(c => c.UserName == forgotPasswordModel.UserName && c.Email == forgotPasswordModel.Email).FirstOrDefault();
             if (user != null)
             {
-                const string lower = "abcdefghijklmnopqrstuvwxyz";
-                const string upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-                const string number = "1234567890";
-                const string special = "!@#$%^&*";
-                int length = 8;
-                var middle = length / 2;
-                StringBuilder res = new StringBuilder();
-                Random rnd = new Random();
-                while (0 < length--)
-                {
-                    if (middle == length)
-                    {
-                        res.Append(number[rnd.Next(number.Length)]);
-                    }
-                    else if (middle - 1 == length)
-                    {
-                        res.Append(special[rnd.Next(special.Length)]);
-                    }
-                    else
-                    {
-                        if (length % 2 == 0)
-                        {
-                            res.Append(lower[rnd.Next(lower.Length)]);
-                        }
-                        else
-                        {
-                            res.Append(upper[rnd.Next(upper.Length)]);
-                        }
-                    }
-                }
-                string newPassword = res.ToString();
+                string randomString = SystemConfig.randomString;
+                string newPassword = new StringCreator(randomString).Get(8);
 
                 _CIRDBContext.Users.Where(x => x.Id == user.Id).ToList().ForEach((a =>
                 {
@@ -64,10 +50,36 @@ namespace CIR.Data.Data
                 ));
                 _CIRDBContext.SaveChanges();
 
-                return newPassword;
+                //Send NewPassword in Mail
+                string mailSubject = MailTemplate.ForgotPasswordSubject();
+                string mailBody = MailTemplate.ForgotPasswordTemplate(user);
+                _emailGeneration.SendMail(forgotPasswordModel.Email, mailSubject, mailBody);
 
+                return "Success";
             }
-            return "";
+            return "Failure";
+        }
+
+        /// <summary>
+        /// This method used by reset password
+        /// </summary>
+        /// <param name="resetPasswordModel"></param>
+        /// <returns>Success status if its valid else failure</returns>
+        public string ResetPassword(ResetPasswordModel resetPasswordModel)
+        {
+            var user = _CIRDBContext.Users.Where(c => c.Id == resetPasswordModel.Id).FirstOrDefault();
+            if (user != null)
+            {
+                if (user.Password == resetPasswordModel.OldPassword)
+                {
+                    user.Id = resetPasswordModel.Id;
+                    user.Password = resetPasswordModel.NewPassword;
+                    _CIRDBContext.Users.Update(user);
+                    _CIRDBContext.SaveChanges();
+                    return "Success";
+                }
+            }
+            return "Failure";
         }
     }
 }

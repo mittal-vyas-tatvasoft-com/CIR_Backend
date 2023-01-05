@@ -1,18 +1,18 @@
 using CIR;
-using CIR.Core.Interfaces;
 using CIR.Application.Services;
+using CIR.Application.Services.Users;
 using CIR.Common.Data;
+using CIR.Common.EmailGeneration;
+using CIR.Common.EMailGeneration;
+using CIR.Core.Interfaces;
+using CIR.Core.Interfaces.Users;
 using CIR.Data.Data;
+using CIR.Data.Data.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using CIR.Core.Interfaces.Users;
-using CIR.Application.Services.Users;
-using CIR.Data.Data.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,13 +51,20 @@ builder.Services.AddSwaggerGen(s =>
 var connectionString = builder.Configuration.GetConnectionString("CIR");
 builder.Services.AddDbContext<CIRDbContext>(item => item.UseSqlServer(connectionString));
 
+//add appsettings
 var appSettings = builder.Configuration.GetSection("AppSettings");
 builder.Services.Configure<AppSettings>(appSettings);
+
+//add emailgeneration appsettings
+var emailGeneration = builder.Configuration.GetSection("EmailGeneration");
+builder.Services.Configure<EmailModel>(emailGeneration);
+
 
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<ILoginRepository, LoginRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<EmailGeneration>();
 
 
 //allow origin
