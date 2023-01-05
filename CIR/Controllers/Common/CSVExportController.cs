@@ -1,4 +1,5 @@
-﻿using CIR.Common.Data;
+﻿using CIR.Common.CustomResponse;
+using CIR.Common.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -54,7 +55,7 @@ namespace CIR.Controllers.Common
 			}
 			else
 			{
-				return BadRequest(new { message = "CSV not Generated" });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest});
 			}
 		}
 	}
