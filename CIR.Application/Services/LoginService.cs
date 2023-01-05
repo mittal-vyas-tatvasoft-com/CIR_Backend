@@ -11,10 +11,17 @@ namespace CIR.Application.Services
         {
             _loginRepository = loginRepository;
         }
-
         User ILoginService.Login(LoginModel value)
         {
             return _loginRepository.Login(value);
+        }
+        public string ForgotPassword(ForgotPasswordModel forgotPasswordModel)
+        {
+            return _loginRepository.ForgotPassword(forgotPasswordModel);
+        }
+        public string ResetPassword(ResetPasswordModel resetPasswordModel)
+        {
+            return _loginRepository.ResetPassword(resetPasswordModel);
         }
     }
 }

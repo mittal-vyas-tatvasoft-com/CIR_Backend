@@ -1,6 +1,6 @@
 ﻿using CIR.Core.Entities;
+using CIR.Core.Entities.GlobalConfig;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace CIR.Common.Data
 {
@@ -12,12 +12,20 @@ namespace CIR.Common.Data
             get;
             set;
         }
-
-        public DbSet<ImageData> Images 
-        { 
+        public DbSet<Currency> Currencies
+        {
             get;
             set;
         }
-
+        public DbSet<CountryCode> CountryCodes
+        {
+            get;
+            set;
+        }
+        public DbSet<GlobalConfigurationCurrency> GlobalConfigurationCurrencies
+        {
+            get;
+            set;
+        }
     }
 }
