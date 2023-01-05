@@ -13,6 +13,8 @@ using System.Text;
 using CIR.Core.Interfaces.Users;
 using CIR.Application.Services.Users;
 using CIR.Data.Data.Users;
+using CIR.Core.Interfaces.Common;
+using CIR.Application.Services.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,6 +60,7 @@ builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<ILoginRepository, LoginRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICsvService, CsvService>();
 
 
 //allow origin
