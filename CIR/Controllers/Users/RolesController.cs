@@ -81,19 +81,13 @@ namespace CIR.Controllers.Users
 		}
 
 		[HttpDelete]
-		public async Task<CustomResponse<Roles>> Delete(int roleid)
+		public async Task<CustomResponse<string>> Delete(int roleid)
 		{
 			if (roleid > 0)
 			{
 				var deletedrole = await _rolesService.DeleteRole(roleid);
-
-				if (deletedrole.Id > 0)
-				{
-					return new CustomResponse<Roles>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = deletedrole };
-				}
-				return new CustomResponse<Roles>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = true, Message = HttpStatusCodesMessages.BadRequest };
 			}
-			return new CustomResponse<Roles>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = true, Message = HttpStatusCodesMessages.BadRequest };
+			return new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound,Data = " Invalid input" };
 		}
 	}
 }
