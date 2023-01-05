@@ -14,7 +14,7 @@ namespace CIR.Application.Services
 
         User ILoginService.Login(LoginModel value)
         {
-            return _loginRepository.Login(value); ;
+            return _loginRepository.Login(value);
         }
     }
 }
