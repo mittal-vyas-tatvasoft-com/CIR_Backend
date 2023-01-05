@@ -60,6 +60,8 @@ builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<ILoginRepository, LoginRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IThumbnailService, ThumbnailService>();
+builder.Services.AddScoped<IThumbnailRepository, ThumbnailRepository>();
 builder.Services.AddScoped<ICsvService, CsvService>();
 
 

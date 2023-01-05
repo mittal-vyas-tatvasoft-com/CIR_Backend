@@ -1,6 +1,7 @@
 ﻿using CIR.Core.Entities;
 using CIR.Core.Interfaces.Users;
 using CIR.Core.ViewModel;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -31,12 +32,12 @@ namespace CIR.Application.Services.Users
         }
 
 
-        public Task<User> CreateOrUpdateUser(User user)
+        public Task<IActionResult> CreateOrUpdateUser(User user)
         {
             return _userRepository.CreateOrUpdateUser(user);
         }
                
-        public async Task<User> DeleteUser(int id)
+        public async Task<IActionResult> DeleteUser(int id)
         {           
             return await _userRepository.DeleteUser(id);
         }

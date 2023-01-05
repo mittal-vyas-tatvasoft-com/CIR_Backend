@@ -13,5 +13,11 @@ namespace CIR.Common.Data
             set;
         }
 
+        public DbSet<ImageData> Images 
+        { 
+            get;
+            set;
+        }
+
     }
 }
