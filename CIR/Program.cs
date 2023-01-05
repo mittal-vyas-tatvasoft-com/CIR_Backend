@@ -10,6 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using CIR.Core.Interfaces.Users;
+using CIR.Application.Services.Users;
+using CIR.Data.Data.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,6 +56,10 @@ builder.Services.Configure<AppSettings>(appSettings);
 
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<ILoginRepository, LoginRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IThumbnailService, ThumbnailService>();
+builder.Services.AddScoped<IThumbnailRepository, ThumbnailRepository>();
 
 
 //allow origin
