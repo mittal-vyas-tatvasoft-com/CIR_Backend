@@ -5,7 +5,7 @@ using CIR.Core.ViewModel;
 
 namespace CIR.Data.Data
 {
-    public class LoginRepository: ILoginRepository
+    public class LoginRepository : ILoginRepository
     {
         private readonly CIRDbContext _CIRDBContext;
         public LoginRepository(CIRDbContext context)

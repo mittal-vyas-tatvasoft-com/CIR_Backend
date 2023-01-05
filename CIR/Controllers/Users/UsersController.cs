@@ -1,111 +1,197 @@
-﻿using CIR.Core.Entities;
+﻿using CIR.Common.CustomResponse;
+using CIR.Core.Entities;
 using CIR.Core.Interfaces.Users;
+using CIR.Common.CustomResponse;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using System.Net;
 using static System.Net.Mime.MediaTypeNames;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using CIR.Core.ViewModel;
 
 namespace CIR.Controllers.Users
 {
-    [Route("api/User")]
+    [Route("api/Users")]
     [ApiController]
     [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
-        
+        private readonly ILogger<UsersController> _logger;
 
-        public UsersController(IUserService userService)
+        public UsersController(IUserService userService, ILogger<UsersController> logger)
         {
             _userService = userService;
+            _logger = logger;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllUsers()
+   
+        /// <summary>
+        /// This method fetches single user data using user's Id
+        /// </summary>
+        /// <param name="id">user will be fetched according to this 'id'</param>
+        /// <returns> user </returns> 
+
+        [HttpGet("{id}")]
+        public async Task<CustomResponse<User>> GetUserById(int id)
         {
             try
             {
-                var userList = await _userService.GetAllUsers();
-                return Ok(userList);
+                var user = await _userService.GetUserById(id);
+                if (user != null)
+                {  
+                    return new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = user };
+                }
+                return new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = user };
+
             }
-            catch (Exception ex)
+            catch
             {
-                return BadRequest(new { message = "Error : " + ex });
+                return new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError};
             }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Post([FromBody] User user)
-        {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var newUser = await _userService.CreateOrUpdateUser(user);
-                    if (newUser.Id > 0)
-                    {
-                        return Ok(newUser);
-                    }
-                    else
-                    {
-                        return BadRequest(new { message = "Error occured creating new user" });
-                    }
-                }
-                catch(Exception ex)
-                {
-                    return BadRequest(new { message = "Error : " +ex +" Invalid input data" });
-                }
+        /// <summary>
+        /// This method takes user details as parameters and creates user and returns that user
+        /// </summary>
+        /// <param name="user"> this object contains different parameters as details of a user </param>
+        /// <returns > created user </returns>
                 
-            }
-
-            return BadRequest();
-        }
-
-        [HttpPut]
-        public async Task<IActionResult> Put([FromBody] User user)
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Create([FromBody] User user)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var updatedUser = await _userService.CreateOrUpdateUser(user);
-                    if (updatedUser.Id > 0)
+                    var userExists = await _userService.UserExists(user.Email);
+                    if (userExists)
                     {
-                        return Ok(updatedUser);
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "user already exists" });
                     }
                     else
                     {
-                        return BadRequest(new { message = "Error occured updating user data" });
+                         return await _userService.CreateOrUpdateUser(user);
                     }
+
                 }
                 catch (Exception ex)
                 {
-                    return BadRequest(new { message = "Error : " + ex + " Invalid input data" });
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
                 }
 
             }
 
-            return BadRequest();
+            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
         }
 
-        [HttpDelete]
+        /// <summary>
+        /// This method takes user details and updates the user
+        /// </summary>
+        /// <param name="user"> this object contains different parameters as details of a user </param>
+        /// <returns> updated user </returns>
+       
+        [HttpPut("[action]")]
+        public async Task<IActionResult> Update([FromBody] User user)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    return await _userService.CreateOrUpdateUser(user);                    
+                }
+                catch (Exception ex)
+                {
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+                }
+
+            }
+
+            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
+        }
+
+        /// <summary>
+        /// This method disables user 
+        /// </summary>
+        /// <param name="id"> user will be disabled according to this id </param>
+        /// <returns> disabled user </returns>
+
+        [HttpDelete("[action]")]
         public async Task<IActionResult> Delete(int id)
         {
-            if(id > 0)
+            if (id > 0)
             {
-                var deletedUser = await _userService.DeleteUser(id);
+                return await _userService.DeleteUser(id);
+            }
 
-                if(deletedUser.Id > 0) 
+            return new JsonResult(new CustomResponse<String>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Invalid input id" });
+        }
+
+        /// <summary>
+        /// This method retuns filtered user list using SP
+        /// </summary>
+        /// <param name="displayLength"> how many row/data we want to fetch(for pagination) </param>
+        /// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
+        /// <param name="sortCol"> name of column which we want to sort</param>
+        /// <param name="search"> word that we want to search in user table </param>
+        /// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
+        /// <returns> filtered list of users </returns>
+
+        [HttpGet("[action]")]
+        public IActionResult UsersSP(int displayLength, int displayStart, int sortCol, string? search, string sortDir = "asc")
+        {
+            try
+            {
+                search ??= string.Empty;
+
+                var usersData = _userService.GetFilteredUsers(displayLength, displayStart, sortCol, sortDir, search);
+                if (usersData.UsersList.Count > 0)
                 {
-                    return Ok(deletedUser);
+                    return new JsonResult(new CustomResponse<UsersModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = usersData });
                 }
 
-                return BadRequest(new { message = "Invalid input" });
+                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Requested users were not found" });
 
             }
-            
-            return BadRequest(new { message = "Invalid input" });
+            catch (Exception ex)
+            {
+                _logger.LogError("database was unable to find appropriate users");
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+            }
         }
+
+        /// <summary>
+        /// This method retuns filtered user list using LINQ
+        /// </summary>
+        /// <param name="displayLength"> how many row/data we want to fetch(for pagination) </param>
+        /// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
+        /// <param name="sortCol"> name of column which we want to sort</param>
+        /// <param name="search"> word that we want to search in user table </param>
+        /// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
+        /// <returns> filtered list of users </returns>
+
+        [HttpGet]
+        public async Task<IActionResult> UsersLinq(int displayLength, int displayStart, string? sortCol, string? search, bool sortAscending = true)
+        {
+            try
+            {
+                search ??= string.Empty;
+
+                var usersData = await _userService.GetFilteredUsersLinq(displayLength, displayStart, sortCol, search, sortAscending);
+                if (usersData.UsersList.Count > 0)
+                {
+                    return new JsonResult(new CustomResponse<UsersModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = usersData });
+                }
+
+                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Requested users were not found" });
+
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+            }
+        }
+
     }
 }
