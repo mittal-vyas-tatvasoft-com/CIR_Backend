@@ -1,17 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
-using Microsoft.Data.SqlClient;
-using System.Dynamic;
-using System.IO;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using System.Reflection;
 
-namespace CIR.Data.Helper
+namespace CIR.Common.Helper
 {
     public static class SQLHelper
     {
@@ -164,23 +157,18 @@ namespace CIR.Data.Helper
             {
                 IConfigurationRoot configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
                 var connectionString = configuration.GetConnectionString("CIR");
-                using (SqlConnection sqlConn = new(connectionString))
-                {
-                    SqlCommand cmd = new(sql, sqlConn);
-                    sqlConn.Open();
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.CommandText = sql;
+                using SqlConnection sqlConn = new(connectionString);
+                SqlCommand cmd = new(sql, sqlConn);
+                sqlConn.Open();
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.CommandText = sql;
 
-                    foreach (var procParameter in Params)
-                    {
-                        cmd.Parameters.AddWithValue(procParameter.Key, procParameter.Value);
-                    }
-                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-                    {
-                        da.Fill(dt);
-                    }
-                    
+                foreach (var procParameter in Params)
+                {
+                    cmd.Parameters.AddWithValue(procParameter.Key, procParameter.Value);
                 }
+                using SqlDataAdapter da = new SqlDataAdapter(cmd);
+                da.Fill(dt);
             }
             catch (Exception ex)
             {
