@@ -13,11 +13,9 @@ namespace CIR.Application.Services.Users
 		{
 			_rolesRepository = rolesRepository;
 		}
-
-		public async Task<List<Roles>> GetAllRoles()
+		public async Task<RolesModel> GetAllRoles(int displayLength, int displayStart, string? sortCol, string search, bool sortAscending = true)
 		{
-			var rolelist = _rolesRepository.GetAllRoles();
-			return await rolelist;
+			return await _rolesRepository.GetAllUser(displayLength, displayStart, sortCol, search, sortAscending);
 		}
 
 		public async Task<Roles> GetRoleById(long roleid)
@@ -29,14 +27,9 @@ namespace CIR.Application.Services.Users
 		{
 			return await _rolesRepository.RoleExists(rolename);
 		}
-		public async Task<IActionResult> CreateRole(RolesModel roles)
+		public Task<IActionResult> CreateOrUpdateRoles(Roles roles)
 		{
-			return await _rolesRepository.CreateRole(roles);
-		}
-
-		public async Task<IActionResult> UpdateRole(Roles role)
-		{
-			return await _rolesRepository.UpdateRole(role);
+			return _rolesRepository.CreateOrUpdateRoles(roles);
 		}
 		public async Task<IActionResult> DeleteRole(long roleid)
 		{

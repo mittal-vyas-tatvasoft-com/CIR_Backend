@@ -6,12 +6,10 @@ namespace CIR.Core.Interfaces.Users
 {
 	public interface IRolesService
 	{
-		Task<List<Roles>> GetAllRoles();
+		Task<RolesModel> GetAllRoles(int displayLength, int displayStart, string? sortCol, string search, bool sortAscending = true);
 		Task<Roles> GetRoleById(long roleid);
-
 		Task<Boolean> RoleExists(string rolename);
-		Task<IActionResult> CreateRole(RolesModel roles);
-		Task<IActionResult> UpdateRole(Roles rolesModel);
+		Task<IActionResult> CreateOrUpdateRoles(Roles roles);
 		Task<IActionResult> DeleteRole(long roleid);
 	}
 }

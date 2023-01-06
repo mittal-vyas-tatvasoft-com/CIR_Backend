@@ -12,26 +12,58 @@ namespace CIR.Controllers.Users
 	[Authorize]
 	public class RolesController : ControllerBase
 	{
+		#region PROPETRTIES 
 		private readonly IRolesService _rolesService;
-		public RolesController(IRolesService rolesService)
+		private readonly ILogger<RolesController> _logger;
+
+		#endregion
+
+		#region CONSTRUCTOR
+		public RolesController(IRolesService rolesService, ILogger<RolesController> logger)
 		{
 			_rolesService = rolesService;
+			_logger = logger;
 		}
+		#endregion
 
+		#region METHODS
+
+		/// <summary>
+		/// This method retuns filtered roles list using SP
+		/// </summary>
+		/// <param name="displayLength"> how many row/data we want to fetch(for pagination) </param>
+		/// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
+		/// <param name="sortCol"> name of column which we want to sort</param>
+		/// <param name="search"> word that we want to search in user table </param>
+		/// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
+		/// <returns> filtered list of roles </returns>
 		[HttpGet]
-		public async Task<CustomResponse<List<Roles>>> GetAll()
+		public async Task<IActionResult> GetAll(int displayLength, int displayStart, string? sortCol, string? search, bool sortAscending = true)
 		{
 			try
 			{
-				var roleslist = await _rolesService.GetAllRoles();
-				return new CustomResponse<List<Roles>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = roleslist };
+				search ??= string.Empty;
+
+				var rolesModel = await _rolesService.GetAllRoles(displayLength, displayStart, sortCol, search, sortAscending);
+
+				if (rolesModel.RolesList.Count > 0)
+				{
+					return new JsonResult(new CustomResponse<RolesModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = rolesModel });
+				}
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Requested roles were not found" });
 			}
 			catch (Exception ex)
 			{
-				return new CustomResponse<List<Roles>>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = true, Message = HttpStatusCodesMessages.BadRequest };
+
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
 			}
 		}
 
+		/// <summary>
+		/// This method fetches single role data using role's Id
+		/// </summary>
+		/// <param name="id">role will be fetched according to this 'id'</param>
+		/// <returns> role </returns> 
 		[HttpGet("{id}")]
 		public async Task<CustomResponse<Roles>> GetById([FromRoute] int id)
 		{
@@ -49,12 +81,17 @@ namespace CIR.Controllers.Users
 			}
 			catch (Exception ex)
 			{
-				return new CustomResponse<Roles>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = true, Message = HttpStatusCodesMessages.BadRequest };
+				return new CustomResponse<Roles>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = true, Message = HttpStatusCodesMessages.InternalServerError };
 			}
 		}
+		/// <summary>
+		/// This method takes roles details as parameters and creates role and returns that role
+		/// </summary>
+		/// <param name="roles"> this object contains different parameters as details of a user </param>
+		/// <returns > created role </returns>
 
 		[HttpPost]
-		public async Task<IActionResult> Post([FromBody] RolesModel roles)
+		public async Task<IActionResult> Post([FromBody] Roles roles)
 		{
 			if (ModelState.IsValid)
 			{
@@ -66,7 +103,7 @@ namespace CIR.Controllers.Users
 						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Role already exists" });
 					}
 
-					var newrole = await _rolesService.CreateRole(roles);
+					var newrole = await _rolesService.CreateOrUpdateRoles(roles);
 					if (newrole != null)
 					{
 						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Role Created" });
@@ -83,6 +120,12 @@ namespace CIR.Controllers.Users
 			}
 			return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Error" });
 		}
+
+		/// <summary>
+		/// This method takes roles details and updates the roles
+		/// </summary>
+		/// <param name="roles"> this object contains different parameters as details of a role </param>
+		/// <returns> updated role </returns>
 		[HttpPut]
 		public async Task<IActionResult> Update([FromBody] Roles roles)
 		{
@@ -90,7 +133,7 @@ namespace CIR.Controllers.Users
 			{
 				try
 				{
-					return await _rolesService.UpdateRole(roles);
+					return await _rolesService.CreateOrUpdateRoles(roles);
 				}
 				catch (Exception ex)
 				{
@@ -99,6 +142,12 @@ namespace CIR.Controllers.Users
 			}
 			return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
 		}
+
+		/// <summary>
+		/// This method disables role
+		/// </summary>
+		/// <param name="id"> role will be disabled according to this id </param>
+		/// <returns> disabled role </returns>
 		[HttpDelete("{roleid}")]
 		public async Task<IActionResult> Delete(int roleid)
 		{
@@ -112,8 +161,9 @@ namespace CIR.Controllers.Users
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = ex });
 			}
 		}
+		#endregion
 	}
 }
