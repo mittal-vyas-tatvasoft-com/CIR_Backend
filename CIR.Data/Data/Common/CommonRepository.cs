@@ -6,12 +6,22 @@ namespace CIR.Data.Data.Common
 {
     public class CommonRepository : ICommonRepository
     {
+        #region PROPERTIES
+
         private readonly CIRDbContext _CIRDBContext;
+
+        #endregion
+
+        #region CONSTRUCTORS
         public CommonRepository(CIRDbContext context)
         {
             _CIRDBContext = context ??
                 throw new ArgumentNullException(nameof(context));
         }
+        #endregion
+
+
+        #region METHODS
 
         /// <summary>
         /// This method used by getcurrencies list
@@ -46,5 +56,7 @@ namespace CIR.Data.Data.Common
                       }).ToList();
             return result;
         }
+
+        #endregion
     }
 }

@@ -7,12 +7,23 @@ namespace CIR.Data.Data.GlobalConfig
 {
     public class GlobalCurrencyRepository : IGlobalCurrencyRepository
     {
+        #region PROPERTIES
+
         private readonly CIRDbContext _CIRDBContext;
+
+        #endregion
+
+        #region CONSTRUCTORS
         public GlobalCurrencyRepository(CIRDbContext context)
         {
             _CIRDBContext = context ??
                 throw new ArgumentNullException(nameof(context));
         }
+
+        #endregion
+
+        #region METHODS
+
         /// <summary>
         /// This method used by getcurrency List countryid wise
         /// </summary>
@@ -47,9 +58,9 @@ namespace CIR.Data.Data.GlobalConfig
         /// <returns>Success status if its valid else failure</returns>
         public string CreateOrUpdateGlobalCurrencies(List<GlobalCurrencyModel> globalCurrencyModel)
         {
-            if (globalCurrencyModel.Any(x => x.CountryId == 0))
+            if (globalCurrencyModel.Any(x => x.CountryId == 0 || x.CurrencyId == 0))
             {
-                return "Failure";
+                return "InValid Data";
             }
             if (globalCurrencyModel != null)
             {
@@ -82,5 +93,6 @@ namespace CIR.Data.Data.GlobalConfig
             }
             return "Failure";
         }
+        #endregion
     }
 }
