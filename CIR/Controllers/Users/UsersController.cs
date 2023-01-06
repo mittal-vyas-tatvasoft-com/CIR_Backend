@@ -12,16 +12,20 @@ namespace CIR.Controllers.Users
     [Authorize]
     public class UsersController : ControllerBase
     {
+        #region PROPERTIES
         private readonly IUserService _userService;
         private readonly ILogger<UsersController> _logger;
+        #endregion
 
+        #region CONSTRUCTOR
         public UsersController(IUserService userService, ILogger<UsersController> logger)
         {
             _userService = userService;
             _logger = logger;
         }
+        #endregion
 
-
+        #region METHODS
         /// <summary>
         /// This method fetches single user data using user's Id
         /// </summary>
@@ -173,7 +177,7 @@ namespace CIR.Controllers.Users
             {
                 search ??= string.Empty;
 
-                var usersData = await _userService.GetFilteredUsersLinq(displayLength, displayStart, sortCol, search, sortAscending);
+                var usersData = await _userService.GetAllUsers(displayLength, displayStart, sortCol, search, sortAscending);
                 if (usersData.UsersList.Count > 0)
                 {
                     return new JsonResult(new CustomResponse<UsersModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = usersData });
@@ -187,6 +191,6 @@ namespace CIR.Controllers.Users
                 return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
             }
         }
-
+        #endregion
     }
 }
