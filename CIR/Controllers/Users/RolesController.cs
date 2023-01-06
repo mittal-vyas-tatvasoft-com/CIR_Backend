@@ -157,7 +157,7 @@ namespace CIR.Controllers.Users
 				{
 					return await _rolesService.DeleteRole(roleid);
 				}
-				return new JsonResult(new CustomResponse<String>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Invalid input id" });
+				return new JsonResult(new CustomResponse<String>() { StatusCode = (int)HttpStatusCodes.NoContent, Result = false, Message = HttpStatusCodesMessages.NoContent, Data = "Invalid input id" });
 			}
 			catch (Exception ex)
 			{
