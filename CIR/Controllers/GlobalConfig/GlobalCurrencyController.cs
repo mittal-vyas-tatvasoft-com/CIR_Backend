@@ -1,18 +1,32 @@
-﻿using CIR.Core.Interfaces.GlobalConfig;
+﻿using CIR.Common.CustomResponse;
+using CIR.Core.Interfaces.GlobalConfig;
 using CIR.Core.ViewModel.GlobalConfig;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Controllers.GlobalConfig
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class GlobalCurrencyController : ControllerBase
     {
+        #region PROPERTIES
+
         private readonly IGlobalCurrencyService _currencyService;
+
+        #endregion
+
+        #region CONSTRUCTORS
+
         public GlobalCurrencyController(IGlobalCurrencyService currencyService)
         {
             _currencyService = currencyService;
         }
+
+        #endregion
+
+        #region METHODS
 
         /// <summary>
         /// This method takes get global currency country wise
@@ -25,11 +39,11 @@ namespace CIR.Controllers.GlobalConfig
             try
             {
                 var currencyList = _currencyService.GetCurrencyCountryWise(countryId);
-                return Ok(currencyList);
+                return new JsonResult(new CustomResponse<List<GlobalConfigurationCurrencyModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = currencyList });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = "Error : " + ex });
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
             }
         }
 
@@ -48,21 +62,26 @@ namespace CIR.Controllers.GlobalConfig
                     var addGlobalCurrency = _currencyService.CreateOrUpdateGlobalCurrencies(globalCurrencyModel);
                     if (addGlobalCurrency == "Success")
                     {
-                        return Ok(new { message = addGlobalCurrency });
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Global Currency added successfully" });
+                    }
+                    else if (addGlobalCurrency == "InValid Data")
+                    {
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Please enter valid Data" });
                     }
                     else
                     {
-                        return BadRequest(new { message = "Error occured add new global currency" });
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Error occurred while adding new Global Currency" });
+
                     }
 
                 }
                 catch (Exception ex)
                 {
-                    return BadRequest(new { message = "Error : " + ex + " Invalid input data" });
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
                 }
 
             }
-            return BadRequest();
+            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
         }
 
         /// <summary>
@@ -80,19 +99,24 @@ namespace CIR.Controllers.GlobalConfig
                     var updateGlobalCurrency = _currencyService.CreateOrUpdateGlobalCurrencies(globalCurrencyModel);
                     if (updateGlobalCurrency == "Success")
                     {
-                        return Ok(new { message = updateGlobalCurrency });
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Global Currency updated successfully" });
+                    }
+                    else if (updateGlobalCurrency == "InValid Data")
+                    {
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Please enter valid Data" });
                     }
                     else
                     {
-                        return BadRequest(new { message = "Error occured update global currency" });
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Error occurred while updating Global Currency" });
                     }
                 }
                 catch (Exception ex)
                 {
-                    return BadRequest(new { message = "Error : " + ex + " Invalid input data" });
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
                 }
             }
-            return BadRequest();
+            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
         }
+        #endregion
     }
 }
