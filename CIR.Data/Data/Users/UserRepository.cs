@@ -13,14 +13,19 @@ namespace CIR.Data.Data.Users
 {
     public class UserRepository : ControllerBase, IUserRepository
     {
+        #region PROPERTIES   
         private readonly CIRDbContext _CIRDBContext;
+        #endregion
 
+        #region CONSTRUCTOR
         public UserRepository(CIRDbContext context)
         {
             _CIRDBContext = context ??
                throw new ArgumentNullException(nameof(context));
         }
+        #endregion
 
+        #region METHODS
         /// <summary>
         /// fetches user based on input user id
         /// </summary>
@@ -113,7 +118,7 @@ namespace CIR.Data.Data.Users
             {
                 _CIRDBContext.Entry(user).Property(x => x.Enabled).IsModified = true;
                 await _CIRDBContext.SaveChangesAsync();
-                return Ok(new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = user });
+                return Ok(new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.NoContent, Result = true, Message = HttpStatusCodesMessages.NoContent, Data = user });
             }
             catch
             {
@@ -165,7 +170,7 @@ namespace CIR.Data.Data.Users
         /// <returns> filtered list of users </returns>
 
 
-        public async Task<UsersModel> GetFilteredUsersLinq(int displayLength, int displayStart, string sortCol, string? search, bool sortAscending = true)
+        public async Task<UsersModel> GetAllUsers(int displayLength, int displayStart, string sortCol, string? search, bool sortAscending = true)
         {
             UsersModel users = new();
             IQueryable<User> temp = users.UsersList.AsQueryable();
@@ -191,10 +196,7 @@ namespace CIR.Data.Data.Users
             {
                 return users;
             }
-
         }
-
-
-
+        #endregion
     }
 }

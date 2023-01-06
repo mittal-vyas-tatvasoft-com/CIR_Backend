@@ -6,6 +6,8 @@
 
         CreatedOrUpdated = 201,
 
+        NoContent = 204,
+
         BadRequest = 400,
 
         Unauthorized = 401,
