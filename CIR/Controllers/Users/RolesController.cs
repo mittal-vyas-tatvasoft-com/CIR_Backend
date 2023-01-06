@@ -11,7 +11,7 @@ namespace CIR.Controllers.Users
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	//[Authorize]
+	[Authorize]
 	public class RolesController : ControllerBase
 	{
 		private readonly IRolesService _rolesService;
