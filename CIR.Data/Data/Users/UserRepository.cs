@@ -1,24 +1,17 @@
-﻿using CIR.Common.Data;
+﻿using CIR.Common.CustomResponse;
+using CIR.Common.Data;
 using CIR.Common.Helper;
 using CIR.Core.Entities;
 using CIR.Core.Interfaces.Users;
 using CIR.Core.ViewModel;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using CIR.Common.CustomResponse;
 
 
 namespace CIR.Data.Data.Users
 {
-    public class UserRepository: ControllerBase, IUserRepository
+    public class UserRepository : ControllerBase, IUserRepository
     {
         private readonly CIRDbContext _CIRDBContext;
 
@@ -62,9 +55,9 @@ namespace CIR.Data.Data.Users
         /// </summary>
         /// <param name="user"> new user data or update data for user </param>
         /// <returns> Ok status if its valid else unprocessable </returns>
-        
+
         public async Task<IActionResult> CreateOrUpdateUser(User user)
-        {       
+        {
             User newUser = new()
             {
                 Id = user.Id,
@@ -99,7 +92,7 @@ namespace CIR.Data.Data.Users
                 return Ok(new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated });
             }
 
-            return UnprocessableEntity(new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = false, Message = HttpStatusCodesMessages.UnprocessableEntity });            
+            return UnprocessableEntity(new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = false, Message = HttpStatusCodesMessages.UnprocessableEntity });
         }
 
         /// <summary>

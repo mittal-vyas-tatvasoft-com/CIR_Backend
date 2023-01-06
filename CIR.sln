@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CIR.Data", "CIR.Data\CIR.Da
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CIR.Common", "CIR.Common\CIR.Common.csproj", "{6881069D-C51F-442C-9999-0FE424C13493}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CIR.Core", "CIR.Core\CIR.Core.csproj", "{5041ACAC-17AA-4850-897C-A456B8735E71}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CIR.Core", "CIR.Core\CIR.Core.csproj", "{5041ACAC-17AA-4850-897C-A456B8735E71}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
