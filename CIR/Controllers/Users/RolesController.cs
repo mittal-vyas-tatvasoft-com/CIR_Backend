@@ -3,9 +3,7 @@ using CIR.Core.Entities;
 using CIR.Core.Interfaces.Users;
 using CIR.Core.ViewModel;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.RegularExpressions;
 
 namespace CIR.Controllers.Users
 {
@@ -40,13 +38,13 @@ namespace CIR.Controllers.Users
 			try
 			{
 				var roleslist = await _rolesService.GetRoleById(id);
-				if( roleslist == null)
+				if (roleslist == null)
 				{
 					return new CustomResponse<Roles>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound };
 				}
 				else
-				{ 
-				return new CustomResponse<Roles>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = roleslist };
+				{
+					return new CustomResponse<Roles>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = roleslist };
 				}
 			}
 			catch (Exception ex)
@@ -56,38 +54,66 @@ namespace CIR.Controllers.Users
 		}
 
 		[HttpPost]
-		public async Task<CustomResponse<long>> Post([FromBody] RolesModel roles)
+		public async Task<IActionResult> Post([FromBody] RolesModel roles)
 		{
 			if (ModelState.IsValid)
 			{
 				try
 				{
+					var isExist = await _rolesService.RoleExists(roles.Name);
+					if (isExist)
+					{
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Role already exists" });
+					}
+
 					var newrole = await _rolesService.CreateRole(roles);
 					if (newrole != null)
 					{
-						return new CustomResponse<long>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = newrole };
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Role Created" });
 					}
 					else
 					{
-						return new CustomResponse<long>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = true, Message = HttpStatusCodesMessages.BadRequest };
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Something went wrong" });
 					}
 				}
 				catch (Exception ex)
 				{
-					return new CustomResponse<long>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = true, Message = HttpStatusCodesMessages.BadRequest };
+					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
 				}
 			}
-			return new CustomResponse<long>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = true, Message = HttpStatusCodesMessages.BadRequest };
+			return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Error" });
 		}
-
-		[HttpDelete]
+		[HttpPut]
+		public async Task<IActionResult> Update([FromBody] Roles roles)
+		{
+			if (ModelState.IsValid)
+			{
+				try
+				{
+					return await _rolesService.UpdateRole(roles);
+				}
+				catch (Exception ex)
+				{
+					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				}
+			}
+			return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
+		}
+		[HttpDelete("{roleid}")]
 		public async Task<IActionResult> Delete(int roleid)
 		{
-			if (roleid > 0)
+			try
 			{
-				return await _rolesService.DeleteRole(roleid);
+				if (roleid > 0)
+				{
+					return await _rolesService.DeleteRole(roleid);
+				}
+				return new JsonResult(new CustomResponse<String>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Invalid input id" });
 			}
-			return new JsonResult(new CustomResponse<String>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Invalid input id" });
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = ex });
+			}
 		}
 	}
 }

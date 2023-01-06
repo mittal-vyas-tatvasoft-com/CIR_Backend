@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using CIR.Core.Interfaces.Users;
-using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
+﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
 using CIR.Core.Entities;
-using Microsoft.EntityFrameworkCore;
+using CIR.Core.Interfaces.Users;
 using CIR.Core.ViewModel;
-using Azure;
 using Microsoft.AspNetCore.Mvc;
-using CIR.Common.CustomResponse;
+using Microsoft.EntityFrameworkCore;
 
 namespace CIR.Data.Data.Users
 {
@@ -35,32 +28,61 @@ namespace CIR.Data.Data.Users
 			var role = await _CIRDbContext.Roles.FindAsync(roleid);
 			return role;
 		}
-
-		public async Task<long> CreateRole(RolesModel rolemodel)
+		public async Task<Boolean> RoleExists(string rolename)
 		{
-			var role = new Roles()
-			{
-				Name = rolemodel.Name,
-				Description = rolemodel.Description,
-				AllPermissions = rolemodel.AllPermissions,
-				CreatedOn = rolemodel.CreatedOn,
-			};
-			_CIRDbContext.Roles.Add(role);
-			await _CIRDbContext.SaveChangesAsync();
+			var checkroleExist = await _CIRDbContext.Roles.Where(x => x.Name == rolename).FirstOrDefaultAsync();
 
-			return role.Id;
+			if (checkroleExist != null && checkroleExist.Id > 0)
+			{
+				return true;
+			}
+			return false;
 		}
 
-		public async Task UpdateRole(RolesModel rolesModel)
+		public async Task<IActionResult> CreateRole(RolesModel rolemodel)
 		{
-			var role = new Roles()
+			try
 			{
-				Name = rolesModel.Name,
-				AllPermissions = rolesModel.AllPermissions,
-				Description = rolesModel.Description,
-			};
-			_CIRDbContext.Roles.Update(role);
-			await _CIRDbContext.SaveChangesAsync();
+				var role = new Roles()
+				{
+					Name = rolemodel.Name,
+					Description = rolemodel.Description,
+					AllPermissions = rolemodel.AllPermissions,
+					CreatedOn = rolemodel.CreatedOn,
+				};
+				_CIRDbContext.Roles.Add(role);
+				await _CIRDbContext.SaveChangesAsync();
+
+				return Ok(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Role Inserted Successfully" }); ;
+			}
+			catch (Exception ex)
+			{
+				return UnprocessableEntity(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = true, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = ex });
+			}
+
+		}
+
+		public async Task<IActionResult> UpdateRole(Roles rolesModel)
+		{
+			try
+			{
+				var role = new Roles()
+				{
+					Id = rolesModel.Id,
+					CreatedOn = rolesModel.CreatedOn,
+					Name = rolesModel.Name,
+					AllPermissions = rolesModel.AllPermissions,
+					Description = rolesModel.Description,
+				};
+				_CIRDbContext.Roles.Update(role);
+				await _CIRDbContext.SaveChangesAsync();
+				return Ok(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "Role Updated Successfuly" });
+			}
+			catch (Exception ex)
+			{
+				return UnprocessableEntity(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = true, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = ex });
+			}
+
 		}
 
 		public async Task<IActionResult> DeleteRole(long roleid)
@@ -70,11 +92,11 @@ namespace CIR.Data.Data.Users
 			{
 				_CIRDbContext.Roles.Remove(role);
 				await _CIRDbContext.SaveChangesAsync();
-				return Ok(new CustomResponse<Roles>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = new Roles() });
+				return Ok(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "Role Deleted Successfully" });
 			}
 			catch (Exception ex)
 			{
-				return UnprocessableEntity(new CustomResponse<Roles>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = true, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = new Roles() });
+				return UnprocessableEntity(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = true, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = ex });
 			}
 		}
 	}

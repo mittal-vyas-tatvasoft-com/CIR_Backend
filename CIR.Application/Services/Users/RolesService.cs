@@ -2,12 +2,6 @@
 using CIR.Core.Interfaces.Users;
 using CIR.Core.ViewModel;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CIR.Application.Services.Users
 {
@@ -31,15 +25,18 @@ namespace CIR.Application.Services.Users
 			var roles = await _rolesRepository.GetRoleById(roleid);
 			return roles;
 		}
-
-		public async Task<long> CreateRole(RolesModel roles)
+		public async Task<Boolean> RoleExists(string rolename)
+		{
+			return await _rolesRepository.RoleExists(rolename);
+		}
+		public async Task<IActionResult> CreateRole(RolesModel roles)
 		{
 			return await _rolesRepository.CreateRole(roles);
 		}
 
-		public async Task UpdateRole(RolesModel rolesModel)
+		public async Task<IActionResult> UpdateRole(Roles role)
 		{
-			 await _rolesRepository.UpdateRole(rolesModel);
+			return await _rolesRepository.UpdateRole(role);
 		}
 		public async Task<IActionResult> DeleteRole(long roleid)
 		{
