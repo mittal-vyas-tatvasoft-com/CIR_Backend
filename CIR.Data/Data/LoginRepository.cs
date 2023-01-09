@@ -1,5 +1,5 @@
 ﻿using CIR.Common.Data;
-using CIR.Common.EMailGeneration;
+using CIR.Common.Helper;
 using CIR.Common.MailTemplate;
 using CIR.Common.SystemConfig;
 using CIR.Core.Entities;
