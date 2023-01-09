@@ -1,4 +1,5 @@
-﻿namespace CIR.Core.Entities.User
+﻿namespace CIR.Core.Entities.Users
+
 {
     public partial class User
     {

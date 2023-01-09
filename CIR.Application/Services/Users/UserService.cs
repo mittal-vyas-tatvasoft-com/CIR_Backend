@@ -1,11 +1,11 @@
-﻿using CIR.Core.Entities.User;
+﻿using CIR.Core.Entities.Users;
 using CIR.Core.Interfaces.Users;
-using CIR.Core.ViewModel.User;
+using CIR.Core.ViewModel.Usersvm;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Application.Services.Users
 {
-    public class UserService : IUserService
+	public class UserService : IUserService
 	{
 		private readonly IUserRepository _userRepository;
 

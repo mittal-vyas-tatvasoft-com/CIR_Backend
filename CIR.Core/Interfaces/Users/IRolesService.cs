@@ -1,10 +1,10 @@
-﻿using CIR.Core.Entities.User;
-using CIR.Core.ViewModel.User;
+﻿using CIR.Core.Entities.Users;
+using CIR.Core.ViewModel.Usersvm;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Core.Interfaces.Users
 {
-    public interface IRolesService
+	public interface IRolesService
 	{
 		Task<RolesModel> GetAllRoles(int displayLength, int displayStart, string? sortCol, string search, bool sortAscending = true);
 		Task<Roles> GetRoleById(long roleid);
