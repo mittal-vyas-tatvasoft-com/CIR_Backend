@@ -7,8 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Configuration\" />
-    <Folder Include="Thumbnails\" />
+    <Compile Remove="Configuration\**" />
+    <Compile Remove="Thumbnails\**" />
+    <EmbeddedResource Remove="Configuration\**" />
+    <EmbeddedResource Remove="Thumbnails\**" />
+    <None Remove="Configuration\**" />
+    <None Remove="Thumbnails\**" />
   </ItemGroup>
 
   <ItemGroup>
