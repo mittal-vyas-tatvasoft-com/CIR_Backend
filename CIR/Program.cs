@@ -5,6 +5,7 @@ using CIR.Application.Services.GlobalConfig;
 using CIR.Application.Services.Users;
 using CIR.Common.Data;
 using CIR.Common.EmailGeneration;
+using CIR.Common.Helper;
 using CIR.Core.Interfaces;
 using CIR.Core.Interfaces.Common;
 using CIR.Core.Interfaces.GlobalConfig;
