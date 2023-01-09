@@ -1,6 +1,6 @@
-﻿using CIR.Core.Entities.User;
+﻿using CIR.Core.Entities.Users;
 
-namespace CIR.Core.ViewModel.User
+namespace CIR.Core.ViewModel.Usersvm
 {
     public class RolesModel
     {

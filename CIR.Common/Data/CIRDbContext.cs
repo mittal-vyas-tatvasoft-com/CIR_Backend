@@ -1,5 +1,6 @@
-﻿using CIR.Core.Entities.GlobalConfig;
-using CIR.Core.Entities.User;
+﻿using CIR.Core.Entities;
+using CIR.Core.Entities.GlobalConfig;
+using CIR.Core.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace CIR.Common.Data
@@ -31,5 +32,5 @@ namespace CIR.Common.Data
         public DbSet<Culture> Cultures { get; set; }
         public virtual DbSet<GlobalConfigurationCutOffTime> GlobalConfigurationCutOffTimes { get; set; }
 
-    }
+	}
 }
