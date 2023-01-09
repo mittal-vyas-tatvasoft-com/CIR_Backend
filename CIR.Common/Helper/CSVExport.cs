@@ -1,19 +1,13 @@
 ﻿using CIR.Common.CustomResponse;
-using CIR.Common.Data;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
 
-namespace CIR.Controllers.Common
+namespace CIR.Common.Helper
 {
-	[Route("api/[controller]")]
-	[ApiController]
-	[Authorize]
-	public class CSVExportController : ControllerBase
+	public class CSVExport
 	{
-		[HttpPost]
-		public async Task<IActionResult> ExportToCSV([FromBody] object model)
+		public IActionResult ExportToCsv([FromBody] object model)
 		{
 			if (model != null)
 			{
@@ -51,12 +45,15 @@ namespace CIR.Controllers.Common
 					}
 					sb.Append("\r\n");
 				}
-				return File(Encoding.UTF8.GetBytes(sb.ToString()), "text/csv", "Data" + DateTime.UtcNow.Ticks.ToString() + ".csv");
+
+				var bytesdata = System.IO.File.ReadAllBytes(sb.ToString());
+				return new FileContentResult(bytesdata, "application/pdf");
 			}
 			else
 			{
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest});
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest });
 			}
 		}
 	}
 }
+
