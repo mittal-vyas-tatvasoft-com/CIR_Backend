@@ -1,4 +1,5 @@
 ﻿using CIR.Common.CustomResponse;
+using CIR.Core.Entities.User;
 using CIR.Core.Interfaces;
 using CIR.Core.ViewModel;
 using Microsoft.AspNetCore.Mvc;
@@ -55,7 +56,7 @@ namespace CIR.Controllers
         /// </summary>
         /// <param name="user">this object contains different parameters as details of a user</param>
         /// <returns></returns>
-        private async Task<string> GenerateJwtToken(CIR.Core.Entities.User user)
+        private async Task<string> GenerateJwtToken(User user)
         {
             string jwtToken = string.Empty;
             try

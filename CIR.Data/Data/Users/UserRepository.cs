@@ -1,9 +1,9 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
 using CIR.Common.Helper;
-using CIR.Core.Entities;
+using CIR.Core.Entities.User;
 using CIR.Core.Interfaces.Users;
-using CIR.Core.ViewModel;
+using CIR.Core.ViewModel.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;

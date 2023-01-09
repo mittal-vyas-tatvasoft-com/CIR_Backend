@@ -1,15 +1,9 @@
-﻿using CIR.Core.Interfaces.Common;
-using CsvHelper;
-using System;
-using System.Collections.Generic;
+﻿using CsvHelper;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace CIR.Application.Services.Common
+namespace CIR.Common.CommonServices
 {
-	public class CsvService : ICsvService
+	public class CSVService
 	{
 		public IEnumerable<T> ReadCSV<T>(Stream file)
 		{
