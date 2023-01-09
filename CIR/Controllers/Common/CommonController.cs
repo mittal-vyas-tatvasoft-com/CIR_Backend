@@ -1,4 +1,5 @@
 ﻿using CIR.Common.CustomResponse;
+using CIR.Core.Entities;
 using CIR.Core.Entities.GlobalConfig;
 using CIR.Core.Interfaces.Common;
 using Microsoft.AspNetCore.Authorization;
@@ -66,6 +67,31 @@ namespace CIR.Controllers.Common
 
             }
 
+        }
+
+        /// <summary>
+        /// This method return the list of cultures
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("GetCultures")]
+        public async Task<IActionResult> GetCultures()
+        {
+            try
+            {
+                var cultures = _commonService.GetCultures();
+                if (cultures.Count > 0)
+                {
+                    return new JsonResult(new CustomResponse<List<Culture>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = cultures });
+                }
+                else
+                {
+                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NoContent, Result = true, Message = HttpStatusCodesMessages.NoContent, Data = "No data present" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+            }
         }
         #endregion
     }

@@ -28,6 +28,7 @@ namespace CIR.Common.Data
             set;
         }
         public DbSet<Roles> Roles { get; set; }
+        public DbSet<Culture> Cultures { get; set; }
 
     }
 }
