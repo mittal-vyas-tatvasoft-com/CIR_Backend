@@ -30,6 +30,6 @@ namespace CIR.Common.Data
 		}
 		public DbSet<Roles> Roles { get; set; }
 		public DbSet<Culture> Cultures { get; set; }
-
+		public DbSet<Holidays> Holidays { get; set; }
 	}
 }
