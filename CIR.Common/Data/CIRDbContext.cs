@@ -1,4 +1,9 @@
-﻿namespace CIR.Common.Data
+﻿using CIR.Core.Entities;
+using CIR.Core.Entities.GlobalConfig;
+using CIR.Core.Entities.Users;
+using Microsoft.EntityFrameworkCore;
+
+namespace CIR.Common.Data
 {
 	public class CIRDbContext : DbContext
 	{
