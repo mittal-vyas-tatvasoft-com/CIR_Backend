@@ -1,9 +1,5 @@
-﻿using CIR.Core.Entities.GlobalConfig;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CIR.Core.Entities;
+using CIR.Core.Entities.GlobalConfig;
 
 namespace CIR.Core.Interfaces.Common
 {
@@ -11,5 +7,6 @@ namespace CIR.Core.Interfaces.Common
     {
         List<Currency> GetCurrencies();
         List<CountryCode> GetCountry();
+        List<Culture> GetCultures();
     }
 }

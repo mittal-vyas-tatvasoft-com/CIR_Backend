@@ -1,4 +1,5 @@
 ﻿using CIR.Common.Data;
+using CIR.Core.Entities;
 using CIR.Core.Entities.GlobalConfig;
 using CIR.Core.Interfaces.Common;
 
@@ -55,6 +56,23 @@ namespace CIR.Data.Data.Common
                           Code = country.Code
                       }).ToList();
             return result;
+        }
+
+        /// <summary>
+        /// This method is used by getCultures
+        /// </summary>
+        /// <returns></returns>
+        public List<Culture> GetCultures()
+        {
+            List<Culture> cultures = new List<Culture>();
+            cultures = (from culture in _CIRDBContext.Cultures
+                        select new Culture()
+                        {
+                            Id = culture.Id,
+                            Name = culture.Name,
+                            DisplayName = culture.DisplayName,
+                        }).ToList();
+            return cultures;
         }
 
         #endregion
