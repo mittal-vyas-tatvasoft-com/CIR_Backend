@@ -1,5 +1,5 @@
 ﻿using CIR.Common.CustomResponse;
-using CIR.Core.Entities.User;
+using CIR.Core.Entities.Users;
 using CIR.Core.Interfaces;
 using CIR.Core.ViewModel;
 using Microsoft.AspNetCore.Mvc;

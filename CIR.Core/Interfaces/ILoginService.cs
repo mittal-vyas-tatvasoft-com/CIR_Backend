@@ -1,4 +1,4 @@
-﻿using CIR.Core.Entities.User;
+﻿using CIR.Core.Entities.Users;
 using CIR.Core.ViewModel;
 
 namespace CIR.Core.Interfaces

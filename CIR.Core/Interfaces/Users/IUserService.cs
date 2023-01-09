@@ -1,10 +1,10 @@
-﻿using CIR.Core.Entities.User;
-using CIR.Core.ViewModel.User;
+﻿using CIR.Core.Entities.Users;
+using CIR.Core.ViewModel.Usersvm;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Core.Interfaces.Users
 {
-    public interface IUserService
+	public interface IUserService
 	{
 		Task<User> GetUserById(int id);
 

@@ -2,7 +2,7 @@
 using CIR.Common.Helper;
 using CIR.Common.MailTemplate;
 using CIR.Common.SystemConfig;
-using CIR.Core.Entities.User;
+using CIR.Core.Entities.Users;
 using CIR.Core.Interfaces;
 using CIR.Core.ViewModel;
 using RandomStringCreator;
