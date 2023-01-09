@@ -1,8 +1,4 @@
-﻿using CIR.Core.Entities.GlobalConfig;
-using CIR.Core.Entities.Users;
-using Microsoft.EntityFrameworkCore;
-
-namespace CIR.Common.Data
+﻿namespace CIR.Common.Data
 {
 	public class CIRDbContext : DbContext
 	{
@@ -28,6 +24,7 @@ namespace CIR.Common.Data
 			set;
 		}
 		public DbSet<Roles> Roles { get; set; }
+		public DbSet<Culture> Cultures { get; set; }
 
 	}
 }
