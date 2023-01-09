@@ -1,6 +1,6 @@
-﻿using CIR.Core.Entities;
+﻿using CIR.Core.Entities.User;
 
-namespace CIR.Core.ViewModel
+namespace CIR.Core.ViewModel.User
 {
     public class UsersModel
     {

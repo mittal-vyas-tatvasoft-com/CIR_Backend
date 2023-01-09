@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CIR.Core.ViewModel
+namespace CIR.Core.ViewModel.User
 {
     public class UserModel
     {

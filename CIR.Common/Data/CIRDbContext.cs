@@ -1,5 +1,5 @@
-﻿using CIR.Core.Entities;
-using CIR.Core.Entities.GlobalConfig;
+﻿using CIR.Core.Entities.GlobalConfig;
+using CIR.Core.Entities.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace CIR.Common.Data

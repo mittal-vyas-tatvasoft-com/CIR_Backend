@@ -1,7 +1,7 @@
 ﻿using CIR.Common.CustomResponse;
-using CIR.Core.Entities;
+using CIR.Core.Entities.User;
 using CIR.Core.Interfaces.Users;
-using CIR.Core.ViewModel;
+using CIR.Core.ViewModel.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

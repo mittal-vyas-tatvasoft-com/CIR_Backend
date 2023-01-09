@@ -1,15 +1,15 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
-using CIR.Core.Entities;
+using CIR.Core.Entities.User;
 using CIR.Core.Interfaces.Users;
-using CIR.Core.ViewModel;
+using CIR.Core.ViewModel.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace CIR.Data.Data.Users
 {
-	public class RolesRepository : ControllerBase, IRolesRepository
+    public class RolesRepository : ControllerBase, IRolesRepository
 	{
 		#region PROPERTIES
 		private readonly CIRDbContext _CIRDbContext;
