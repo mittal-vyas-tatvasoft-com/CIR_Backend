@@ -3,6 +3,7 @@ using CIR.Application.Services;
 using CIR.Application.Services.Common;
 using CIR.Application.Services.GlobalConfig;
 using CIR.Application.Services.Users;
+using CIR.Common.CommonServices;
 using CIR.Common.CommonModels;
 using CIR.Common.Data;
 using CIR.Common.EmailGeneration;
@@ -84,6 +85,12 @@ builder.Services.AddScoped<IRolesService, RolesService>();
 builder.Services.AddScoped<IRolesRepository, RolesRepository>();
 builder.Services.AddScoped<ICutOffTimesService, CutOffTimesService>();
 builder.Services.AddScoped<ICutOffTimesRepository, CutOffTimesRepository>();
+builder.Services.AddScoped<CSVExport>();
+builder.Services.AddScoped<ICsvService, CSVService>();
+builder.Services.AddScoped<IHolidayService, HolidayService>();
+builder.Services.AddScoped<IHolidaysRepository, HolidaysRepository>();
+
+
 
 //allow origin
 builder.Services.AddCors(options => options.AddDefaultPolicy(builder => builder.AllowAnyOrigin()

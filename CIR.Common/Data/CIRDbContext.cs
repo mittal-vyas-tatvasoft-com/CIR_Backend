@@ -33,4 +33,6 @@ namespace CIR.Common.Data
         public DbSet<GlobalConfigurationCutOffTime> GlobalConfigurationCutOffTimes { get; set; }
 
     }
+		public DbSet<Holidays> Holidays { get; set; }
+	}
 }
