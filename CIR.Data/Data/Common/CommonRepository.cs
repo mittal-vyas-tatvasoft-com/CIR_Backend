@@ -1,7 +1,9 @@
 ﻿using CIR.Common.Data;
 using CIR.Core.Entities;
 using CIR.Core.Entities.GlobalConfig;
+using CIR.Core.Entities.Users;
 using CIR.Core.Interfaces.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace CIR.Data.Data.Common
 {
@@ -59,20 +61,33 @@ namespace CIR.Data.Data.Common
         }
 
         /// <summary>
-        /// This method is used by getCultures
+        /// This method used by get culture list
         /// </summary>
         /// <returns></returns>
-        public List<Culture> GetCultures()
+        public async Task<List<Culture>> GetCultures()
         {
-            List<Culture> cultures = new List<Culture>();
-            cultures = (from culture in _CIRDBContext.Cultures
-                        select new Culture()
-                        {
-                            Id = culture.Id,
-                            Name = culture.Name,
-                            DisplayName = culture.DisplayName,
-                        }).ToList();
-            return cultures;
+            var cultureList = await _CIRDBContext.Cultures.ToListAsync();
+            return cultureList;
+        }
+
+        /// <summary>
+        /// This method used by get site or section list
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<SubSite>> GetSite()
+        {
+            var siteList = await _CIRDBContext.SubSites.ToListAsync();
+            return siteList;
+        }
+
+        /// <summary>
+        /// This method used by get role privileges list
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<RolePrivileges>> GetRolePrivileges()
+        {
+            var result = await _CIRDBContext.RolePrivileges.ToListAsync();
+            return result;
         }
 
         #endregion
