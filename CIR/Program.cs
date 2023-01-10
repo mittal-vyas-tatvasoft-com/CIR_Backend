@@ -82,7 +82,8 @@ builder.Services.AddScoped<EmailGeneration>();
 builder.Services.AddScoped<ThumbnailCreation>();
 builder.Services.AddScoped<IRolesService, RolesService>();
 builder.Services.AddScoped<IRolesRepository, RolesRepository>();
-
+builder.Services.AddScoped<ICutOffTimesService, CutOffTimesService>();
+builder.Services.AddScoped<ICutOffTimesRepository, CutOffTimesRepository>();
 
 //allow origin
 builder.Services.AddCors(options => options.AddDefaultPolicy(builder => builder.AllowAnyOrigin()
