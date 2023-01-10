@@ -83,6 +83,8 @@ builder.Services.AddScoped<EmailGeneration>();
 builder.Services.AddScoped<ThumbnailCreation>();
 builder.Services.AddScoped<IRolesService, RolesService>();
 builder.Services.AddScoped<IRolesRepository, RolesRepository>();
+builder.Services.AddScoped<ICutOffTimesService, CutOffTimesService>();
+builder.Services.AddScoped<ICutOffTimesRepository, CutOffTimesRepository>();
 builder.Services.AddScoped<CSVExport>();
 builder.Services.AddScoped<ICsvService, CSVService>();
 builder.Services.AddScoped<IHolidayService, HolidayService>();
