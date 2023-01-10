@@ -1,11 +1,6 @@
-﻿using CIR.Core.Entities.GlobalConfig;
-using CIR.Core.Interfaces.GlobalConfig;
+﻿using CIR.Core.Interfaces.GlobalConfig;
 using CIR.Core.ViewModel.GlobalConfig;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Application.Services.GlobalConfig
 {
@@ -22,7 +17,7 @@ namespace CIR.Application.Services.GlobalConfig
             return _currencyRepository.GetCurrencyCountryWise(countryId);
         }
 
-        public string CreateOrUpdateGlobalCurrencies(List<GlobalCurrencyModel> globalCurrencyModel)
+        public Task<IActionResult> CreateOrUpdateGlobalCurrencies(List<GlobalCurrencyModel> globalCurrencyModel)
         {
             return _currencyRepository.CreateOrUpdateGlobalCurrencies(globalCurrencyModel);
         }
