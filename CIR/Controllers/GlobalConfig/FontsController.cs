@@ -1,13 +1,14 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Core.Entities.GlobalConfig;
 using CIR.Core.Interfaces.GlobalConfig;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Controllers.GlobalConfig
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	//[Authorize]
+	[Authorize]
 	public class FontsController : ControllerBase
 	{
 		#region PROPERTIES
