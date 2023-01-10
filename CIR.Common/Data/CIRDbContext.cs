@@ -33,7 +33,7 @@ namespace CIR.Common.Data
 		public DbSet<GlobalConfigurationCutOffTime> GlobalConfigurationCutOffTimes { get; set; }
 
 		public DbSet<Holidays> Holidays { get; set; }
-		public DbSet<Fonts> Fonts { get; set; }
+		public DbSet<GlobalConfigurationFonts> GlobalConfigurationFonts { get; set; }
 	}
 }
 
