@@ -1,6 +1,7 @@
 ﻿using CIR.Core.Entities;
 using CIR.Core.Entities.GlobalConfig;
 using CIR.Core.Entities.Users;
+using CIR.Core.ViewModel.GlobalConfig;
 using Microsoft.EntityFrameworkCore;
 
 namespace CIR.Common.Data
@@ -30,6 +31,7 @@ namespace CIR.Common.Data
 		}
 		public DbSet<Roles> Roles { get; set; }
 		public DbSet<Culture> Cultures { get; set; }
+		public DbSet<GlobalMessagesModel> GlobalConfigurationMessages { get; set; }
 
 	}
 }
