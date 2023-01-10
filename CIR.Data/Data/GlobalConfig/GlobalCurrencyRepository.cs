@@ -1,7 +1,9 @@
-﻿using CIR.Common.Data;
+﻿using CIR.Common.CustomResponse;
+using CIR.Common.Data;
 using CIR.Core.Entities.GlobalConfig;
 using CIR.Core.Interfaces.GlobalConfig;
 using CIR.Core.ViewModel.GlobalConfig;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Data.Data.GlobalConfig
 {
@@ -56,11 +58,13 @@ namespace CIR.Data.Data.GlobalConfig
         /// </summary>
         /// <param name="globalCurrencyModel"></param>
         /// <returns>Success status if its valid else failure</returns>
-        public string CreateOrUpdateGlobalCurrencies(List<GlobalCurrencyModel> globalCurrencyModel)
+
+
+        public async Task<IActionResult> CreateOrUpdateGlobalCurrencies(List<GlobalCurrencyModel> globalCurrencyModel)
         {
             if (globalCurrencyModel.Any(x => x.CountryId == 0 || x.CurrencyId == 0))
             {
-                return "InValid Data";
+                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Please enter valid Data" });
             }
             if (globalCurrencyModel != null)
             {
@@ -89,9 +93,9 @@ namespace CIR.Data.Data.GlobalConfig
                     }
                 }
                 _CIRDBContext.SaveChanges();
-                return "Success";
+                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Global Currency added successfully" });
             }
-            return "Failure";
+            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Error occurred while adding new Global Currency" });
         }
         #endregion
     }
