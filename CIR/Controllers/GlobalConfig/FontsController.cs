@@ -1,14 +1,13 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Core.Entities.GlobalConfig;
 using CIR.Core.Interfaces.GlobalConfig;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Controllers.GlobalConfig
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	[Authorize]
+	//[Authorize]
 	public class FontsController : ControllerBase
 	{
 		#region PROPERTIES
@@ -47,7 +46,7 @@ namespace CIR.Controllers.GlobalConfig
 		/// <returns > created fonts </returns>
 
 		[HttpPost]
-		public async Task<IActionResult> Create([FromBody] GlobalConfigurationFonts fonts)
+		public async Task<IActionResult> Create(List<GlobalConfigurationFonts> fonts)
 		{
 			if (ModelState.IsValid)
 			{
@@ -69,7 +68,7 @@ namespace CIR.Controllers.GlobalConfig
 		/// <param name="fonts"> this object contains different parameters as details of a fonts	</param>
 		/// <returns> updated fonts </returns>
 		[HttpPut]
-		public async Task<IActionResult> Update([FromBody] GlobalConfigurationFonts fonts)
+		public async Task<IActionResult> Update(List<GlobalConfigurationFonts> fonts)
 		{
 			if (ModelState.IsValid)
 			{

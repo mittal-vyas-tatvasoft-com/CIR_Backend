@@ -6,6 +6,6 @@ namespace CIR.Core.Interfaces.GlobalConfig
 	public interface IFontServices
 	{
 		Task<IActionResult> GetAllFonts();
-		Task<IActionResult> CreateOrUpdateFonts(GlobalConfigurationFonts fonts);
+		Task<IActionResult> CreateOrUpdateFonts(List<GlobalConfigurationFonts> fonts);
 	}
 }

@@ -16,7 +16,7 @@ namespace CIR.Application.Services.GlobalConfig
 			var fonts = await _fontRepository.GetAllFonts();
 			return fonts;
 		}
-		public Task<IActionResult> CreateOrUpdateFonts(GlobalConfigurationFonts fonts)
+		public Task<IActionResult> CreateOrUpdateFonts(List<GlobalConfigurationFonts> fonts)
 		{
 			return _fontRepository.CreateOrUpdateFont(fonts);
 		}

@@ -44,32 +44,41 @@ namespace CIR.Data.Data.GlobalConfig
 		/// </summary>
 		/// <param name="fonts"> new fonts data or update data for fonts </param>
 		/// <returns> Ok status if its valid else unprocessable </returns>
-		public async Task<IActionResult> CreateOrUpdateFont(GlobalConfigurationFonts fonts)
+		public async Task<IActionResult> CreateOrUpdateFont(List<GlobalConfigurationFonts> fonts)
 		{
-			GlobalConfigurationFonts newfont = new()
+			if (fonts != null)
 			{
-				Id = fonts.Id,
-				Name = fonts.Name,
-				Enabled = fonts.Enabled,
-				FontFamily = fonts.FontFamily,
-				IsDefault = fonts.IsDefault
-			};
+				foreach (var item in fonts)
+				{
+					if (item.Id != 0)
+					{
+						GlobalConfigurationFonts font = new GlobalConfigurationFonts()
+						{
+							Id = item.Id,
+							Name = item.Name,
+							Enabled = item.Enabled,
+							FontFamily = item.FontFamily,
+							IsDefault = item.IsDefault
+						};
+						_CIRDBContext.GlobalConfigurationFonts.Update(font);
+					}
+					else
+					{
+						GlobalConfigurationFonts font = new GlobalConfigurationFonts()
+						{
+							Name = item.Name,
+							Enabled = item.Enabled,
+							FontFamily = item.FontFamily,
+							IsDefault = item.IsDefault
+						};
+						_CIRDBContext.GlobalConfigurationFonts.Add(font);
 
-			if (fonts.Id > 0)
-			{
-				_CIRDBContext.GlobalConfigurationFonts.Update(newfont);
+					}
+				}
+				_CIRDBContext.SaveChanges();
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success });
 			}
-			else
-			{
-				_CIRDBContext.GlobalConfigurationFonts.Add(newfont);
-			}
-			await _CIRDBContext.SaveChangesAsync();
-
-			if (fonts.Id != null)
-			{
-				return new JsonResult(new CustomResponse<GlobalConfigurationFonts>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated });
-			}
-			return new JsonResult(new CustomResponse<GlobalConfigurationFonts>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = false, Message = HttpStatusCodesMessages.UnprocessableEntity });
+			return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest });
 		}
 		#endregion
 
