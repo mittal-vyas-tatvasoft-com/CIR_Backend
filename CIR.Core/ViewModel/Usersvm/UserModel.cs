@@ -19,5 +19,7 @@
 		public DateTime CreatedOn { get; set; }
 
 		public string? EmployeeId { get; set; }
+		public int loginattempts { get; set; }
+		public Boolean resetflag { get; set; }
 	}
 }
