@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Core.Interfaces.GlobalConfig
 {
-	public interface IFontRepository
+	public interface IFontServices
 	{
 		Task<IActionResult> GetAllFonts();
-		Task<IActionResult> CreateOrUpdateFont(List<GlobalConfigurationFonts> fonts);
+		Task<IActionResult> CreateOrUpdateFonts(List<GlobalConfigurationFonts> fonts);
 	}
 }
