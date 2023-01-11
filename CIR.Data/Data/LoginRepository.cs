@@ -48,10 +48,10 @@ namespace CIR.Data.Data
 					var userdetails = _CIRDBContext.Users.Where(x => x.UserName == model.UserName).FirstOrDefault();
 					if (userdetails != null)
 					{
-						var temp = (from item in _CIRDBContext.Users where item.UserName == model.UserName select item.Id);
+						var dbrecord = (from item in _CIRDBContext.Users where item.UserName == model.UserName select item.Id);
 						if (userdetails.LoginAttempts < 5)
 						{
-							userdetails.Id = temp.FirstOrDefault();
+							userdetails.Id = dbrecord.FirstOrDefault();
 							userdetails.LoginAttempts += 1;
 							_CIRDBContext.Entry(userdetails).State = EntityState.Modified;
 							_CIRDBContext.SaveChanges();
