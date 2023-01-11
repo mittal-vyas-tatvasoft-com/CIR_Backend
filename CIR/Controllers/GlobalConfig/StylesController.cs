@@ -40,9 +40,7 @@ namespace CIR.Controllers.GlobalConfig
         {
             try
             {
-                var styleData = await _styleService.GetAllStyles();
-            
-                return new JsonResult(new CustomResponse<GlobalConfigurationStyleModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = styleData });
+                return await _styleService.GetAllStyles();
                
             }
             catch (Exception ex)

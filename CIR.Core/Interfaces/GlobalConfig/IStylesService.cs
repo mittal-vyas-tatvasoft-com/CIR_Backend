@@ -11,7 +11,7 @@ namespace CIR.Core.Interfaces.GlobalConfig
 {
     public interface IStylesService
     {
-        Task<GlobalConfigurationStyleModel> GetAllStyles();
+        Task<IActionResult> GetAllStyles();
         Task<IActionResult> SaveStyle(List<GlobalConfigurationStyle> model);
     }
 }
