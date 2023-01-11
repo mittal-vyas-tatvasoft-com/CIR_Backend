@@ -69,12 +69,16 @@ namespace CIR.Common.Data
         public DbSet<Holidays> Holidays { get; set; }
         public DbSet<GlobalConfigurationFonts> GlobalConfigurationFonts { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<RoleGrouping2SubSite>().HasKey(x => new { x.RoleGroupingId, x.SubSiteId });
-            modelBuilder.Entity<RoleGrouping2Permission>().HasKey(x => new { x.RoleGroupingId, x.PermissionEnumId });
-            modelBuilder.Entity<RoleGrouping2Culture>().HasKey(x => new { x.RoleGroupingId, x.CultureLcid });
-        }
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			modelBuilder.Entity<RoleGrouping2SubSite>().HasKey(x => new { x.RoleGroupingId, x.SubSiteId });
+			modelBuilder.Entity<RoleGrouping2Permission>().HasKey(x => new { x.RoleGroupingId, x.PermissionEnumId });
+			modelBuilder.Entity<RoleGrouping2Culture>().HasKey(x => new { x.RoleGroupingId, x.CultureLcid });
+		}
+
+		public DbSet<Fonts> Fonts { get; set; }
+        public DbSet<GlobalConfigurationStyle> GlobalConfigurationStyles { get; set; }
+     
         public DbSet<GlobalConfigurationReasons> GlobalConfigurationReasons { get; set; }
     }
 }
