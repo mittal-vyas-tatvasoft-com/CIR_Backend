@@ -1,6 +1,7 @@
 ﻿using CIR.Core.Entities;
 using CIR.Core.Entities.GlobalConfig;
 using CIR.Core.Entities.Users;
+using CIR.Core.ViewModel.GlobalConfig;
 using Microsoft.EntityFrameworkCore;
 
 namespace CIR.Common.Data
@@ -75,6 +76,8 @@ namespace CIR.Common.Data
 			modelBuilder.Entity<RoleGrouping2Permission>().HasKey(x => new { x.RoleGroupingId, x.PermissionEnumId });
 			modelBuilder.Entity<RoleGrouping2Culture>().HasKey(x => new { x.RoleGroupingId, x.CultureLcid });
 		}
+		
+		public DbSet<GlobalMessagesModel> GlobalConfigurationMessages { get; set; }
 
 		public DbSet<Fonts> Fonts { get; set; }
         public DbSet<GlobalConfigurationStyle> GlobalConfigurationStyles { get; set; }
