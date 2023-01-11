@@ -75,7 +75,9 @@ namespace CIR.Common.Data
 			modelBuilder.Entity<RoleGrouping2Permission>().HasKey(x => new { x.RoleGroupingId, x.PermissionEnumId });
 			modelBuilder.Entity<RoleGrouping2Culture>().HasKey(x => new { x.RoleGroupingId, x.CultureLcid });
 		}
+        public DbSet<GlobalConfigurationStyle> GlobalConfigurationStyles { get; set; }
 
+		public DbSet<Fonts> Fonts { get; set; }
 	}
 }
 
