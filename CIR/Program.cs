@@ -91,6 +91,9 @@ builder.Services.AddScoped<IHolidayService, HolidayService>();
 builder.Services.AddScoped<IHolidaysRepository, HolidaysRepository>();
 builder.Services.AddScoped<IFontServices, FontServices>();
 builder.Services.AddScoped<IFontRepository, FontRepository>();
+builder.Services.AddScoped<IDropdownOptionService, DropdownOptionService>();
+builder.Services.AddScoped<IDropdownOptionRepository, DropdownOptionRepository>();
+
 
 
 //allow origin
