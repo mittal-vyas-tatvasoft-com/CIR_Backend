@@ -33,13 +33,12 @@ namespace CIR.Data.Data.GlobalConfig
 		/// This method used by GlobalConfigMessages list
 		/// </summary>
 		/// <returns></returns>
-		public List<GlobalMessagesModel> GetGlobalMessagesList(int cultureID)
+		public async Task<IActionResult> GetGlobalMessagesList(int cultureID)
 		{
-			List<GlobalMessagesModel> result = new List<GlobalMessagesModel>();
+			
 			if (cultureID == 0)
 			{
-
-				result = (from globalMessages in _CIRDBContext.GlobalConfigurationMessages
+				var result = (from globalMessages in _CIRDBContext.GlobalConfigurationMessages
 						  select new GlobalMessagesModel()
 						  {
 							  Id = globalMessages.Id,
@@ -47,10 +46,15 @@ namespace CIR.Data.Data.GlobalConfig
 							  Content = globalMessages.Content,
 							  CultureID = globalMessages.CultureID
 						  }).ToList();
+
+				if(result!=null)
+					return new JsonResult(new CustomResponse<List<GlobalMessagesModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = result });
+				else
+					return new JsonResult(new CustomResponse<List<GlobalMessagesModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
 			}
 			else
 			{
-				result = (from globalMessages in _CIRDBContext.GlobalConfigurationMessages
+				var result = (from globalMessages in _CIRDBContext.GlobalConfigurationMessages
 						  select new GlobalMessagesModel()
 						  {
 							  Id = globalMessages.Id,
@@ -58,8 +62,12 @@ namespace CIR.Data.Data.GlobalConfig
 							  Content = globalMessages.Content,
 							  CultureID = globalMessages.CultureID
 						  }).Where(x => x.CultureID == cultureID).ToList();
+
+				if (result != null)
+					return new JsonResult(new CustomResponse<List<GlobalMessagesModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = result });
+				else
+					return new JsonResult(new CustomResponse<List<GlobalMessagesModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
 			}
-			return result;
 		}
 
 		/// <summary>
@@ -67,15 +75,15 @@ namespace CIR.Data.Data.GlobalConfig
 		/// </summary>
 		/// <param name="globalMessageModel"></param>
 		/// <returns>Success status if its valid else failure</returns>
-		public async Task<IActionResult> CreateOrUpdateGlobalMessages(List<GlobalMessagesModel> globalMwssageModel)
+		public async Task<IActionResult> CreateOrUpdateGlobalMessages(List<GlobalMessagesModel> globalMessageModel)
 		{
-			if (globalMwssageModel.Any(x => x.CultureID == 0 || x.CultureID == 0))
+			if (globalMessageModel.Any(x => x.CultureID == 0))
 			{
 				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest});
 			}
-			if (globalMwssageModel != null)
+			if (globalMessageModel != null)
 			{
-				foreach (var item in globalMwssageModel)
+				foreach (var item in globalMessageModel)
 				{
 					if (item.Id != 0)
 					{

@@ -20,9 +20,9 @@ namespace CIR.Application.Services.GlobalConfig
 			_globalMessageRepository = globalMessageRepository;
 		}
 
-		public List<GlobalMessagesModel> GetGlobalMessagesList(int cultureID)
+		public async Task<IActionResult> GetGlobalMessagesList(int cultureID)
 		{
-			return _globalMessageRepository.GetGlobalMessagesList(cultureID);
+			return await _globalMessageRepository.GetGlobalMessagesList(cultureID);
 		}
 		public async Task<IActionResult> CreateOrUpdateGlobalMessages(List<GlobalMessagesModel> globalMessageModel)
 		{

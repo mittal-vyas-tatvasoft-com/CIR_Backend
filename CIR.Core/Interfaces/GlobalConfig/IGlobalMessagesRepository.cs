@@ -10,7 +10,7 @@ namespace CIR.Core.Interfaces.GlobalConfig
 {
 	public interface IGlobalMessagesRepository
 	{
-		List<GlobalMessagesModel> GetGlobalMessagesList(int cultureID);
+		Task<IActionResult> GetGlobalMessagesList(int cultureID);
 		Task<IActionResult> CreateOrUpdateGlobalMessages(List<GlobalMessagesModel> globalMessageModel);
 	}
 }

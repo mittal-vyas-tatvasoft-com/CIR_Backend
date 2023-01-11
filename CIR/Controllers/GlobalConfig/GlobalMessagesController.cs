@@ -38,12 +38,7 @@ namespace CIR.Controllers.GlobalConfig
 		{
 			try
 			{
-				var messageList = _globalMessages.GetGlobalMessagesList(cultureID);
-				if (messageList != null && messageList.Count>0)
-				{ 
-					return new JsonResult(new CustomResponse<List<GlobalMessagesModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = messageList });
-				}
-				return new JsonResult(new CustomResponse<List<GlobalMessagesModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = messageList });
+				return await _globalMessages.GetGlobalMessagesList(cultureID);
 			}
 			catch (Exception ex)
 			{
@@ -56,7 +51,7 @@ namespace CIR.Controllers.GlobalConfig
 		/// </summary>
 		/// <param name="globalMessageModel">this object contains different parameters as details of a globalMessages</param>
 		/// <returns></returns>
-		[HttpPost("{id}")]
+		[HttpPost]
 		public async Task<IActionResult> Post(List<GlobalMessagesModel> globalMessageModel)
 		{
 			if (ModelState.IsValid)
@@ -69,7 +64,6 @@ namespace CIR.Controllers.GlobalConfig
 				{
 					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
 				}
-
 			}
 			return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
 		}
