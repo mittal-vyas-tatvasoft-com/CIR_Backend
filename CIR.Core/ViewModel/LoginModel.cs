@@ -9,6 +9,5 @@ namespace CIR.Core.ViewModel
 
         [Required]
         public string Password { get; set; }
-
     }
 }

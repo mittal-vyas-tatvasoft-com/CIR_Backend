@@ -34,19 +34,7 @@ namespace CIR.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = _loginService.Login(value);
-                if (user != null)
-                {
-                    var generatedToken = await GenerateJwtToken(user);
-                    if (generatedToken != null)
-                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = generatedToken });
-                    else
-                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Token not generated" });
-                }
-                else
-                {
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Username or password is incorrect" });
-                }
+                return await _loginService.Login(value);
             }
             return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
         }

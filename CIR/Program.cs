@@ -1,4 +1,3 @@
-using CIR;
 using CIR.Application.Services;
 using CIR.Application.Services.Common;
 using CIR.Application.Services.GlobalConfig;
@@ -61,7 +60,7 @@ builder.Services.AddDbContext<CIRDbContext>(item => item.UseSqlServer(connection
 
 //add appsettings
 var appSettings = builder.Configuration.GetSection("AppSettings");
-builder.Services.Configure<AppSettings>(appSettings);
+builder.Services.Configure<JwtAppSettings>(appSettings);
 
 //add emailgeneration appsettings
 var emailGeneration = builder.Configuration.GetSection("EmailGeneration");
@@ -89,7 +88,7 @@ builder.Services.AddScoped<CSVExport>();
 builder.Services.AddScoped<ICsvService, CSVService>();
 builder.Services.AddScoped<IHolidayService, HolidayService>();
 builder.Services.AddScoped<IHolidaysRepository, HolidaysRepository>();
-
+builder.Services.AddScoped<JwtGenerateToken>();
 
 
 //allow origin
