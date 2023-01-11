@@ -33,9 +33,9 @@ namespace CIR.Data.Data
 		{
 			try
 			{
-				var fetchedrecord = _CIRDBContext.Users.Where((x) => x.UserName == model.UserName && x.Password == model.Password).FirstOrDefault();
+				var fetchedRecord = _CIRDBContext.Users.Where((x) => x.UserName == model.UserName && x.Password == model.Password).FirstOrDefault();
 
-				if (fetchedrecord != null && fetchedrecord.ResetRequired == true)
+				if (fetchedRecord != null && fetchedRecord.ResetRequired == true)
 				{
 					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Forbidden, Result = false, Message = HttpStatusCodesMessages.Forbidden, Data = "Your Account is locked. To Unlock this account contact to Aramex Support team" });
 				}
@@ -43,23 +43,23 @@ namespace CIR.Data.Data
 				{
 					UserName = model.UserName,
 				};
-				if (fetchedrecord == null)
+				if (fetchedRecord == null)
 				{
-					var userdetails = _CIRDBContext.Users.Where(x => x.UserName == model.UserName).FirstOrDefault();
-					if (userdetails != null)
+					var userDetails = _CIRDBContext.Users.Where(x => x.UserName == model.UserName).FirstOrDefault();
+					if (userDetails != null)
 					{
-						var userrecord = (from item in _CIRDBContext.Users where item.UserName == model.UserName select item.Id);
-						if (userdetails.LoginAttempts < 5)
+						var userRecord = (from item in _CIRDBContext.Users where item.UserName == model.UserName select item.Id);
+						if (userDetails.LoginAttempts < 5)
 						{
-							userdetails.Id = userrecord.FirstOrDefault();
-							userdetails.LoginAttempts += 1;
-							_CIRDBContext.Entry(userdetails).State = EntityState.Modified;
+							userDetails.Id = userRecord.FirstOrDefault();
+							userDetails.LoginAttempts += 1;
+							_CIRDBContext.Entry(userDetails).State = EntityState.Modified;
 							_CIRDBContext.SaveChanges();
 						}
 						else
 						{
-							userdetails.ResetRequired = true;
-							_CIRDBContext.Users.Update(userdetails);
+							userDetails.ResetRequired = true;
+							_CIRDBContext.Users.Update(userDetails);
 							_CIRDBContext.SaveChanges();
 							return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Forbidden, Result = false, Message = HttpStatusCodesMessages.Forbidden, Data = "Your Account is locked. To Unlock this account contact to Aramex Support team" });
 						}
@@ -69,10 +69,10 @@ namespace CIR.Data.Data
 						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Invalid username or password" });
 					}
 				}
-				var userdata = _CIRDBContext.Users.FirstOrDefault((u) => u.UserName == model.UserName && u.Password == model.Password);
-				if (userdata != null)
+				var userData = _CIRDBContext.Users.FirstOrDefault((u) => u.UserName == model.UserName && u.Password == model.Password);
+				if (userData != null)
 				{
-					var generatedToken = await _jwtGenerateToken.GenerateJwtToken(userdata);
+					var generatedToken = await _jwtGenerateToken.GenerateJwtToken(userData);
 					if (generatedToken != null)
 						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = generatedToken });
 					else
