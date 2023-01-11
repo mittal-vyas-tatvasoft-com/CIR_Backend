@@ -1,4 +1,9 @@
-﻿namespace CIR.Common.Data
+﻿using CIR.Core.Entities;
+using CIR.Core.Entities.GlobalConfig;
+using CIR.Core.Entities.Users;
+using Microsoft.EntityFrameworkCore;
+
+namespace CIR.Common.Data
 {
     public class CIRDbContext : DbContext
     {
@@ -70,9 +75,6 @@
             modelBuilder.Entity<RoleGrouping2Permission>().HasKey(x => new { x.RoleGroupingId, x.PermissionEnumId });
             modelBuilder.Entity<RoleGrouping2Culture>().HasKey(x => new { x.RoleGroupingId, x.CultureLcid });
         }
-
-        public DbSet<Holidays> Holidays { get; set; }
-        public DbSet<Fonts> Fonts { get; set; }
         public DbSet<GlobalConfigurationReasons> GlobalConfigurationReasons { get; set; }
     }
 }
