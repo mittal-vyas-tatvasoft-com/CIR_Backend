@@ -53,27 +53,13 @@ namespace CIR.Controllers.GlobalConfig
         /// <param name="globalCurrencyModel">this object contains different parameters as details of a globalcurrency</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Post(List<GlobalCurrencyModel> globalCurrencyModel)
+        public async Task<IActionResult> Add(List<GlobalCurrencyModel> globalCurrencyModel)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var addGlobalCurrency = _currencyService.CreateOrUpdateGlobalCurrencies(globalCurrencyModel);
-                    if (addGlobalCurrency == "Success")
-                    {
-                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Global Currency added successfully" });
-                    }
-                    else if (addGlobalCurrency == "InValid Data")
-                    {
-                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Please enter valid Data" });
-                    }
-                    else
-                    {
-                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Error occurred while adding new Global Currency" });
-
-                    }
-
+                    return await _currencyService.CreateOrUpdateGlobalCurrencies(globalCurrencyModel);
                 }
                 catch (Exception ex)
                 {
@@ -90,25 +76,13 @@ namespace CIR.Controllers.GlobalConfig
         /// <param name="globalCurrencyModel">this object contains different parameters as details of a globalcurrency</param>
         /// <returns></returns>
         [HttpPut]
-        public async Task<IActionResult> Put(List<GlobalCurrencyModel> globalCurrencyModel)
+        public async Task<IActionResult> Update(List<GlobalCurrencyModel> globalCurrencyModel)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var updateGlobalCurrency = _currencyService.CreateOrUpdateGlobalCurrencies(globalCurrencyModel);
-                    if (updateGlobalCurrency == "Success")
-                    {
-                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Global Currency updated successfully" });
-                    }
-                    else if (updateGlobalCurrency == "InValid Data")
-                    {
-                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Please enter valid Data" });
-                    }
-                    else
-                    {
-                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Error occurred while updating Global Currency" });
-                    }
+                    return await _currencyService.CreateOrUpdateGlobalCurrencies(globalCurrencyModel);
                 }
                 catch (Exception ex)
                 {

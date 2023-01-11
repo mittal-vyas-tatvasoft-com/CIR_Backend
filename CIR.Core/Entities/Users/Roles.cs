@@ -7,6 +7,7 @@
 		public string Description { get; set; }
 		public bool AllPermissions { get; set; }
 		public DateTime CreatedOn { get; set; }
+		public DateTime? LastEditedOn { get; set; }
 
 	}
 }
