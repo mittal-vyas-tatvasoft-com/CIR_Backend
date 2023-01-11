@@ -87,6 +87,8 @@ builder.Services.AddScoped<CSVExport>();
 builder.Services.AddScoped<ICsvService, CSVService>();
 builder.Services.AddScoped<IHolidayService, HolidayService>();
 builder.Services.AddScoped<IHolidaysRepository, HolidaysRepository>();
+builder.Services.AddScoped<IGlobalEmailService, GlobalConfigEmailService>();
+builder.Services.AddScoped<IGlobalEmailRepository, GlobalConfigEmailRepository>();
 
 
 
