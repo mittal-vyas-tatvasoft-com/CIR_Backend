@@ -48,11 +48,7 @@ namespace CIR.Data.Data
 					var userdetails = _CIRDBContext.Users.Where(x => x.UserName == model.UserName).FirstOrDefault();
 					if (userdetails != null)
 					{
-
-						var temp = (from item in _CIRDBContext.Users
-									where item.UserName == model.UserName
-									select item.Id);
-
+						var temp = (from item in _CIRDBContext.Users where item.UserName == model.UserName select item.Id);
 						if (userdetails.LoginAttempts < 5)
 						{
 							userdetails.Id = temp.FirstOrDefault();
@@ -86,7 +82,6 @@ namespace CIR.Data.Data
 			}
 			catch (Exception ex)
 			{
-
 				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
 			}
 		}

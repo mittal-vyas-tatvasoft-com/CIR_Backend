@@ -1,3 +1,4 @@
+using CIR.Application.Services;
 using CIR.Application.Services.Common;
 using CIR.Application.Services.GlobalConfig;
 using CIR.Application.Services.Users;
@@ -11,6 +12,7 @@ using CIR.Core.Interfaces.Common;
 using CIR.Core.Interfaces.GlobalConfig;
 using CIR.Core.Interfaces.Users;
 using CIR.Data.Data;
+using CIR.Data.Data.Common;
 using CIR.Data.Data.GlobalConfig;
 using CIR.Data.Data.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -67,18 +69,17 @@ builder.Services.Configure<EmailModel>(emailGeneration);
 //add thumbnailcreation appsettings
 var thumbnailCreation = builder.Configuration.GetSection("ThumbnailCreation");
 builder.Services.Configure<ThumbnailModel>(thumbnailCreation);
-
-builder.Services.AddScoped<ILoginService, ILoginService>();
+builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<ILoginRepository, LoginRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IUserRepository, IUserRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IGlobalCurrencyService, GlobalCurrencyService>();
 builder.Services.AddScoped<IGlobalCurrencyRepository, GlobalCurrencyRepository>();
 builder.Services.AddScoped<IGlobalMessagesRepository, GlobalMessagesRepository>();
 builder.Services.AddScoped<IGlobalMessagesService, GlobalMessagesService>();
-builder.Services.AddScoped<IGlobalCurrencyRepository, IGlobalCurrencyRepository>();
+builder.Services.AddScoped<IGlobalCurrencyRepository, GlobalCurrencyRepository>();
 builder.Services.AddScoped<ICommonService, CommonService>();
-builder.Services.AddScoped<ICommonRepository, ICommonRepository>();
+builder.Services.AddScoped<ICommonRepository, CommonRepository>();
 builder.Services.AddScoped<EmailGeneration>();
 builder.Services.AddScoped<ThumbnailCreation>();
 builder.Services.AddScoped<IRolesService, RolesService>();
@@ -93,10 +94,8 @@ builder.Services.AddScoped<IFontServices, FontServices>();
 builder.Services.AddScoped<IFontRepository, FontRepository>();
 builder.Services.AddScoped<IStylesService, StylesService>();
 builder.Services.AddScoped<IStylesRepository, StylesRepository>();
-
 builder.Services.AddScoped<IDropdownOptionService, DropdownOptionService>();
 builder.Services.AddScoped<IDropdownOptionRepository, DropdownOptionRepository>();
-
 builder.Services.AddScoped<JwtGenerateToken>();
 
 
