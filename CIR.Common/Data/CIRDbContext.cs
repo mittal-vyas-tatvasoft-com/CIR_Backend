@@ -79,7 +79,7 @@ namespace CIR.Common.Data
 		
 		public DbSet<GlobalMessagesModel> GlobalConfigurationMessages { get; set; }
 
-		public DbSet<Fonts> Fonts { get; set; }
+		public DbSet<GlobalConfigurationFonts> Fonts { get; set; }
         public DbSet<GlobalConfigurationStyle> GlobalConfigurationStyles { get; set; }
      
         public DbSet<GlobalConfigurationReasons> GlobalConfigurationReasons { get; set; }
