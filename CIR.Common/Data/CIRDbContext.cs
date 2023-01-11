@@ -34,6 +34,7 @@ namespace CIR.Common.Data
 
 		public DbSet<Holidays> Holidays { get; set; }
 		public DbSet<Fonts> Fonts { get; set; }
+		public DbSet<GlobalConfigurationReasons> GlobalConfigurationReasons { get; set; }
 	}
 }
 
