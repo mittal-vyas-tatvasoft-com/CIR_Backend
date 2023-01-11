@@ -37,19 +37,28 @@ namespace CIR.Data.Data.GlobalConfig
         /// <returns> list of style </returns>
 
 
-        public async Task<GlobalConfigurationStyleModel> GetAllStyles()
+        public async Task<IActionResult> GetAllStyles()
         {
-            GlobalConfigurationStyleModel styles = new();
             try
             {
-                styles.StylesList = _CIRDBContext.GlobalConfigurationStyles.ToList();
-                return styles;
+                var style = await _CIRDBContext.GlobalConfigurationStyles.Select(x => new GlobalConfigurationStyle()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Description= x.Description,
+                    TypeCode= x.TypeCode,
+                    TypeName= x.TypeName,
+                    ValueType= x.ValueType,
+                    Value= x.Value,
+                    SortOrder= x.SortOrder
+
+                }).ToListAsync();
+                return new JsonResult(new CustomResponse<List<GlobalConfigurationStyle>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = style });
             }
             catch (Exception ex)
             {
-                return styles;
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError,Data=ex });
             }
-
         }
 
         /// <summary>

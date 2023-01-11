@@ -20,7 +20,7 @@ namespace CIR.Application.Services.GlobalConfig
         {
             _stylesRepository = stylesRepository;
         }
-        public Task<GlobalConfigurationStyleModel> GetAllStyles()
+        public Task<IActionResult> GetAllStyles()
         {
             return _stylesRepository.GetAllStyles();
         }
