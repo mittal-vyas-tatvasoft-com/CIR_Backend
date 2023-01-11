@@ -46,24 +46,31 @@ namespace CIR.Data.Data
 				if (fetchedrecord == null)
 				{
 					var userdetails = _CIRDBContext.Users.Where(x => x.UserName == model.UserName).FirstOrDefault();
-
-					var temp = (from item in _CIRDBContext.Users
-								where item.UserName == model.UserName
-								select item.Id);
-
-					if (userdetails.LoginAttempts < 5)
+					if (userdetails != null)
 					{
-						userdetails.Id = temp.FirstOrDefault();
-						userdetails.LoginAttempts += 1;
-						_CIRDBContext.Entry(userdetails).State = EntityState.Modified;
-						_CIRDBContext.SaveChanges();
+
+						var temp = (from item in _CIRDBContext.Users
+									where item.UserName == model.UserName
+									select item.Id);
+
+						if (userdetails.LoginAttempts < 5)
+						{
+							userdetails.Id = temp.FirstOrDefault();
+							userdetails.LoginAttempts += 1;
+							_CIRDBContext.Entry(userdetails).State = EntityState.Modified;
+							_CIRDBContext.SaveChanges();
+						}
+						else
+						{
+							userdetails.ResetRequired = true;
+							_CIRDBContext.Users.Update(userdetails);
+							_CIRDBContext.SaveChanges();
+							return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Forbidden, Result = false, Message = HttpStatusCodesMessages.Forbidden, Data = "Your Account is locked. To Unlock this account contact to Aramex Support team" });
+						}
 					}
 					else
 					{
-						userdetails.ResetRequired = true;
-						_CIRDBContext.Users.Update(userdetails);
-						_CIRDBContext.SaveChanges();
-						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Forbidden, Result = false, Message = HttpStatusCodesMessages.Forbidden, Data = "Your Account is locked. To Unlock this account contact to Aramex Support team" });
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Invalid username or password" });
 					}
 				}
 				var userdata = _CIRDBContext.Users.FirstOrDefault((u) => u.UserName == model.UserName && u.Password == model.Password);
