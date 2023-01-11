@@ -167,6 +167,7 @@ namespace CIR.Common.Helper
                 {
                     cmd.Parameters.AddWithValue(procParameter.Key, procParameter.Value);
                 }
+
                 using SqlDataAdapter da = new SqlDataAdapter(cmd);
                 da.Fill(dt);
             }

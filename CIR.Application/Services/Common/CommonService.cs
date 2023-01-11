@@ -1,5 +1,6 @@
 ﻿using CIR.Core.Entities;
 using CIR.Core.Entities.GlobalConfig;
+using CIR.Core.Entities.Users;
 using CIR.Core.Interfaces.Common;
 
 namespace CIR.Application.Services.Common
@@ -20,10 +21,18 @@ namespace CIR.Application.Services.Common
         {
             return _commonRepository.GetCurrencies();
         }
-
-        public List<Culture> GetCultures()
+        public async Task<List<Culture>> GetCultures()
         {
-            return _commonRepository.GetCultures();
+            return await _commonRepository.GetCultures();
+        }
+
+        public async Task<List<SubSite>> GetSite()
+        {
+            return await _commonRepository.GetSite();
+        }
+        public async Task<List<RolePrivileges>> GetRolePrivileges()
+        {
+            return await _commonRepository.GetRolePrivileges();
         }
     }
 }
