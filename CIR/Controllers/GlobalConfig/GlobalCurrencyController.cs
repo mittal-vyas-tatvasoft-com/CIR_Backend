@@ -38,8 +38,7 @@ namespace CIR.Controllers.GlobalConfig
         {
             try
             {
-                var currencyList = _currencyService.GetCurrencyCountryWise(countryId);
-                return new JsonResult(new CustomResponse<List<GlobalConfigurationCurrencyModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = currencyList });
+                return await _currencyService.GetCurrenciesCountryWise(countryId);
             }
             catch (Exception ex)
             {
@@ -52,8 +51,8 @@ namespace CIR.Controllers.GlobalConfig
         /// </summary>
         /// <param name="globalCurrencyModel">this object contains different parameters as details of a globalcurrency</param>
         /// <returns></returns>
-        [HttpPost]
-        public async Task<IActionResult> Add(List<GlobalCurrencyModel> globalCurrencyModel)
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Create(List<GlobalCurrencyModel> globalCurrencyModel)
         {
             if (ModelState.IsValid)
             {
@@ -67,7 +66,7 @@ namespace CIR.Controllers.GlobalConfig
                 }
 
             }
-            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
+            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Error" });
         }
 
         /// <summary>
@@ -75,7 +74,7 @@ namespace CIR.Controllers.GlobalConfig
         /// </summary>
         /// <param name="globalCurrencyModel">this object contains different parameters as details of a globalcurrency</param>
         /// <returns></returns>
-        [HttpPut]
+        [HttpPut("[action]")]
         public async Task<IActionResult> Update(List<GlobalCurrencyModel> globalCurrencyModel)
         {
             if (ModelState.IsValid)
@@ -88,8 +87,9 @@ namespace CIR.Controllers.GlobalConfig
                 {
                     return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
                 }
+
             }
-            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
+            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Error" });
         }
         #endregion
     }

@@ -12,9 +12,9 @@ namespace CIR.Application.Services.GlobalConfig
             _currencyRepository = currencyRepository;
         }
 
-        public List<GlobalConfigurationCurrencyModel> GetCurrencyCountryWise(int countryId)
+        public async Task<IActionResult> GetCurrenciesCountryWise(int countryId)
         {
-            return _currencyRepository.GetCurrencyCountryWise(countryId);
+            return await _currencyRepository.GetCurrenciesCountryWise(countryId);
         }
 
         public Task<IActionResult> CreateOrUpdateGlobalCurrencies(List<GlobalCurrencyModel> globalCurrencyModel)

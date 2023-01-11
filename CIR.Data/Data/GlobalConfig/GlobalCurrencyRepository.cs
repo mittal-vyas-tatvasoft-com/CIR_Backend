@@ -4,6 +4,7 @@ using CIR.Core.Entities.GlobalConfig;
 using CIR.Core.Interfaces.GlobalConfig;
 using CIR.Core.ViewModel.GlobalConfig;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CIR.Data.Data.GlobalConfig
 {
@@ -31,26 +32,30 @@ namespace CIR.Data.Data.GlobalConfig
         /// </summary>
         /// <param name="countryId"></param>
         /// <returns></returns>
-        public List<GlobalConfigurationCurrencyModel> GetCurrencyCountryWise(int countryId)
+        public async Task<IActionResult> GetCurrenciesCountryWise(int countryId)
         {
-            List<GlobalConfigurationCurrencyModel> globalConfigurationCurrenciesList = new List<GlobalConfigurationCurrencyModel>();
-
-            globalConfigurationCurrenciesList = (from globalCurrency in _CIRDBContext.GlobalConfigurationCurrencies
-                                                 join country in _CIRDBContext.CountryCodes
-                                                 on globalCurrency.CountryId equals country.Id
-                                                 join currency in _CIRDBContext.Currencies
-                                                 on globalCurrency.CurrencyId equals currency.Id
-                                                 select new GlobalConfigurationCurrencyModel()
-                                                 {
-                                                     Id = globalCurrency.Id,
-                                                     CountryId = globalCurrency.CountryId,
-                                                     CurrencyId = globalCurrency.CurrencyId,
-                                                     Enabled = globalCurrency.Enabled,
-                                                     CountryName = country.CountryName,
-                                                     CodeName = currency.CodeName
-                                                 }).Where(x => x.CountryId == countryId).ToList();
-
-            return globalConfigurationCurrenciesList;
+            try
+            {
+                var globalConfigurationCurrenciesList = await (from globalCurrency in _CIRDBContext.GlobalConfigurationCurrencies
+                                                               join country in _CIRDBContext.CountryCodes
+                                                               on globalCurrency.CountryId equals country.Id
+                                                               join currency in _CIRDBContext.Currencies
+                                                               on globalCurrency.CurrencyId equals currency.Id
+                                                               select new GlobalConfigurationCurrencyModel()
+                                                               {
+                                                                   Id = globalCurrency.Id,
+                                                                   CountryId = globalCurrency.CountryId,
+                                                                   CurrencyId = globalCurrency.CurrencyId,
+                                                                   Enabled = globalCurrency.Enabled,
+                                                                   CountryName = country.CountryName,
+                                                                   CodeName = currency.CodeName
+                                                               }).Where(x => x.CountryId == countryId).ToListAsync();
+                return new JsonResult(new CustomResponse<List<GlobalConfigurationCurrencyModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = globalConfigurationCurrenciesList });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+            }
         }
 
         /// <summary>
@@ -59,43 +64,49 @@ namespace CIR.Data.Data.GlobalConfig
         /// <param name="globalCurrencyModel"></param>
         /// <returns>Success status if its valid else failure</returns>
 
-
         public async Task<IActionResult> CreateOrUpdateGlobalCurrencies(List<GlobalCurrencyModel> globalCurrencyModel)
         {
-            if (globalCurrencyModel.Any(x => x.CountryId == 0 || x.CurrencyId == 0))
+            try
             {
-                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Please enter valid Data" });
-            }
-            if (globalCurrencyModel != null)
-            {
-                foreach (var item in globalCurrencyModel)
+                if (globalCurrencyModel.Any(x => x.CountryId == 0 || x.CurrencyId == 0))
                 {
-                    if (item.Id != 0)
-                    {
-                        GlobalConfigurationCurrency curr = new GlobalConfigurationCurrency()
-                        {
-                            Id = item.Id,
-                            CountryId = item.CountryId,
-                            CurrencyId = item.CurrencyId,
-                            Enabled = item.Enabled
-                        };
-                        _CIRDBContext.GlobalConfigurationCurrencies.Update(curr);
-                    }
-                    else
-                    {
-                        GlobalConfigurationCurrency curr = new GlobalConfigurationCurrency()
-                        {
-                            CountryId = item.CountryId,
-                            CurrencyId = item.CurrencyId,
-                            Enabled = item.Enabled
-                        };
-                        _CIRDBContext.GlobalConfigurationCurrencies.Add(curr);
-                    }
+                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Please enter valid Data" });
                 }
-                _CIRDBContext.SaveChanges();
-                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Global Currency added successfully" });
+                if (globalCurrencyModel != null)
+                {
+                    foreach (var item in globalCurrencyModel)
+                    {
+                        if (item.Id != 0)
+                        {
+                            GlobalConfigurationCurrency curr = new GlobalConfigurationCurrency()
+                            {
+                                Id = item.Id,
+                                CountryId = item.CountryId,
+                                CurrencyId = item.CurrencyId,
+                                Enabled = item.Enabled
+                            };
+                            _CIRDBContext.GlobalConfigurationCurrencies.Update(curr);
+                        }
+                        else
+                        {
+                            GlobalConfigurationCurrency curr = new GlobalConfigurationCurrency()
+                            {
+                                CountryId = item.CountryId,
+                                CurrencyId = item.CurrencyId,
+                                Enabled = item.Enabled
+                            };
+                            _CIRDBContext.GlobalConfigurationCurrencies.Add(curr);
+                        }
+                    }
+                    await _CIRDBContext.SaveChangesAsync();
+                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Global Currency saved successfully" });
+                }
+                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Error occurred while adding new Global Currency" });
             }
-            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Error occurred while adding new Global Currency" });
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+            }
         }
         #endregion
     }
