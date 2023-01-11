@@ -1,7 +1,4 @@
 ﻿using CIR.Common.CustomResponse;
-using CIR.Core.Entities;
-using CIR.Core.Entities.GlobalConfig;
-using CIR.Core.Entities.Users;
 using CIR.Core.Interfaces.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,8 +36,7 @@ namespace CIR.Controllers.Common
         {
             try
             {
-                var currencyList = _commonService.GetCurrencies();
-                return new JsonResult(new CustomResponse<List<Currency>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = currencyList });
+                return await _commonService.GetCurrencies();
             }
             catch (Exception ex)
             {
@@ -54,13 +50,12 @@ namespace CIR.Controllers.Common
         /// This method get a country list
         /// </summary>
         /// <returns></returns>
-        [HttpGet("GetCountry")]
-        public async Task<IActionResult> GetCountry()
+        [HttpGet("GetCountries")]
+        public async Task<IActionResult> GetCountries()
         {
             try
             {
-                var countryList = _commonService.GetCountry();
-                return new JsonResult(new CustomResponse<List<CountryCode>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = countryList });
+                return await _commonService.GetCountries();
             }
             catch (Exception ex)
             {
@@ -73,13 +68,12 @@ namespace CIR.Controllers.Common
         /// This method get a culture list
         /// </summary>
         /// <returns></returns>
-        [HttpGet("GetCulture")]
-        public async Task<IActionResult> GetCulture()
+        [HttpGet("GetCultures")]
+        public async Task<IActionResult> GetCultures()
         {
             try
             {
-                var cultureList = await _commonService.GetCultures();
-                return new JsonResult(new CustomResponse<List<Culture>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = cultureList });
+                return await _commonService.GetCultures();
             }
             catch (Exception ex)
             {
@@ -91,13 +85,12 @@ namespace CIR.Controllers.Common
         /// This method get a site or section list
         /// </summary>
         /// <returns></returns>
-        [HttpGet("GetSite")]
-        public async Task<IActionResult> GetSite()
+        [HttpGet("GetSubSites")]
+        public async Task<IActionResult> GetSubSites()
         {
             try
             {
-                var siteList = await _commonService.GetSite();
-                return new JsonResult(new CustomResponse<List<SubSite>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = siteList });
+                return await _commonService.GetSubSites();
             }
             catch (Exception ex)
             {
@@ -114,8 +107,7 @@ namespace CIR.Controllers.Common
         {
             try
             {
-                var rolePriviledgesList = await _commonService.GetRolePrivileges();
-                return new JsonResult(new CustomResponse<List<RolePrivileges>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = rolePriviledgesList });
+                return await _commonService.GetRolePrivileges();
             }
             catch (Exception ex)
             {
