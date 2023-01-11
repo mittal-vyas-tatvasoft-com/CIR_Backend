@@ -89,12 +89,7 @@ namespace CIR.Controllers
             {
                 try
                 {
-                    var forgotPassword = _loginService.ForgotPassword(forgotPasswordModel);
-                    if (forgotPassword == "Success")
-                    {
-                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Successfully send new password on your mail,please check once!" });
-                    }
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Please enter valid username and email" });
+                    return await _loginService.ForgotPassword(forgotPasswordModel);
                 }
                 catch (Exception ex)
                 {
@@ -116,12 +111,7 @@ namespace CIR.Controllers
             {
                 try
                 {
-                    var resetPassword = _loginService.ResetPassword(resetPasswordModel);
-                    if (resetPassword == "Success")
-                    {
-                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Password Change Successfully." });
-                    }
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "OldPassword InCorrect." });
+                    return await _loginService.ResetPassword(resetPasswordModel);
                 }
                 catch (Exception ex)
                 {

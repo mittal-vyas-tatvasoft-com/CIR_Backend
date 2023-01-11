@@ -34,10 +34,6 @@ namespace CIR.Common.Helper
 				NetworkCredential networkCredential = new NetworkCredential(fromEmail, _emailModel.Password);
 				smtpClient.Credentials = networkCredential;
 
-				//smtpClient.EnableSsl = true;
-				//smtpClient.EnableSsl = true;
-				//smtpClient.Port = 587;
-
 				smtpClient.EnableSsl = _emailModel.Enablessl;
 				smtpClient.Port = _emailModel.port;
 				smtpClient.Host = _emailModel.Host;
