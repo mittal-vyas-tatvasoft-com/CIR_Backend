@@ -1,8 +1,10 @@
-﻿using CIR.Common.Data;
+﻿using CIR.Common.CustomResponse;
+using CIR.Common.Data;
 using CIR.Core.Entities;
 using CIR.Core.Entities.GlobalConfig;
 using CIR.Core.Entities.Users;
 using CIR.Core.Interfaces.Common;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace CIR.Data.Data.Common
@@ -23,71 +25,96 @@ namespace CIR.Data.Data.Common
         }
         #endregion
 
-
         #region METHODS
 
         /// <summary>
         /// This method used by getcurrencies list
         /// </summary>
         /// <returns></returns>
-        public List<Currency> GetCurrencies()
+        public async Task<IActionResult> GetCurrencies()
         {
-            List<Currency> result = new List<Currency>();
-            result = (from currency in _CIRDBContext.Currencies
-                      select new Currency()
-                      {
-                          Id = currency.Id,
-                          CodeName = currency.CodeName,
-                          Symbol = currency.Symbol
-                      }).ToList();
-            return result;
+            try
+            {
+                var currenciesList = await _CIRDBContext.Currencies.Select(x => new Currency()
+                {
+                    Id = x.Id,
+                    CodeName = x.CodeName,
+                    Symbol = x.Symbol
+                }).ToListAsync();
+                return new JsonResult(new CustomResponse<List<Currency>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = currenciesList });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+            }
         }
 
         /// <summary>
         /// This method used by getcountry list
         /// </summary>
         /// <returns></returns>
-        public List<CountryCode> GetCountry()
+        public async Task<IActionResult> GetCountries()
         {
-            List<CountryCode> result = new List<CountryCode>();
-            result = (from country in _CIRDBContext.CountryCodes
-                      select new CountryCode()
-                      {
-                          Id = country.Id,
-                          CountryName = country.CountryName,
-                          Code = country.Code
-                      }).ToList();
-            return result;
+            try
+            {
+                var countriesList = await _CIRDBContext.CountryCodes.ToListAsync();
+                return new JsonResult(new CustomResponse<List<CountryCode>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = countriesList });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+            }
         }
 
         /// <summary>
         /// This method used by get culture list
         /// </summary>
         /// <returns></returns>
-        public async Task<List<Culture>> GetCultures()
+        public async Task<IActionResult> GetCultures()
         {
-            var cultureList = await _CIRDBContext.Cultures.ToListAsync();
-            return cultureList;
+            try
+            {
+                var culturesList = await _CIRDBContext.Cultures.ToListAsync();
+                return new JsonResult(new CustomResponse<List<Culture>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = culturesList });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+            }
         }
 
         /// <summary>
         /// This method used by get site or section list
         /// </summary>
         /// <returns></returns>
-        public async Task<List<SubSite>> GetSite()
+        public async Task<IActionResult> GetSubSites()
         {
-            var siteList = await _CIRDBContext.SubSites.ToListAsync();
-            return siteList;
+            try
+            {
+                var subsitesList = await _CIRDBContext.SubSites.ToListAsync();
+                return new JsonResult(new CustomResponse<List<SubSite>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = subsitesList });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+            }
         }
 
         /// <summary>
         /// This method used by get role privileges list
         /// </summary>
         /// <returns></returns>
-        public async Task<List<RolePrivileges>> GetRolePrivileges()
+        public async Task<IActionResult> GetRolePrivileges()
         {
-            var result = await _CIRDBContext.RolePrivileges.ToListAsync();
-            return result;
+            try
+            {
+                var rolePrivilegesList = await _CIRDBContext.RolePrivileges.ToListAsync();
+                return new JsonResult(new CustomResponse<List<RolePrivileges>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = rolePrivilegesList });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+            }
         }
 
         #endregion
