@@ -1,9 +1,10 @@
-﻿using CsvHelper;
+﻿using CIR.Core.Interfaces.Common;
+using CsvHelper;
 using System.Globalization;
 
 namespace CIR.Common.CommonServices
 {
-	public class CSVService
+	public class CSVService : ICsvService
 	{
 		public IEnumerable<T> ReadCSV<T>(Stream file)
 		{

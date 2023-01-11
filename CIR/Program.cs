@@ -3,6 +3,8 @@ using CIR.Application.Services;
 using CIR.Application.Services.Common;
 using CIR.Application.Services.GlobalConfig;
 using CIR.Application.Services.Users;
+using CIR.Common.CommonModels;
+using CIR.Common.CommonServices;
 using CIR.Common.Data;
 using CIR.Common.EmailGeneration;
 using CIR.Common.Helper;
@@ -65,6 +67,10 @@ builder.Services.Configure<AppSettings>(appSettings);
 var emailGeneration = builder.Configuration.GetSection("EmailGeneration");
 builder.Services.Configure<EmailModel>(emailGeneration);
 
+//add thumbnailcreation appsettings
+var thumbnailCreation = builder.Configuration.GetSection("ThumbnailCreation");
+builder.Services.Configure<ThumbnailModel>(thumbnailCreation);
+
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddScoped<ILoginRepository, LoginRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -76,8 +82,16 @@ builder.Services.AddScoped<IGlobalMessagesService, GlobalMessagesService>();
 builder.Services.AddScoped<ICommonService, CommonService>();
 builder.Services.AddScoped<ICommonRepository, CommonRepository>();
 builder.Services.AddScoped<EmailGeneration>();
+builder.Services.AddScoped<ThumbnailCreation>();
 builder.Services.AddScoped<IRolesService, RolesService>();
 builder.Services.AddScoped<IRolesRepository, RolesRepository>();
+builder.Services.AddScoped<ICutOffTimesService, CutOffTimesService>();
+builder.Services.AddScoped<ICutOffTimesRepository, CutOffTimesRepository>();
+builder.Services.AddScoped<CSVExport>();
+builder.Services.AddScoped<ICsvService, CSVService>();
+builder.Services.AddScoped<IHolidayService, HolidayService>();
+builder.Services.AddScoped<IHolidaysRepository, HolidaysRepository>();
+
 
 
 //allow origin
@@ -110,7 +124,7 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();

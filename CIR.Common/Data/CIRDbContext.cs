@@ -32,6 +32,15 @@ namespace CIR.Common.Data
 		public DbSet<Roles> Roles { get; set; }
 		public DbSet<Culture> Cultures { get; set; }
 		public DbSet<GlobalMessagesModel> GlobalConfigurationMessages { get; set; }
-
-	}
+		public DbSet<GlobalConfigurationCutOffTime> GlobalConfigurationCutOffTimes { get; set; }
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<RoleGrouping2SubSite>().HasKey(x => new { x.RoleGroupingId, x.SubSiteId });
+            modelBuilder.Entity<RoleGrouping2Permission>().HasKey(x => new { x.RoleGroupingId, x.PermissionEnumId });
+            modelBuilder.Entity<RoleGrouping2Culture>().HasKey(x => new { x.RoleGroupingId, x.CultureLcid });
+        }
+        public DbSet<Holidays> Holidays { get; set; }
+        public DbSet<Fonts> Fonts { get; set; }
+    }
 }
+
