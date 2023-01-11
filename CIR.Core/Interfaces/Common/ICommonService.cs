@@ -1,5 +1,6 @@
 ﻿using CIR.Core.Entities;
 using CIR.Core.Entities.GlobalConfig;
+using CIR.Core.Entities.Users;
 
 namespace CIR.Core.Interfaces.Common
 {
@@ -7,6 +8,8 @@ namespace CIR.Core.Interfaces.Common
     {
         List<Currency> GetCurrencies();
         List<CountryCode> GetCountry();
-        List<Culture> GetCultures();
+        Task<List<Culture>> GetCultures();
+        Task<List<SubSite>> GetSite();
+        Task<List<RolePrivileges>> GetRolePrivileges();
     }
 }
