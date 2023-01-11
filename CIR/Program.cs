@@ -1,24 +1,3 @@
-using CIR.Application.Services;
-using CIR.Application.Services.Common;
-using CIR.Application.Services.GlobalConfig;
-using CIR.Application.Services.Users;
-using CIR.Common.CommonModels;
-using CIR.Common.CommonServices;
-using CIR.Common.Data;
-using CIR.Common.EmailGeneration;
-using CIR.Common.Helper;
-using CIR.Core.Interfaces;
-using CIR.Core.Interfaces.Common;
-using CIR.Core.Interfaces.GlobalConfig;
-using CIR.Core.Interfaces.Users;
-using CIR.Data.Data;
-using CIR.Data.Data.Common;
-using CIR.Data.Data.GlobalConfig;
-using CIR.Data.Data.Users;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -88,6 +67,8 @@ builder.Services.AddScoped<CSVExport>();
 builder.Services.AddScoped<ICsvService, CSVService>();
 builder.Services.AddScoped<IHolidayService, HolidayService>();
 builder.Services.AddScoped<IHolidaysRepository, HolidaysRepository>();
+builder.Services.AddScoped<IFontServices, FontServices>();
+builder.Services.AddScoped<IFontRepository, FontRepository>();
 builder.Services.AddScoped<JwtGenerateToken>();
 
 
