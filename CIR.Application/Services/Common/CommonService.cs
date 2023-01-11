@@ -1,7 +1,5 @@
-﻿using CIR.Core.Entities;
-using CIR.Core.Entities.GlobalConfig;
-using CIR.Core.Entities.Users;
-using CIR.Core.Interfaces.Common;
+﻿using CIR.Core.Interfaces.Common;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Application.Services.Common
 {
@@ -12,25 +10,25 @@ namespace CIR.Application.Services.Common
         {
             _commonRepository = commonRepository;
         }
-        public List<CountryCode> GetCountry()
+        public async Task<IActionResult> GetCountries()
         {
-            return _commonRepository.GetCountry();
+            return await _commonRepository.GetCountries();
         }
 
-        public List<Currency> GetCurrencies()
+        public async Task<IActionResult> GetCurrencies()
         {
-            return _commonRepository.GetCurrencies();
+            return await _commonRepository.GetCurrencies();
         }
-        public async Task<List<Culture>> GetCultures()
+        public async Task<IActionResult> GetCultures()
         {
             return await _commonRepository.GetCultures();
         }
 
-        public async Task<List<SubSite>> GetSite()
+        public async Task<IActionResult> GetSubSites()
         {
-            return await _commonRepository.GetSite();
+            return await _commonRepository.GetSubSites();
         }
-        public async Task<List<RolePrivileges>> GetRolePrivileges()
+        public async Task<IActionResult> GetRolePrivileges()
         {
             return await _commonRepository.GetRolePrivileges();
         }

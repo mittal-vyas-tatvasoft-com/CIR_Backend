@@ -1,16 +1,13 @@
-﻿using CIR.Core.Entities;
-using CIR.Core.Entities.GlobalConfig;
-using CIR.Core.Entities.Users;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Core.Interfaces.Common
 {
     public interface ICommonRepository
     {
-        List<Currency> GetCurrencies();
-        List<CountryCode> GetCountry();
-        Task<List<Culture>> GetCultures();
-
-        Task<List<SubSite>> GetSite();
-        Task<List<RolePrivileges>> GetRolePrivileges();
+        Task<IActionResult> GetCurrencies();
+        Task<IActionResult> GetCountries();
+        Task<IActionResult> GetCultures();
+        Task<IActionResult> GetSubSites();
+        Task<IActionResult> GetRolePrivileges();
     }
 }
