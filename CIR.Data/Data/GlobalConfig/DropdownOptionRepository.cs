@@ -2,8 +2,10 @@
 using CIR.Common.Data;
 using CIR.Core.Entities.GlobalConfig;
 using CIR.Core.Interfaces.GlobalConfig;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace CIR.Data.Data.GlobalConfig
 {
@@ -62,28 +64,33 @@ namespace CIR.Data.Data.GlobalConfig
         /// <returns>return ok if successful else returns bad request</returns>
         public async Task<IActionResult> CreateOrUpdateDrownOption(List<GlobalConfigurationReasons> dropdownOptions)
         {
+
             if (dropdownOptions != null)
             {
                 foreach (var option in dropdownOptions)
                 {
-                    GlobalConfigurationReasons dropdown = new GlobalConfigurationReasons()
+                    if (option.Type <= 0 || option.Type > 3)
                     {
-                        Id = option.Id,
-                        Type = option.Type,
-                        Enabled = option.Enabled,
-                        Content = option.Content,
-                    };
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Error occurred while adding new Global Currency" });
 
-                    if (option.Id > 0)
-                    {
-                        _CIRDbContext.GlobalConfigurationReasons.Update(dropdown);
                     }
-                    else
+                    string result;
+                    using (DbConnection dbConnection = new DbConnection())
                     {
-                        _CIRDbContext.GlobalConfigurationReasons.Add(dropdown);
+
+                        using (var connection = dbConnection.Connection)
+                        {
+                            DynamicParameters parameters = new DynamicParameters();
+                            parameters.Add("@Id", option.Id);
+                            parameters.Add("@Type", option.Type);
+                            parameters.Add("@Enabled", option.Enabled);
+                            parameters.Add("@Content", option.Content);
+
+                            var DataSet = connection.QueryMultiple("spAddorUpdateDropDownOptions", parameters, commandType: CommandType.StoredProcedure);
+                            result = DataSet.Read<string>().FirstOrDefault();
+                        }
                     }
                 }
-                await _CIRDbContext.SaveChangesAsync();
                 return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "DropDown Option created or updated Successfully" });
             }
             return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Error occurred while adding new Global Currency" });
