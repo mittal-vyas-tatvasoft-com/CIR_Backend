@@ -10,7 +10,7 @@ namespace CIR.Core.ViewModel.GlobalConfig
 	{
 		public long Id { get; set; }
 
-		public Int16 Type { get; set; }
+		public short Type { get; set; }
 
 		public string Content { get; set; }
 
