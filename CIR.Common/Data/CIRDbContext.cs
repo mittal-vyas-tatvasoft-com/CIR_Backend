@@ -67,7 +67,9 @@ namespace CIR.Common.Data
 		}
 		public DbSet<GlobalConfigurationCutOffTime> GlobalConfigurationCutOffTimes { get; set; }
 		public DbSet<Holidays> Holidays { get; set; }
-		public DbSet<GlobalConfigurationFonts> GlobalConfigurationFonts { get; set; }
+
+        public DbSet<GlobalConfigurationWeekends> Weekends { get; set; }
+        public DbSet<GlobalConfigurationFonts> GlobalConfigurationFonts { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -75,7 +77,6 @@ namespace CIR.Common.Data
 			modelBuilder.Entity<RoleGrouping2Permission>().HasKey(x => new { x.RoleGroupingId, x.PermissionEnumId });
 			modelBuilder.Entity<RoleGrouping2Culture>().HasKey(x => new { x.RoleGroupingId, x.CultureLcid });
 		}
-
 	}
 }
 
