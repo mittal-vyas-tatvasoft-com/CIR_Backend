@@ -15,13 +15,13 @@ namespace CIR.Application.Services
 		{
 			return await _loginRepository.Login(model);
 		}
-		public string ForgotPassword(ForgotPasswordModel forgotPasswordModel)
+		public async Task<IActionResult> ForgotPassword(ForgotPasswordModel forgotPasswordModel)
 		{
-			return _loginRepository.ForgotPassword(forgotPasswordModel);
+			return await _loginRepository.ForgotPassword(forgotPasswordModel);
 		}
-		public string ResetPassword(ResetPasswordModel resetPasswordModel)
+		public async Task<IActionResult> ResetPassword(ResetPasswordModel resetPasswordModel)
 		{
-			return _loginRepository.ResetPassword(resetPasswordModel);
+			return await _loginRepository.ResetPassword(resetPasswordModel);
 		}
 	}
 }
