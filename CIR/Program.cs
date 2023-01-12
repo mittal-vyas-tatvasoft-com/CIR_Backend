@@ -91,6 +91,8 @@ builder.Services.AddScoped<CSVExport>();
 builder.Services.AddScoped<ICsvService, CSVService>();
 builder.Services.AddScoped<IHolidayService, HolidayService>();
 builder.Services.AddScoped<IHolidaysRepository, HolidaysRepository>();
+builder.Services.AddScoped<IGlobalConfigurationWeekendsService, GlobalConfigurationWeekendsService>();
+builder.Services.AddScoped<IGlobalConfigurationWeekendsRepository, GlobalConfigurationWeekendsRepository>();
 builder.Services.AddScoped<IFontServices, FontServices>();
 builder.Services.AddScoped<IFontRepository, FontRepository>();
 builder.Services.AddScoped<IStylesService, StylesService>();

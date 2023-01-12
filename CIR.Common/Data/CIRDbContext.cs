@@ -1,9 +1,4 @@
-﻿using CIR.Core.Entities;
-using CIR.Core.Entities.GlobalConfig;
-using CIR.Core.Entities.Users;
-using Microsoft.EntityFrameworkCore;
-
-namespace CIR.Common.Data
+﻿namespace CIR.Common.Data
 {
     public class CIRDbContext : DbContext
     {
@@ -68,6 +63,7 @@ namespace CIR.Common.Data
         public DbSet<GlobalConfigurationCutOffTime> GlobalConfigurationCutOffTimes { get; set; }
         public DbSet<Holidays> Holidays { get; set; }
         public DbSet<GlobalConfigurationFonts> GlobalConfigurationFonts { get; set; }
+        public DbSet<GlobalConfigurationWeekends> Weekends { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
