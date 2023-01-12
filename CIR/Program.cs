@@ -77,8 +77,8 @@ builder.Services.AddScoped<IGlobalConfigurationCurrenciesService, GlobalConfigur
 builder.Services.AddScoped<IGlobalConfigurationCurrenciesRepository, GlobalConfigurationCurrenciesRepository>();
 builder.Services.AddScoped<IGlobalConfigurationReasonsService, GlobalConfigurationReasonsService>();
 builder.Services.AddScoped<IGlobalConfigurationReasonsRepository, GlobalConfigurationReasonsRepository>();
-builder.Services.AddScoped<IGlobalMessagesRepository, GlobalMessagesRepository>();
-builder.Services.AddScoped<IGlobalMessagesService, GlobalMessagesService>();
+builder.Services.AddScoped<IGlobalConfigurationMessagesRepository, GlobalConfigurationMessagesRepository>();
+builder.Services.AddScoped<IGlobalConfigurationMessagesService, GlobalConfigurationMessagesService>();
 builder.Services.AddScoped<ICommonService, CommonService>();
 builder.Services.AddScoped<ICommonRepository, CommonRepository>();
 builder.Services.AddScoped<EmailGeneration>();

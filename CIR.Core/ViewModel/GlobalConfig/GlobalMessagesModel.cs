@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CIR.Core.ViewModel.GlobalConfig
+﻿namespace CIR.Core.ViewModel.GlobalConfig
 {
-	public class GlobalMessagesModel
-	{
-		public long Id { get; set; }
+    public class GlobalMessagesModel
+    {
+        public long Id { get; set; }
 
-		public short Type { get; set; }
+        public short Type { get; set; }
 
-		public string Content { get; set; }
+        public string Content { get; set; }
 
-		public long CultureID { get; set; }
-	}
+        public long CultureId { get; set; }
+        public string CultureName { get; set; }
+    }
 }

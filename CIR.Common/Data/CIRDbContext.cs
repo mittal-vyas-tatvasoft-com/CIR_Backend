@@ -1,10 +1,4 @@
-﻿using CIR.Core.Entities;
-using CIR.Core.Entities.GlobalConfig;
-using CIR.Core.Entities.Users;
-using CIR.Core.ViewModel.GlobalConfig;
-using Microsoft.EntityFrameworkCore;
-
-namespace CIR.Common.Data
+﻿namespace CIR.Common.Data
 {
     public class CIRDbContext : DbContext
     {
@@ -72,17 +66,17 @@ namespace CIR.Common.Data
         public DbSet<GlobalConfigurationWeekends> Weekends { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-		{
-			modelBuilder.Entity<RoleGrouping2SubSite>().HasKey(x => new { x.RoleGroupingId, x.SubSiteId });
-			modelBuilder.Entity<RoleGrouping2Permission>().HasKey(x => new { x.RoleGroupingId, x.PermissionEnumId });
-			modelBuilder.Entity<RoleGrouping2Culture>().HasKey(x => new { x.RoleGroupingId, x.CultureLcid });
-		}
-		
-		public DbSet<GlobalMessagesModel> GlobalConfigurationMessages { get; set; }
+        {
+            modelBuilder.Entity<RoleGrouping2SubSite>().HasKey(x => new { x.RoleGroupingId, x.SubSiteId });
+            modelBuilder.Entity<RoleGrouping2Permission>().HasKey(x => new { x.RoleGroupingId, x.PermissionEnumId });
+            modelBuilder.Entity<RoleGrouping2Culture>().HasKey(x => new { x.RoleGroupingId, x.CultureLcid });
+        }
 
-		public DbSet<GlobalConfigurationFonts> Fonts { get; set; }
+        public DbSet<GlobalConfigurationMessages> GlobalConfigurationMessages { get; set; }
+
+        public DbSet<GlobalConfigurationFonts> Fonts { get; set; }
         public DbSet<GlobalConfigurationStyle> GlobalConfigurationStyles { get; set; }
-     
+
         public DbSet<GlobalConfigurationReasons> GlobalConfigurationReasons { get; set; }
     }
 }

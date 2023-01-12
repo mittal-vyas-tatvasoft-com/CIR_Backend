@@ -1,44 +1,42 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Core.Entities.GlobalConfig;
 using CIR.Core.Interfaces.GlobalConfig;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Controllers.GlobalConfig
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
-    public class DropdownOptionsController : ControllerBase
+    public class GlobalConfigurationMessagesController : ControllerBase
     {
         #region PROPERTIES
 
-        private readonly IDropdownOptionService _dropdownOptionService;
+        private readonly IGlobalConfigurationMessagesService _globalConfigurationMessagesService;
 
         #endregion
 
         #region CONSTRUCTORS
 
-        public DropdownOptionsController(IDropdownOptionService dropdownOptionService)
+        public GlobalConfigurationMessagesController(IGlobalConfigurationMessagesService globalConfigurationMessagesService)
         {
-            _dropdownOptionService = dropdownOptionService;
+            _globalConfigurationMessagesService = globalConfigurationMessagesService;
         }
 
         #endregion
 
-
         #region METHODS
 
         /// <summary>
-        /// This method fetches the list of dropdown options
+        /// This method takes a get globalconfiguration messages list
         /// </summary>
-        /// <returns>list of dropdown option></returns>
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        /// <param name="cultureId"></param>
+        /// <returns></returns>
+        [HttpGet("{cultureId}")]
+        public async Task<IActionResult> GetGlobalConfigurationMessagesList(int cultureId)
         {
             try
             {
-                return await _dropdownOptionService.GetAllDropdownOptions();
+                return await _globalConfigurationMessagesService.GetGlobalConfigurationMessagesList(cultureId);
             }
             catch (Exception ex)
             {
@@ -47,18 +45,18 @@ namespace CIR.Controllers.GlobalConfig
         }
 
         /// <summary>
-        /// This method takes dropdown option detail and adds it
+        /// This method takes a create globalconfiguration messages
         /// </summary>
-        /// <param name="dropdownOption">this object contains different parameters as details of a dropdown option</param>
+        /// <param name="globalConfigurationMessages"></param>
         /// <returns></returns>
-        [HttpPost]
-        public async Task<IActionResult> Add(List<GlobalConfigurationReasons> dropdownOptions)
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Create(List<GlobalConfigurationMessages> globalConfigurationMessages)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    return await _dropdownOptionService.CreateOrUpdateDrownOption(dropdownOptions);
+                    return await _globalConfigurationMessagesService.CreateOrUpdateGlobalConfigurationMessages(globalConfigurationMessages);
                 }
                 catch (Exception ex)
                 {
@@ -67,21 +65,20 @@ namespace CIR.Controllers.GlobalConfig
             }
             return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
         }
-
 
         /// <summary>
-        /// This method takes dropdown option detail and updates it
+        /// This method takes a update globalconfiguration messages
         /// </summary>
-        /// <param name="dropdownOption">this object contains different parameters as details of a dropdown option</param>
+        /// <param name="globalConfigurationMessages"></param>
         /// <returns></returns>
-        [HttpPut]
-        public async Task<IActionResult> Update(List<GlobalConfigurationReasons> dropdownOptions)
+        [HttpPut("[action]")]
+        public async Task<IActionResult> Update(List<GlobalConfigurationMessages> globalConfigurationMessages)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    return await _dropdownOptionService.CreateOrUpdateDrownOption(dropdownOptions);
+                    return await _globalConfigurationMessagesService.CreateOrUpdateGlobalConfigurationMessages(globalConfigurationMessages);
                 }
                 catch (Exception ex)
                 {
@@ -90,7 +87,6 @@ namespace CIR.Controllers.GlobalConfig
             }
             return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
         }
-
         #endregion
     }
 }
