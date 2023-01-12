@@ -75,9 +75,10 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IGlobalConfigurationCurrenciesService, GlobalConfigurationCurrenciesService>();
 builder.Services.AddScoped<IGlobalConfigurationCurrenciesRepository, GlobalConfigurationCurrenciesRepository>();
+builder.Services.AddScoped<IGlobalConfigurationReasonsService, GlobalConfigurationReasonsService>();
+builder.Services.AddScoped<IGlobalConfigurationReasonsRepository, GlobalConfigurationReasonsRepository>();
 builder.Services.AddScoped<IGlobalMessagesRepository, GlobalMessagesRepository>();
 builder.Services.AddScoped<IGlobalMessagesService, GlobalMessagesService>();
-builder.Services.AddScoped<IGlobalCurrencyRepository, GlobalCurrencyRepository>();
 builder.Services.AddScoped<ICommonService, CommonService>();
 builder.Services.AddScoped<ICommonRepository, CommonRepository>();
 builder.Services.AddScoped<EmailGeneration>();
@@ -94,8 +95,6 @@ builder.Services.AddScoped<IFontServices, FontServices>();
 builder.Services.AddScoped<IFontRepository, FontRepository>();
 builder.Services.AddScoped<IStylesService, StylesService>();
 builder.Services.AddScoped<IStylesRepository, StylesRepository>();
-builder.Services.AddScoped<IDropdownOptionService, DropdownOptionService>();
-builder.Services.AddScoped<IDropdownOptionRepository, DropdownOptionRepository>();
 builder.Services.AddScoped<JwtGenerateToken>();
 
 
