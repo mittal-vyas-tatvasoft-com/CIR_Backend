@@ -1,12 +1,12 @@
-﻿using CIR.Core.Entities.Users;
-using CIR.Core.ViewModel;
+﻿using CIR.Core.ViewModel;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Core.Interfaces
 {
-    public interface ILoginRepository
-    {
-        public User Login(LoginModel model);
-        public string ForgotPassword(ForgotPasswordModel forgotPasswordModel);
-        public string ResetPassword(ResetPasswordModel resetPasswordModel);
-    }
+	public interface ILoginRepository
+	{
+		Task<IActionResult> Login(LoginModel model);
+		Task<IActionResult> ForgotPassword(ForgotPasswordModel forgotPasswordModel);
+		Task<IActionResult> ResetPassword(ResetPasswordModel resetPasswordModel);
+	}
 }
