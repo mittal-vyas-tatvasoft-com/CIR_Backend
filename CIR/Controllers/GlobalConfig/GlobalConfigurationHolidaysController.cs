@@ -12,17 +12,17 @@ namespace CIR.Controllers.GlobalConfig
 	[Route("api/[controller]")]
 	[ApiController]
 	[Authorize]
-	public class HolidayController : ControllerBase
+	public class GlobalConfigurationHolidaysController : ControllerBase
 	{
 		#region PROPERTIES
-		private readonly IHolidayService _holidayService;
+		private readonly IGlobalConfigurationHolidaysService _globalConfigurationHolidaysService;
 		private readonly ICsvService _csvService;
 		#endregion
 
 		#region CONSTRUCTOR
-		public HolidayController(IHolidayService holidayService, ICsvService csvService)
+		public GlobalConfigurationHolidaysController(IGlobalConfigurationHolidaysService globalConfigurationHolidaysService, ICsvService csvService)
 		{
-			_holidayService = holidayService;
+			_globalConfigurationHolidaysService = globalConfigurationHolidaysService;
 			_csvService = csvService;
 		}
 		#endregion
@@ -57,14 +57,14 @@ namespace CIR.Controllers.GlobalConfig
 							{
 								break;
 							}
-							await _holidayService.CreateOrUpdateHoliday(record);
+							await _globalConfigurationHolidaysService.CreateOrUpdateGlobalConfigurationHolidays(record);
 						}
 						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated });
 					}
 				}
 				else
 				{
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest });
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "select only .xlsx or .csv file" });
 				}
 			}
 			catch (Exception ex)
