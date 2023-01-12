@@ -74,7 +74,7 @@ namespace CIR.Data.Data.GlobalConfig
                 {
                     _CIRDbContext.Weekends.Remove(weekend);
                     await _CIRDbContext.SaveChangesAsync();
-                    return new JsonResult(new CustomResponse<GlobalConfigurationWeekends>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.NoContent});
+                    return new JsonResult(new CustomResponse<GlobalConfigurationWeekends>() { StatusCode = (int)HttpStatusCodes.NoContent, Result = true, Message = HttpStatusCodesMessages.NoContent});
                 }
                 else
                 {
