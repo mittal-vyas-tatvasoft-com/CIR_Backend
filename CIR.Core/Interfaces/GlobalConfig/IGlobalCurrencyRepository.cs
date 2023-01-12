@@ -5,7 +5,7 @@ namespace CIR.Core.Interfaces.GlobalConfig
 {
     public interface IGlobalCurrencyRepository
     {
-        List<GlobalConfigurationCurrencyModel> GetCurrencyCountryWise(int countryId);
+        Task<IActionResult> GetCurrenciesCountryWise(int countryId);
         Task<IActionResult> CreateOrUpdateGlobalCurrencies(List<GlobalCurrencyModel> globalCurrencyModel);
     }
 }

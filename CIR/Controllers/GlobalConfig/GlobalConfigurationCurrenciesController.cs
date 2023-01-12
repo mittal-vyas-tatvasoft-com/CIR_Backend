@@ -9,19 +9,19 @@ namespace CIR.Controllers.GlobalConfig
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class GlobalCurrencyController : ControllerBase
+    public class GlobalConfigurationCurrenciesController : ControllerBase
     {
         #region PROPERTIES
 
-        private readonly IGlobalCurrencyService _currencyService;
+        private readonly IGlobalConfigurationCurrenciesService _globalConfigurationCurrenciesService;
 
         #endregion
 
         #region CONSTRUCTORS
 
-        public GlobalCurrencyController(IGlobalCurrencyService currencyService)
+        public GlobalConfigurationCurrenciesController(IGlobalConfigurationCurrenciesService globalConfigurationCurrenciesService)
         {
-            _currencyService = currencyService;
+            _globalConfigurationCurrenciesService = globalConfigurationCurrenciesService;
         }
 
         #endregion
@@ -34,11 +34,11 @@ namespace CIR.Controllers.GlobalConfig
         /// <param name="countryId">this object contains countryId</param>
         /// <returns></returns>
         [HttpGet("{countryId}")]
-        public async Task<IActionResult> Get(int countryId)
+        public async Task<IActionResult> GetGlobalConfigurationCurrenciesCountryWise(int countryId)
         {
             try
             {
-                return await _currencyService.GetCurrenciesCountryWise(countryId);
+                return await _globalConfigurationCurrenciesService.GetGlobalConfigurationCurrenciesCountryWise(countryId);
             }
             catch (Exception ex)
             {
@@ -58,7 +58,7 @@ namespace CIR.Controllers.GlobalConfig
             {
                 try
                 {
-                    return await _currencyService.CreateOrUpdateGlobalCurrencies(globalCurrencyModel);
+                    return await _globalConfigurationCurrenciesService.CreateOrUpdateGlobalConfigurationCurrencies(globalCurrencyModel);
                 }
                 catch (Exception ex)
                 {
@@ -80,7 +80,7 @@ namespace CIR.Controllers.GlobalConfig
             {
                 try
                 {
-                    return await _currencyService.CreateOrUpdateGlobalCurrencies(globalCurrencyModel);
+                    return await _globalConfigurationCurrenciesService.CreateOrUpdateGlobalConfigurationCurrencies(globalCurrencyModel);
                 }
                 catch (Exception ex)
                 {
