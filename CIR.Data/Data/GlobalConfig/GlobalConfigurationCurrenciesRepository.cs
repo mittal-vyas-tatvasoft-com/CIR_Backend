@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CIR.Data.Data.GlobalConfig
 {
-    public class GlobalCurrencyRepository : IGlobalCurrencyRepository
+    public class GlobalConfigurationCurrenciesRepository : IGlobalConfigurationCurrenciesRepository
     {
         #region PROPERTIES
 
@@ -17,7 +17,7 @@ namespace CIR.Data.Data.GlobalConfig
         #endregion
 
         #region CONSTRUCTORS
-        public GlobalCurrencyRepository(CIRDbContext context)
+        public GlobalConfigurationCurrenciesRepository(CIRDbContext context)
         {
             _CIRDBContext = context ??
                 throw new ArgumentNullException(nameof(context));
@@ -32,7 +32,7 @@ namespace CIR.Data.Data.GlobalConfig
         /// </summary>
         /// <param name="countryId"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetCurrenciesCountryWise(int countryId)
+        public async Task<IActionResult> GetGlobalConfigurationCurrenciesCountryWise(int countryId)
         {
             try
             {
@@ -64,7 +64,7 @@ namespace CIR.Data.Data.GlobalConfig
         /// <param name="globalCurrencyModel"></param>
         /// <returns>Success status if its valid else failure</returns>
 
-        public async Task<IActionResult> CreateOrUpdateGlobalCurrencies(List<GlobalCurrencyModel> globalCurrencyModel)
+        public async Task<IActionResult> CreateOrUpdateGlobalConfigurationCurrencies(List<GlobalCurrencyModel> globalCurrencyModel)
         {
             try
             {
