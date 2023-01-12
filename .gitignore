@@ -192,3 +192,4 @@ ModelManifest.xml
 
 /CIR/Properties/PublishProfiles/FolderProfile.pubxml
 /CIR/Properties/PublishProfiles/FolderProfile1.pubxml
+/CIR/Controllers/GlobalConfig/FontsController.cs
