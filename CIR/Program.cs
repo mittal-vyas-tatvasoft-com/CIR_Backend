@@ -89,8 +89,8 @@ builder.Services.AddScoped<IGlobalConfigurationCutOffTimesService, GlobalConfigu
 builder.Services.AddScoped<IGlobalConfigurationCutOffTimesRepository, GlobalConfigurationCutOffTimesRepository>();
 builder.Services.AddScoped<CSVExport>();
 builder.Services.AddScoped<ICsvService, CSVService>();
-builder.Services.AddScoped<IHolidayService, HolidayService>();
-builder.Services.AddScoped<IHolidaysRepository, HolidaysRepository>();
+builder.Services.AddScoped<IGlobalConfigurationHolidaysService, GlobalConfigurationHolidaysService>();
+builder.Services.AddScoped<IGlobalConfigurationHolidaysRepository, GlobalConfigurationHolidaysRepository>();
 builder.Services.AddScoped<IGlobalConfigurationWeekendsService, GlobalConfigurationWeekendsService>();
 builder.Services.AddScoped<IGlobalConfigurationWeekendsRepository, GlobalConfigurationWeekendsRepository>();
 builder.Services.AddScoped<IGlobalConfigurationFontsServices, GlobalConfigurationFontsServices>();
