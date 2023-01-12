@@ -16,7 +16,7 @@ namespace CIR.Controllers.GlobalConfig
 {
     [Route("api/Weekends")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class GlobalConfigurationWeekendsController : Controller
     {
         #region PROPERTIES
@@ -73,12 +73,12 @@ namespace CIR.Controllers.GlobalConfig
             { 
               return await _weekendsService.DeleteGlobalConfigurationWeekend(id);
 
-              }
+            }
             catch (Exception ex)
             {
                 return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int) HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = ex });
             }
-        }
+         }
 
 
         /// <summary>

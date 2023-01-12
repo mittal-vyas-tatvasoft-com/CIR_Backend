@@ -74,7 +74,7 @@ namespace CIR.Data.Data.GlobalConfig
                 {
                     _CIRDbContext.Weekends.Remove(weekend);
                     await _CIRDbContext.SaveChangesAsync();
-                    return new JsonResult(new CustomResponse<GlobalConfigurationWeekends>() { StatusCode = (int)HttpStatusCodes.NoContent, Result = true, Message = HttpStatusCodesMessages.NoContent});
+                    return new JsonResult(new CustomResponse<GlobalConfigurationWeekends>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.NoContent});
                 }
                 else
                 {
@@ -166,14 +166,9 @@ namespace CIR.Data.Data.GlobalConfig
 
                 var sortedData = temp.Skip(displayStart).Take(displayLength);
                 weekends.WeekendsList = sortedData.ToList();
-
-                if (weekends.WeekendsList.Count > 0)
-                {
-                    return new JsonResult(new CustomResponse<GlobalConfigurationWeekendsModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success,Data= weekends});
-                }
-
-                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Requested Weekends were not found" });
-
+              
+                return new JsonResult(new CustomResponse<GlobalConfigurationWeekendsModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success,Data= weekends});
+               
             }
             catch(Exception ex)
             {
