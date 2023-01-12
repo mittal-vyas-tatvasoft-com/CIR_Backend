@@ -32,7 +32,7 @@ namespace CIR.Data.Data
 		{
 			try
 			{
-				var userRecords = _CIRDBContext.Users.Where((x) => x.UserName == model.UserName && x.Password == model.Password).FirstOrDefault();
+				var userRecords = _CIRDBContext.Users.Where((x) => x.Email == model.Email && x.Password == model.Password).FirstOrDefault();
 
 				if (userRecords != null && userRecords.ResetRequired == true)
 				{
@@ -40,10 +40,10 @@ namespace CIR.Data.Data
 				}
 				if (userRecords == null)
 				{
-					var userDetails = _CIRDBContext.Users.Where(x => x.UserName == model.UserName).FirstOrDefault();
+					var userDetails = _CIRDBContext.Users.Where(x => x.Email == model.Email).FirstOrDefault();
 					if (userDetails != null)
 					{
-						var userId = (from item in _CIRDBContext.Users where item.UserName == model.UserName select item.Id);
+						var userId = (from item in _CIRDBContext.Users where item.Email == model.Email select item.Id);
 						if (userDetails.LoginAttempts < 5)
 						{
 							userDetails.Id = userId.FirstOrDefault();
@@ -64,7 +64,7 @@ namespace CIR.Data.Data
 						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Invalid username or password" });
 					}
 				}
-				var userData = _CIRDBContext.Users.FirstOrDefault((u) => u.UserName == model.UserName && u.Password == model.Password);
+				var userData = _CIRDBContext.Users.FirstOrDefault((u) => u.Email == model.Email && u.Password == model.Password);
 				if (userData != null)
 				{
 					var generatedToken = await _jwtGenerateToken.GenerateJwtToken(userData);
@@ -128,20 +128,25 @@ namespace CIR.Data.Data
 		{
 			try
 			{
-				var user = _CIRDBContext.Users.Where(c => c.Id == resetPasswordModel.Id).FirstOrDefault();
+				var user = _CIRDBContext.Users.Where(c => c.Email == resetPasswordModel.Email).FirstOrDefault();
+
 				if (user != null)
 				{
 					if (user.Password == resetPasswordModel.OldPassword)
 					{
-						user.Id = resetPasswordModel.Id;
+						user.Email = resetPasswordModel.Email;
 						user.Password = resetPasswordModel.NewPassword;
 						user.ResetRequired = false;
 						_CIRDBContext.Users.Update(user);
 						await _CIRDBContext.SaveChangesAsync();
 						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Password Change Successfully." });
 					}
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "OldPassword InCorrect." });
 				}
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "OldPassword InCorrect." });
+				else
+				{
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Invalid Email Address." });
+				}
 			}
 			catch (Exception ex)
 			{
