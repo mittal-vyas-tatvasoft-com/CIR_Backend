@@ -1,21 +1,14 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
 using CIR.Core.Entities.GlobalConfig;
-using CIR.Core.Entities.Users;
 using CIR.Core.Interfaces.GlobalConfig;
 using CIR.Core.ViewModel.GlobalConfig;
-using CIR.Core.ViewModel.Usersvm;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CIR.Data.Data.GlobalConfig
 {
-    public class GlobalConfigurationWeekendsRepository :  IGlobalConfigurationWeekendsRepository
+    public class GlobalConfigurationWeekendsRepository : IGlobalConfigurationWeekendsRepository
     {
         #region PROPERTIES
         private readonly CIRDbContext _CIRDbContext;
@@ -42,15 +35,15 @@ namespace CIR.Data.Data.GlobalConfig
             {
                 GlobalConfigurationWeekends newWeekends = new()
                 {
-                    
+
                     CountryId = weekends.CountryId,
                     DayOfWeekId = weekends.DayOfWeekId,
                 };
-            
-                    _CIRDbContext.Weekends.Add(newWeekends);
+
+                _CIRDbContext.Weekends.Add(newWeekends);
 
                 await _CIRDbContext.SaveChangesAsync();
-                 return new JsonResult(new CustomResponse<GlobalConfigurationWeekends>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated });
+                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "Globalonfiguration weekends saved successfully" });
             }
             catch (Exception ex)
             {
@@ -69,22 +62,22 @@ namespace CIR.Data.Data.GlobalConfig
         {
             try
             {
-                GlobalConfigurationWeekends weekend= _CIRDbContext.Weekends.FirstOrDefault(x => x.Id == id);
-                if (weekend!= null)
+                var weekend = _CIRDbContext.Weekends.FirstOrDefault(x => x.Id == id);
+                if (weekend != null)
                 {
                     _CIRDbContext.Weekends.Remove(weekend);
                     await _CIRDbContext.SaveChangesAsync();
-                    return new JsonResult(new CustomResponse<GlobalConfigurationWeekends>() { StatusCode = (int)HttpStatusCodes.NoContent, Result = true, Message = HttpStatusCodesMessages.NoContent});
+                    return new JsonResult(new CustomResponse<GlobalConfigurationWeekends>() { StatusCode = (int)HttpStatusCodes.NoContent, Result = true, Message = HttpStatusCodesMessages.NoContent });
                 }
                 else
                 {
-                    return new JsonResult(new CustomResponse<GlobalConfigurationWeekends>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = true, Message = HttpStatusCodesMessages.NotFound});
+                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = true, Message = HttpStatusCodesMessages.NotFound, Data = "Weekend id not found" });
                 }
 
             }
             catch
             {
-                    return new JsonResult(new CustomResponse<GlobalConfigurationWeekends>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound});
+                return new JsonResult(new CustomResponse<GlobalConfigurationWeekends>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
             }
 
         }
@@ -103,7 +96,7 @@ namespace CIR.Data.Data.GlobalConfig
         public async Task<ActionResult> GetAllGlobalConfigurationWeekends(int displayLength, int displayStart, string sortCol, string? search, bool sortAscending = true)
         {
             GlobalConfigurationWeekendsModel weekends = new();
-            
+
 
             if (string.IsNullOrEmpty(sortCol))
             {
@@ -159,18 +152,18 @@ namespace CIR.Data.Data.GlobalConfig
 
                 IQueryable<WeekendModel> temp = weekends.WeekendsList.AsQueryable();
 
-                weekends.Count = weekends.WeekendsList.Where(x => x.CountryName.Contains(search) || x.CountryCode.Contains(search)||x.DayOfWeek.Contains(search)).Count();
+                weekends.Count = weekends.WeekendsList.Where(x => x.CountryName.Contains(search) || x.CountryCode.Contains(search) || x.DayOfWeek.Contains(search)).Count();
 
                 temp = sortAscending ? weekends.WeekendsList.Where(x => x.CountryName.Contains(search) || x.CountryCode.Contains(search) || x.DayOfWeek.Contains(search)).AsQueryable()
                                      : weekends.WeekendsList.Where(x => x.CountryName.Contains(search) || x.CountryCode.Contains(search) || x.DayOfWeek.Contains(search)).AsQueryable();
 
                 var sortedData = temp.Skip(displayStart).Take(displayLength);
                 weekends.WeekendsList = sortedData.ToList();
-              
-                return new JsonResult(new CustomResponse<GlobalConfigurationWeekendsModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success,Data= weekends});
-               
+
+                return new JsonResult(new CustomResponse<GlobalConfigurationWeekendsModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = weekends });
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
             }

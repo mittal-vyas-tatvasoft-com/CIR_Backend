@@ -2,19 +2,12 @@
 using CIR.Core.Entities.GlobalConfig;
 using CIR.Core.Interfaces.Common;
 using CIR.Core.Interfaces.GlobalConfig;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using CsvHelper;
-using System.Globalization;
-using CIR.Core.Entities.Users;
-using CIR.Core.ViewModel.Usersvm;
 using Microsoft.AspNetCore.Authorization;
-using CIR.Controllers.Users;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Controllers.GlobalConfig
 {
-    [Route("api/Weekends")]
+    [Route("api/[controller]")]
     [ApiController]
     [Authorize]
     public class GlobalConfigurationWeekendsController : Controller
@@ -47,15 +40,14 @@ namespace CIR.Controllers.GlobalConfig
             if (ModelState.IsValid)
             {
                 try
-                { 
-                        return await _weekendsService.CreateGlobalConfigurationWeekendsWeekends(weekend);
+                {
+                    return await _weekendsService.CreateGlobalConfigurationWeekendsWeekends(weekend);
                 }
-                 catch (Exception ex)
+                catch (Exception ex)
                 {
                     return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
                 }
             }
-
             return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
         }
 
@@ -70,15 +62,15 @@ namespace CIR.Controllers.GlobalConfig
         public async Task<IActionResult> Delete(int id)
         {
             try
-            { 
-              return await _weekendsService.DeleteGlobalConfigurationWeekend(id);
+            {
+                return await _weekendsService.DeleteGlobalConfigurationWeekend(id);
 
             }
             catch (Exception ex)
             {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int) HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = ex });
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = ex });
             }
-         }
+        }
 
 
         /// <summary>
@@ -94,10 +86,10 @@ namespace CIR.Controllers.GlobalConfig
         [HttpGet]
         public async Task<IActionResult> GetWeekends(int displayLength, int displayStart, string? sortCol, string? search, bool sortAscending = true)
         {
-                search ??= string.Empty;
+            search ??= string.Empty;
 
-                return await _weekendsService.GetAllGlobalConfigurationWeekends(displayLength, displayStart, sortCol, search, sortAscending);
-          
+            return await _weekendsService.GetAllGlobalConfigurationWeekends(displayLength, displayStart, sortCol, search, sortAscending);
+
         }
         #endregion
     }
