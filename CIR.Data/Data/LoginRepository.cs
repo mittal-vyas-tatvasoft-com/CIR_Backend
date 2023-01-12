@@ -3,7 +3,6 @@ using CIR.Common.Data;
 using CIR.Common.Helper;
 using CIR.Common.MailTemplate;
 using CIR.Common.SystemConfig;
-using CIR.Core.Entities.Users;
 using CIR.Core.Interfaces;
 using CIR.Core.ViewModel;
 using Microsoft.AspNetCore.Mvc;
@@ -33,43 +32,42 @@ namespace CIR.Data.Data
 		{
 			try
 			{
-				var fetchedrecord = _CIRDBContext.Users.Where((x) => x.UserName == model.UserName && x.Password == model.Password).FirstOrDefault();
+				var userRecords = _CIRDBContext.Users.Where((x) => x.UserName == model.UserName && x.Password == model.Password).FirstOrDefault();
 
-				if (fetchedrecord != null && fetchedrecord.ResetRequired == true)
+				if (userRecords != null && userRecords.ResetRequired == true)
 				{
 					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Forbidden, Result = false, Message = HttpStatusCodesMessages.Forbidden, Data = "Your Account is locked. To Unlock this account contact to Aramex Support team" });
 				}
-				User user = new User()
+				if (userRecords == null)
 				{
-					UserName = model.UserName,
-				};
-				if (fetchedrecord == null)
-				{
-					var userdetails = _CIRDBContext.Users.Where(x => x.UserName == model.UserName).FirstOrDefault();
-
-					var temp = (from item in _CIRDBContext.Users
-								where item.UserName == model.UserName
-								select item.Id);
-
-					if (userdetails.LoginAttempts < 5)
+					var userDetails = _CIRDBContext.Users.Where(x => x.UserName == model.UserName).FirstOrDefault();
+					if (userDetails != null)
 					{
-						userdetails.Id = temp.FirstOrDefault();
-						userdetails.LoginAttempts += 1;
-						_CIRDBContext.Entry(userdetails).State = EntityState.Modified;
-						_CIRDBContext.SaveChanges();
+						var userId = (from item in _CIRDBContext.Users where item.UserName == model.UserName select item.Id);
+						if (userDetails.LoginAttempts < 5)
+						{
+							userDetails.Id = userId.FirstOrDefault();
+							userDetails.LoginAttempts += 1;
+							_CIRDBContext.Entry(userDetails).State = EntityState.Modified;
+							_CIRDBContext.SaveChanges();
+						}
+						else
+						{
+							userDetails.ResetRequired = true;
+							_CIRDBContext.Users.Update(userDetails);
+							_CIRDBContext.SaveChanges();
+							return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Forbidden, Result = false, Message = HttpStatusCodesMessages.Forbidden, Data = "Your Account is locked. To Unlock this account contact to Aramex Support team" });
+						}
 					}
 					else
 					{
-						userdetails.ResetRequired = true;
-						_CIRDBContext.Users.Update(userdetails);
-						_CIRDBContext.SaveChanges();
-						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Forbidden, Result = false, Message = HttpStatusCodesMessages.Forbidden, Data = "Your Account is locked. To Unlock this account contact to Aramex Support team" });
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Invalid username or password" });
 					}
 				}
-				var userdata = _CIRDBContext.Users.FirstOrDefault((u) => u.UserName == model.UserName && u.Password == model.Password);
-				if (userdata != null)
+				var userData = _CIRDBContext.Users.FirstOrDefault((u) => u.UserName == model.UserName && u.Password == model.Password);
+				if (userData != null)
 				{
-					var generatedToken = await _jwtGenerateToken.GenerateJwtToken(userdata);
+					var generatedToken = await _jwtGenerateToken.GenerateJwtToken(userData);
 					if (generatedToken != null)
 						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = generatedToken });
 					else
@@ -79,7 +77,6 @@ namespace CIR.Data.Data
 			}
 			catch (Exception ex)
 			{
-
 				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
 			}
 		}
@@ -89,29 +86,37 @@ namespace CIR.Data.Data
 		/// </summary>
 		/// <param name="forgotPasswordModel"></param>
 		/// <returns>Success status if its valid else failure</returns>
-		public string ForgotPassword(ForgotPasswordModel forgotPasswordModel)
+		public async Task<IActionResult> ForgotPassword(ForgotPasswordModel forgotPasswordModel)
 		{
-			var user = _CIRDBContext.Users.Where(c => c.UserName == forgotPasswordModel.UserName && c.Email == forgotPasswordModel.Email).FirstOrDefault();
-			if (user != null)
+			try
 			{
-				string randomString = SystemConfig.randomString;
-				string newPassword = new StringCreator(randomString).Get(8);
-
-				_CIRDBContext.Users.Where(x => x.Id == user.Id).ToList().ForEach((a =>
+				var user = _CIRDBContext.Users.Where(c => c.UserName == forgotPasswordModel.UserName && c.Email == forgotPasswordModel.Email).FirstOrDefault();
+				if (user != null)
 				{
-					a.Password = newPassword;
+					string randomString = SystemConfig.randomString;
+					string newPassword = new StringCreator(randomString).Get(8);
+
+					_CIRDBContext.Users.Where(x => x.Id == user.Id).ToList().ForEach((a =>
+					{
+						a.Password = newPassword;
+						a.ResetRequired = true;
+					}
+					));
+					await _CIRDBContext.SaveChangesAsync();
+
+					//Send NewPassword in Mail
+					string mailSubject = MailTemplate.ForgotPasswordSubject();
+					string mailBody = MailTemplate.ForgotPasswordTemplate(user);
+					_emailGeneration.SendMail(forgotPasswordModel.Email, mailSubject, mailBody);
+
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Successfully send new password on your mail,please check once!" });
 				}
-				));
-				_CIRDBContext.SaveChanges();
-
-				//Send NewPassword in Mail
-				string mailSubject = MailTemplate.ForgotPasswordSubject();
-				string mailBody = MailTemplate.ForgotPasswordTemplate(user);
-				_emailGeneration.SendMail(forgotPasswordModel.Email, mailSubject, mailBody);
-
-				return "Success";
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Please enter valid username and email" });
 			}
-			return "Failure";
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+			}
 		}
 
 		/// <summary>
@@ -119,22 +124,31 @@ namespace CIR.Data.Data
 		/// </summary>
 		/// <param name="resetPasswordModel"></param>
 		/// <returns>Success status if its valid else failure</returns>
-		public string ResetPassword(ResetPasswordModel resetPasswordModel)
+		public async Task<IActionResult> ResetPassword(ResetPasswordModel resetPasswordModel)
 		{
-			var user = _CIRDBContext.Users.Where(c => c.Id == resetPasswordModel.Id).FirstOrDefault();
-			if (user != null)
+			try
 			{
-				if (user.Password == resetPasswordModel.OldPassword)
+				var user = _CIRDBContext.Users.Where(c => c.Id == resetPasswordModel.Id).FirstOrDefault();
+				if (user != null)
 				{
-					user.Id = resetPasswordModel.Id;
-					user.Password = resetPasswordModel.NewPassword;
-					_CIRDBContext.Users.Update(user);
-					_CIRDBContext.SaveChanges();
-					return "Success";
+					if (user.Password == resetPasswordModel.OldPassword)
+					{
+						user.Id = resetPasswordModel.Id;
+						user.Password = resetPasswordModel.NewPassword;
+						user.ResetRequired = false;
+						_CIRDBContext.Users.Update(user);
+						await _CIRDBContext.SaveChangesAsync();
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Password Change Successfully." });
+					}
 				}
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "OldPassword InCorrect." });
 			}
-			return "Failure";
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+			}
 		}
+
 
 	}
 }
