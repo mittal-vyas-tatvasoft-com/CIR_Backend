@@ -95,8 +95,8 @@ builder.Services.AddScoped<IGlobalConfigurationWeekendsService, GlobalConfigurat
 builder.Services.AddScoped<IGlobalConfigurationWeekendsRepository, GlobalConfigurationWeekendsRepository>();
 builder.Services.AddScoped<IGlobalConfigurationFontsServices, GlobalConfigurationFontsServices>();
 builder.Services.AddScoped<IGlobalConfigurationFontsRepository, GlobalConfigurationFontsRepository>();
-builder.Services.AddScoped<IStylesService, StylesService>();
-builder.Services.AddScoped<IStylesRepository, StylesRepository>();
+builder.Services.AddScoped<IGlobalConfigurationStylesService, GlobalConfigurationStylesService>();
+builder.Services.AddScoped<IGlobalConfigurationStylesRepository, GlobalConfigurationStylesRepository>();
 builder.Services.AddScoped<JwtGenerateToken>();
 
 
