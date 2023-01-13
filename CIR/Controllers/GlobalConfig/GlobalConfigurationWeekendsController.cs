@@ -1,6 +1,5 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Core.Entities.GlobalConfig;
-using CIR.Core.Interfaces.Common;
 using CIR.Core.Interfaces.GlobalConfig;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,26 +12,23 @@ namespace CIR.Controllers.GlobalConfig
     public class GlobalConfigurationWeekendsController : Controller
     {
         #region PROPERTIES
-        private readonly IGlobalConfigurationWeekendsService _weekendsService;
-        private readonly ICsvService _csvService;
-        private readonly ILogger<GlobalConfigurationWeekendsController> _logger;
+        private readonly IGlobalConfigurationWeekendsService _globalConfigurationWeekendsService;
         #endregion
 
         #region CONSTRUCTOR
-        public GlobalConfigurationWeekendsController(IGlobalConfigurationWeekendsService weekendsService, ILogger<GlobalConfigurationWeekendsController> logger)
+        public GlobalConfigurationWeekendsController(IGlobalConfigurationWeekendsService globalConfigurationWeekendsService)
         {
-            _weekendsService = weekendsService;
-            _logger = logger;
+            _globalConfigurationWeekendsService = globalConfigurationWeekendsService;
         }
         #endregion
 
         #region METHODS
+
         /// <summary>
         /// This method takes user details as parameters and creates Weekends and returns that user
         /// </summary>
         /// <param name="weekend"> this object contains different parameters as details of a weekends </param>
         /// <returns > created Weekends </returns>
-
         [HttpPost("[action]")]
         public async Task<IActionResult> Create([FromBody] GlobalConfigurationWeekends weekend)
         {
@@ -41,7 +37,7 @@ namespace CIR.Controllers.GlobalConfig
             {
                 try
                 {
-                    return await _weekendsService.CreateGlobalConfigurationWeekendsWeekends(weekend);
+                    return await _globalConfigurationWeekendsService.CreateGlobalConfigurationWeekendsWeekends(weekend);
                 }
                 catch (Exception ex)
                 {
@@ -57,19 +53,22 @@ namespace CIR.Controllers.GlobalConfig
         /// </summary>
         /// <param name="id"> Weekend will be disabled according to this id </param>
         /// <returns> disabled Weekend </returns>
-
         [HttpDelete("[action]")]
         public async Task<IActionResult> Delete(int id)
         {
-            try
+            if (ModelState.IsValid)
             {
-                return await _weekendsService.DeleteGlobalConfigurationWeekend(id);
+                try
+                {
+                    return await _globalConfigurationWeekendsService.DeleteGlobalConfigurationWeekend(id);
 
+                }
+                catch (Exception ex)
+                {
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = ex });
+                }
             }
-            catch (Exception ex)
-            {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = ex });
-            }
+            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
         }
 
 
@@ -82,14 +81,19 @@ namespace CIR.Controllers.GlobalConfig
         /// <param name="search"> word that we want to search in user table </param>
         /// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
         /// <returns> filtered list of Weekends </returns>
-
         [HttpGet]
-        public async Task<IActionResult> GetWeekends(int displayLength, int displayStart, string? sortCol, string? search, bool sortAscending = true)
+        public async Task<IActionResult> Get(int displayLength, int displayStart, string? sortCol, string? search, bool sortAscending = true)
         {
-            search ??= string.Empty;
+            try
+            {
+                search ??= string.Empty;
 
-            return await _weekendsService.GetAllGlobalConfigurationWeekends(displayLength, displayStart, sortCol, search, sortAscending);
-
+                return await _globalConfigurationWeekendsService.GetGlobalConfigurationWeekends(displayLength, displayStart, sortCol, search, sortAscending);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = ex });
+            }
         }
         #endregion
     }
