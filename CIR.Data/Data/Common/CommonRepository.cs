@@ -1,7 +1,7 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
 using CIR.Core.Entities;
-using CIR.Core.Entities.GlobalConfig;
+using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Entities.Users;
 using CIR.Core.Interfaces.Common;
 using Microsoft.AspNetCore.Mvc;
