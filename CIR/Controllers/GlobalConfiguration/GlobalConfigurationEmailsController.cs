@@ -1,11 +1,15 @@
 ﻿using CIR.Common.CustomResponse;
-using CIR.Core.Entities.GlobalConfig;
+using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.GlobalConfiguration;
 using CIR.Core.ViewModel.GlobalConfig;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Controllers.GlobalConfiguration
 {
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
     public class GlobalConfigurationEmailsController : ControllerBase
     {
         #region PROPERTIES

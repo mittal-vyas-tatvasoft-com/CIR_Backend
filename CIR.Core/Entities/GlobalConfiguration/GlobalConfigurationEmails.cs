@@ -5,12 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CIR.Core.Entities.GlobalConfig
+namespace CIR.Core.Entities.GlobalConfiguration
 {
     public partial class GlobalConfigurationEmails
     {
         [Key]
-        [Required]
         public long Id { get; set; }
         [Required]
         public long FieldTypeId { get; set; }

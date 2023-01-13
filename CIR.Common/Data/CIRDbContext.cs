@@ -1,5 +1,4 @@
 ﻿using CIR.Core.Entities;
-using CIR.Core.Entities.GlobalConfig;
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Entities.Users;
 using CIR.Core.Entities.Website;
@@ -86,9 +85,8 @@ namespace CIR.Common.Data
             get;
             set;
         }
-		
-		public DbSet<GlobalMessagesModel> GlobalConfigurationMessages { get; set; }
-
+        public DbSet<GlobalConfigurationMessages> GlobalConfigurationMessages { get; set; }
+        
         public DbSet<GlobalConfigurationFonts> Fonts { get; set; }
         public DbSet<GlobalConfigurationStyle> GlobalConfigurationStyles { get; set; }
 

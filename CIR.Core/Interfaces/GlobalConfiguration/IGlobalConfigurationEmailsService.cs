@@ -1,4 +1,4 @@
-﻿using CIR.Core.Entities.GlobalConfig;
+﻿using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.ViewModel.GlobalConfig;
 using Microsoft.AspNetCore.Mvc;
 using System;

@@ -1,4 +1,4 @@
-﻿using CIR.Core.Entities.GlobalConfig;
+﻿using CIR.Core.Entities.GlobalConfiguration;
 using System;
 using System.Collections.Generic;
 using System.Linq;

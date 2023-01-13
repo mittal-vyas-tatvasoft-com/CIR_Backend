@@ -1,5 +1,4 @@
-﻿using CIR.Core.Entities.GlobalConfig;
-using CIR.Core.ViewModel.GlobalConfig;
+﻿using CIR.Core.Entities.GlobalConfiguration;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
