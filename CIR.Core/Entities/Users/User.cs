@@ -50,5 +50,6 @@ namespace CIR.Core.Entities.Users
 		public string? CompanyName { get; set; }
 
 		public long? PortalThemeId { get; set; }
+
 	}
 }
