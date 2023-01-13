@@ -1,7 +1,7 @@
 ﻿using CIR.Core.Entities;
-using CIR.Core.Entities.GlobalConfig;
+using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Entities.Users;
-using CIR.Core.ViewModel.GlobalConfig;
+using CIR.Core.Entities.Website;
 using Microsoft.EntityFrameworkCore;
 
 namespace CIR.Common.Data
@@ -69,6 +69,7 @@ namespace CIR.Common.Data
         public DbSet<GlobalConfigurationCutOffTime> GlobalConfigurationCutOffTimes { get; set; }
         public DbSet<Holidays> Holidays { get; set; }
         public DbSet<GlobalConfigurationFonts> GlobalConfigurationFonts { get; set; }
+        public DbSet<GlobalConfigurationWeekends> Weekends { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -86,10 +87,11 @@ namespace CIR.Common.Data
 		
 		public DbSet<GlobalMessagesModel> GlobalConfigurationMessages { get; set; }
 
-		public DbSet<GlobalConfigurationFonts> Fonts { get; set; }
+        public DbSet<GlobalConfigurationFonts> Fonts { get; set; }
         public DbSet<GlobalConfigurationStyle> GlobalConfigurationStyles { get; set; }
-     
+
         public DbSet<GlobalConfigurationReasons> GlobalConfigurationReasons { get; set; }
+        public DbSet<Clients> Clients { get; set; }
     }
 }
 

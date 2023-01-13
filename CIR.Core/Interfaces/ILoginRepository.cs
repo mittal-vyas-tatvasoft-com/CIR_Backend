@@ -6,7 +6,7 @@ namespace CIR.Core.Interfaces
 	public interface ILoginRepository
 	{
 		Task<IActionResult> Login(LoginModel model);
-		public string ForgotPassword(ForgotPasswordModel forgotPasswordModel);
-		public string ResetPassword(ResetPasswordModel resetPasswordModel);
+		Task<IActionResult> ForgotPassword(ForgotPasswordModel forgotPasswordModel);
+		Task<IActionResult> ResetPassword(ResetPasswordModel resetPasswordModel);
 	}
 }
