@@ -95,7 +95,7 @@ namespace CIR.Data.Data.GlobalConfiguration
                                 CultureId = item.CultureId,
                                 Content = item.Content
                             };
-                            //_CIRDBContext.GlobalConfigurationMessages.Update(globalConfigMessage);
+                            _CIRDBContext.GlobalConfigurationMessages.Update(globalConfigMessage);
                         }
                         else
                         {
@@ -105,7 +105,7 @@ namespace CIR.Data.Data.GlobalConfiguration
                                 CultureId = item.CultureId,
                                 Content = item.Content
                             };
-                            //_CIRDBContext.GlobalConfigurationMessages.Add(globalConfigMessage);
+                            _CIRDBContext.GlobalConfigurationMessages.Add(globalConfigMessage);
                         }
                     }
                     await _CIRDBContext.SaveChangesAsync();
