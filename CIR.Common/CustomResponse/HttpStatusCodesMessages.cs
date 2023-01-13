@@ -6,6 +6,8 @@
 
 		public const string CreatedOrUpdated = "Data Created or Updated Successfully";
 
+		public const string Deleted = "Data Deleted Successfully";
+
 		public const string NoContent = "No Content";
 
 		public const string BadRequest = "Bad Request, issue in client request";

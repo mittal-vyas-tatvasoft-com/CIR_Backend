@@ -1,74 +1,69 @@
-﻿using CIR.Application.Services.GlobalConfig;
-using CIR.Application.Services.Users;
-using CIR.Common.CustomResponse;
-using CIR.Controllers.Users;
-using CIR.Core.Entities.GlobalConfig;
-using CIR.Core.Interfaces.GlobalConfig;
-using CIR.Core.Interfaces.Users;
-using CIR.Core.ViewModel.GlobalConfig;
-using CIR.Core.ViewModel.Usersvm;
+﻿using CIR.Common.CustomResponse;
+using CIR.Core.Interfaces.Websites;
+using CIR.Core.ViewModel.Websites;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CIR.Controllers.GlobalConfig
+namespace CIR.Controllers.Websites
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class StylesController : ControllerBase
+    public class ClientsController : ControllerBase
     {
         #region PROPERTIES
-        private readonly IStylesService _styleService;
+
+        private readonly IClientService _clientService;
+
         #endregion
 
-        #region CONSTRUCTOR
-        public StylesController(IStylesService styleService)
+        #region CONSTRUCTORS
+
+        public ClientsController(IClientService clientService)
         {
-            _styleService = styleService;
+            _clientService = clientService;
         }
+
         #endregion
 
         #region METHODS
-        /// <summary>
-        /// This method retuns Style list using LINQ
-        /// </summary>
-        /// <returns> list of style </returns>
 
+        /// <summary>
+        /// This method fetched the list of clients
+        /// </summary>
+        /// <returns>list of the clients</returns>
         [HttpGet]
-        public async Task<IActionResult> StylesList()
+        public async Task<IActionResult> GetAll()
         {
             try
             {
-                return await _styleService.GetAllStyles();
-               
+                return await _clientService.GetAllClients();
             }
             catch (Exception ex)
             {
                 return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
             }
         }
+
         /// <summary>
-        /// This method takes Style details as request and save data.
+        /// This method takes client details and adds it
         /// </summary>
-        /// <param name="Style"> this object contains different parameters as details of a Style </param>
-        /// <returns > success </returns>
-        [HttpPut("[action]")]
-        public async Task<IActionResult> Save([FromBody] List<GlobalConfigurationStyle> model)
+        /// <param name="clientModel"></param>
+        /// <returns></returns>
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create(ClientModel clientModel)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    return await _styleService.SaveStyle(model);
+                    return await _clientService.CreateClient(clientModel);
                 }
                 catch (Exception ex)
                 {
                     return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
                 }
-
             }
-
             return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
         }
 

@@ -1,6 +1,7 @@
 ﻿using CIR.Core.Entities;
 using CIR.Core.Entities.GlobalConfig;
 using CIR.Core.Entities.Users;
+using CIR.Core.Entities.Websites;
 using Microsoft.EntityFrameworkCore;
 
 namespace CIR.Common.Data
@@ -83,6 +84,7 @@ namespace CIR.Common.Data
         public DbSet<GlobalConfigurationStyle> GlobalConfigurationStyles { get; set; }
 
         public DbSet<GlobalConfigurationReasons> GlobalConfigurationReasons { get; set; }
+        public DbSet<Clients> Clients { get; set; }
     }
 }
 
