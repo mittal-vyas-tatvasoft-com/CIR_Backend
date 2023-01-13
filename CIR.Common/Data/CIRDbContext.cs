@@ -1,7 +1,9 @@
 ﻿using CIR.Core.Entities;
+using CIR.Core.Entities.GlobalConfig;
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Entities.Users;
 using CIR.Core.Entities.Website;
+using CIR.Core.ViewModel.GlobalConfiguration;
 using Microsoft.EntityFrameworkCore;
 
 namespace CIR.Common.Data

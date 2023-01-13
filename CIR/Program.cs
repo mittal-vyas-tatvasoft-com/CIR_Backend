@@ -100,19 +100,12 @@ builder.Services.AddScoped<IGlobalConfigurationFontsServices, GlobalConfiguratio
 builder.Services.AddScoped<IGlobalConfigurationFontsRepository, GlobalConfigurationFontsRepository>();
 builder.Services.AddScoped<IGlobalConfigurationStylesService, GlobalConfigurationStylesService>();
 builder.Services.AddScoped<IGlobalConfigurationStylesRepository, GlobalConfigurationStylesRepository>();
-builder.Services.AddScoped<IHolidayService, HolidayService>();
-builder.Services.AddScoped<IHolidaysRepository, HolidaysRepository>();
-builder.Services.AddScoped<IGlobalEmailsService, GlobalEmailsService>();
-builder.Services.AddScoped<IGlobalEmailsRepository, GlobalEmailsRepository>();
-builder.Services.AddScoped<IFontServices, FontServices>();
-builder.Services.AddScoped<IFontRepository, FontRepository>();
-builder.Services.AddScoped<IStylesService, StylesService>();
-builder.Services.AddScoped<IStylesRepository, StylesRepository>();
-builder.Services.AddScoped<IDropdownOptionService, DropdownOptionService>();
-builder.Services.AddScoped<IDropdownOptionRepository, DropdownOptionRepository>();
+builder.Services.AddScoped<IGlobalConfigurationEmailsService, GlobalConfigurationEmailsService>();
+builder.Services.AddScoped<IGlobalConfigurationEmailsRepository, GlobalConfigurationEmailsRepository>();
 builder.Services.AddScoped<JwtGenerateToken>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
+
 
 
 //allow origin
