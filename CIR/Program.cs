@@ -2,6 +2,7 @@ using CIR.Application.Services;
 using CIR.Application.Services.Common;
 using CIR.Application.Services.GlobalConfig;
 using CIR.Application.Services.Users;
+using CIR.Application.Services.Websites;
 using CIR.Common.CommonModels;
 using CIR.Common.CommonServices;
 using CIR.Common.Data;
@@ -11,10 +12,12 @@ using CIR.Core.Interfaces;
 using CIR.Core.Interfaces.Common;
 using CIR.Core.Interfaces.GlobalConfig;
 using CIR.Core.Interfaces.Users;
+using CIR.Core.Interfaces.Websites;
 using CIR.Data.Data;
 using CIR.Data.Data.Common;
 using CIR.Data.Data.GlobalConfig;
 using CIR.Data.Data.Users;
+using CIR.Data.Data.Websites;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -98,6 +101,8 @@ builder.Services.AddScoped<IGlobalConfigurationFontsRepository, GlobalConfigurat
 builder.Services.AddScoped<IGlobalConfigurationStylesService, GlobalConfigurationStylesService>();
 builder.Services.AddScoped<IGlobalConfigurationStylesRepository, GlobalConfigurationStylesRepository>();
 builder.Services.AddScoped<JwtGenerateToken>();
+builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddScoped<IClientRepository, ClientRepository>();
 
 
 //allow origin
