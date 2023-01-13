@@ -1,6 +1,7 @@
 ﻿using CIR.Core.Entities.GlobalConfig;
 using CIR.Core.Entities.Users;
 using CIR.Core.ViewModel.GlobalConfig;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace CIR.Core.Interfaces.GlobalConfig
 {
     public interface IGlobalEmailRepository
     {
-        Task<GlobalConfigurationEmailsGetModel> GetglobalEmailModelById(int id);
-        string CreateOrUpdateGlobalEmail(List<GlobalConfigurationEmailsModel> globalEmailSaveModel);
+        Task<IActionResult> GetglobalEmailModelById(int id);
+        Task<IActionResult> CreateOrUpdateGlobalEmail(List<GlobalConfigurationEmailsModel> globalEmailSaveModel);
     }
 }

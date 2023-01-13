@@ -1,4 +1,5 @@
 ﻿using CIR.Core.ViewModel.GlobalConfig;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace CIR.Core.Interfaces.GlobalConfig
 {
     public interface IGlobalEmailService
     {
-        string SaveGlobalEmail(List<GlobalConfigurationEmailsModel> globalEmailSaveModel);
-        Task<GlobalConfigurationEmailsGetModel> globalEmailGetData(int id);
+        Task<IActionResult> SaveGlobalEmail(List<GlobalConfigurationEmailsModel> globalEmailSaveModel);
+        Task<IActionResult> globalEmailGetData(int id);
     }
 }

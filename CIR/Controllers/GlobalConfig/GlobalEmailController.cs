@@ -11,12 +11,24 @@ namespace CIR.Controllers.GlobalConfig
     [ApiController]
     public class GlobalEmailController : ControllerBase
     {
+        #region PROPERTIES
         private readonly IGlobalEmailService _emailService;
+        #endregion
+
+        #region CONSTRUCTORS
         public GlobalEmailController(IGlobalEmailService emailService)
         {
             _emailService = emailService;
         }
+        #endregion
 
+
+        #region METHODS
+        /// <summary>
+		/// This method takes Email details as parameters and give details.
+		/// </summary>
+		/// <param name="Email"> this object contains different parameters as details of a email</param>
+		/// <returns >update email</returns>
         [HttpPost]
         public async Task<IActionResult> Post(List<GlobalConfigurationEmailsModel> globalEmailModel)
         {
@@ -24,42 +36,35 @@ namespace CIR.Controllers.GlobalConfig
             {
                 try
                 {
-                    var addGlobalEmail = _emailService.SaveGlobalEmail(globalEmailModel);
-                    if (addGlobalEmail == "Success")
-                    {
-                        return Ok(new { message = addGlobalEmail });
-                    }
-                    else
-                    {
-                        return BadRequest(new { message = "Error occured Invalid id provided." });
-                    }
+                    return await _emailService.SaveGlobalEmail(globalEmailModel);
 
                 }
                 catch (Exception ex)
                 {
-                    return BadRequest(new { message = "Error : " + ex + " Invalid input data" });
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
                 }
-
             }
-            return BadRequest();
+            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
+
         }
+
+        /// <summary>
+        /// This method takes get detail about email by id wise
+        /// </summary>
+        /// <param name="Id">this object contains id</param>
+        /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<CustomResponse<GlobalConfigurationEmailsGetModel>> Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
             try
             {
-                var user = await _emailService.globalEmailGetData(id);
-                if (user != null)
-                {
-                    return new CustomResponse<GlobalConfigurationEmailsGetModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = user };
-                }
-                return new CustomResponse<GlobalConfigurationEmailsGetModel>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = user };
-
+                return await _emailService.globalEmailGetData(id);
             }
-            catch
+            catch (Exception ex)
             {
-                return new CustomResponse<GlobalConfigurationEmailsGetModel>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError };
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
             }
         }
+        #endregion
     }
 }

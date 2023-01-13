@@ -2,6 +2,7 @@
 using CIR.Core.Interfaces.GlobalConfig;
 using CIR.Core.Interfaces.Users;
 using CIR.Core.ViewModel.GlobalConfig;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,27 +20,15 @@ namespace CIR.Application.Services.GlobalConfig
             _saveEmailRepository = saveEmailRepository;
         }
 
-        //public async Task<GlobalConfigurationEmails> globalEmailGetData(int id)
-        //{
-        //    var user = await _saveEmailRepository.GetglobalEmailModelById(id);
-        //    return user;
-        //}
-
-        public string SaveGlobalEmail(List<GlobalConfigurationEmailsModel> globalEmailSaveModel)
+        public async Task<IActionResult> SaveGlobalEmail(List<GlobalConfigurationEmailsModel> globalEmailSaveModel)
         {
-            return _saveEmailRepository.CreateOrUpdateGlobalEmail(globalEmailSaveModel);
+            return await _saveEmailRepository.CreateOrUpdateGlobalEmail(globalEmailSaveModel);
         }
 
-       //public async Task<GlobalConfigurationEmails> globalEmailGetData(int id)
-       // {
-       //     var user = await _saveEmailRepository.GetglobalEmailModelById(id);
-       //     return user;
-       // }
-
-        public async Task<GlobalConfigurationEmailsGetModel> globalEmailGetData(int id)
+        public async Task<IActionResult> globalEmailGetData(int id)
         {
-            var user = await _saveEmailRepository.GetglobalEmailModelById(id);
-            return user;
+            return await _saveEmailRepository.GetglobalEmailModelById(id);
+
         }
     }
 }
