@@ -1,6 +1,6 @@
 ﻿using CIR.Common.CustomResponse;
+using CIR.Core.Entities.GlobalConfig;
 using CIR.Core.Interfaces.GlobalConfig;
-using CIR.Core.ViewModel.GlobalConfig;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,37 +9,36 @@ namespace CIR.Controllers.GlobalConfig
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class GlobalCurrencyController : ControllerBase
+    public class GlobalConfigurationReasonsController : ControllerBase
     {
         #region PROPERTIES
 
-        private readonly IGlobalCurrencyService _currencyService;
+        private readonly IGlobalConfigurationReasonsService _globalConfigurationReasonsService;
 
         #endregion
 
         #region CONSTRUCTORS
 
-        public GlobalCurrencyController(IGlobalCurrencyService currencyService)
+        public GlobalConfigurationReasonsController(IGlobalConfigurationReasonsService globalConfigurationReasonsService)
         {
-            _currencyService = currencyService;
+            _globalConfigurationReasonsService = globalConfigurationReasonsService;
         }
 
         #endregion
 
+
         #region METHODS
 
         /// <summary>
-        /// This method takes get global currency country wise
+        /// This method takes a get globalconfiguration reasons list
         /// </summary>
-        /// <param name="countryId">this object contains countryId</param>
         /// <returns></returns>
-        [HttpGet("{countryId}")]
-        public async Task<IActionResult> Get(int countryId)
+        [HttpGet]
+        public async Task<IActionResult> GetGlobalConfigurationReasons()
         {
             try
             {
-                var currencyList = _currencyService.GetCurrencyCountryWise(countryId);
-                return new JsonResult(new CustomResponse<List<GlobalConfigurationCurrencyModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = currencyList });
+                return await _globalConfigurationReasonsService.GetGlobalConfigurationReasons();
             }
             catch (Exception ex)
             {
@@ -48,41 +47,41 @@ namespace CIR.Controllers.GlobalConfig
         }
 
         /// <summary>
-        /// This method takes add global currency
+        /// This method takes a create globalconfiguration reason
         /// </summary>
-        /// <param name="globalCurrencyModel">this object contains different parameters as details of a globalcurrency</param>
+        /// <param name="globalConfigurationReasons"></param>
         /// <returns></returns>
-        [HttpPost]
-        public async Task<IActionResult> Add(List<GlobalCurrencyModel> globalCurrencyModel)
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Create(List<GlobalConfigurationReasons> globalConfigurationReasons)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    return await _currencyService.CreateOrUpdateGlobalCurrencies(globalCurrencyModel);
+                    return await _globalConfigurationReasonsService.CreateOrUpdateGlobalConfigurationReasons(globalConfigurationReasons);
                 }
                 catch (Exception ex)
                 {
                     return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
                 }
-
             }
             return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
         }
+
 
         /// <summary>
-        /// This method takes update global currency
+        /// This method takes a update globalconfiguration reason
         /// </summary>
-        /// <param name="globalCurrencyModel">this object contains different parameters as details of a globalcurrency</param>
+        /// <param name="globalConfigurationReasons"></param>
         /// <returns></returns>
-        [HttpPut]
-        public async Task<IActionResult> Update(List<GlobalCurrencyModel> globalCurrencyModel)
+        [HttpPut("[action]")]
+        public async Task<IActionResult> Update(List<GlobalConfigurationReasons> globalConfigurationReasons)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    return await _currencyService.CreateOrUpdateGlobalCurrencies(globalCurrencyModel);
+                    return await _globalConfigurationReasonsService.CreateOrUpdateGlobalConfigurationReasons(globalConfigurationReasons);
                 }
                 catch (Exception ex)
                 {
@@ -91,6 +90,7 @@ namespace CIR.Controllers.GlobalConfig
             }
             return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
         }
+
         #endregion
     }
 }
