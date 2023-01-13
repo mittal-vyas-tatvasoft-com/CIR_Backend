@@ -14,15 +14,14 @@ namespace CIR.Application.Services.Users
 			_userRepository = userRepository;
 		}
 
-		public async Task<User> GetUserById(int id)
+		public async Task<IActionResult> GetUserById(int id)
 		{
-			var user = await _userRepository.GetUserById(id);
-			return user;
+			return await _userRepository.GetUserById(id);
 		}
 
-		public async Task<Boolean> UserExists(string email)
+		public async Task<Boolean> UserExists(string email, long id)
 		{
-			return await _userRepository.UserExists(email);
+			return await _userRepository.UserExists(email, id);
 		}
 
 

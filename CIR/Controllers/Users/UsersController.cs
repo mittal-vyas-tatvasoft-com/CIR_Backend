@@ -33,21 +33,15 @@ namespace CIR.Controllers.Users
         /// <returns> user </returns> 
 
         [HttpGet("{id}")]
-        public async Task<CustomResponse<User>> GetUserById(int id)
+        public async Task<IActionResult> GetUserById(int id)
         {
             try
             {
-                var user = await _userService.GetUserById(id);
-                if (user != null)
-                {
-                    return new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = user };
-                }
-                return new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = user };
-
+                return await _userService.GetUserById(id);
             }
-            catch
+            catch (Exception ex)
             {
-                return new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError };
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
             }
         }
 
@@ -64,10 +58,10 @@ namespace CIR.Controllers.Users
             {
                 try
                 {
-                    var userExists = await _userService.UserExists(user.Email);
+                    var userExists = await _userService.UserExists(user.Email, user.Id);
                     if (userExists)
                     {
-                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "user already exists" });
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "User already exist!" });
                     }
                     else
                     {
@@ -79,7 +73,6 @@ namespace CIR.Controllers.Users
                 {
                     return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
                 }
-
             }
 
             return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
@@ -98,15 +91,21 @@ namespace CIR.Controllers.Users
             {
                 try
                 {
-                    return await _userService.CreateOrUpdateUser(user);
+                    var userExists = await _userService.UserExists(user.Email, user.Id);
+                    if (userExists)
+                    {
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "user already exists" });
+                    }
+                    else
+                    {
+                        return await _userService.CreateOrUpdateUser(user);
+                    }
                 }
                 catch (Exception ex)
                 {
                     return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
                 }
-
             }
-
             return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
         }
 
@@ -119,12 +118,22 @@ namespace CIR.Controllers.Users
         [HttpDelete("[action]")]
         public async Task<IActionResult> Delete(int id)
         {
-            if (id > 0)
+            if (ModelState.IsValid)
             {
-                return await _userService.DeleteUser(id);
+                try
+                {
+                    if (id > 0)
+                    {
+                        return await _userService.DeleteUser(id);
+                    }
+                    return new JsonResult(new CustomResponse<String>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Invalid input id" });
+                }
+                catch (Exception ex)
+                {
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+                }
             }
-
-            return new JsonResult(new CustomResponse<String>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Invalid input id" });
+            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
         }
 
         /// <summary>
