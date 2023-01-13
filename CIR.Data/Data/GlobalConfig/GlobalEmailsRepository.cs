@@ -16,15 +16,29 @@ using System.Threading.Tasks;
 
 namespace CIR.Data.Data.GlobalConfig
 {
-    public class GlobalConfigEmailRepository : IGlobalEmailRepository
+    public class GlobalEmailsRepository : IGlobalEmailsRepository
     {
+        #region PROPERTIES
+
         private readonly CIRDbContext _CIRDBContext;
-        public GlobalConfigEmailRepository(CIRDbContext context)
+
+        #endregion
+
+        #region CONSTRUCTOR
+        public GlobalEmailsRepository(CIRDbContext context)
         {
             _CIRDBContext = context ??
                 throw new ArgumentNullException(nameof(context));
         }
-        public async Task<IActionResult> GetglobalEmailModelById(int id)
+        #endregion
+
+        #region METHODS
+        /// <summary>
+		/// This method used by GlobalConfigEmail list
+		/// </summary>
+        /// <param name="emailId"></param>
+		/// <returns></returns>
+        public async Task<IActionResult> GetGlobalEmailsDataList(int id)
         {
             var result = (from globalMessages in _CIRDBContext.GlobalConfigurationEmails
                           select new GlobalConfigurationEmailsGetModel()
@@ -35,7 +49,7 @@ namespace CIR.Data.Data.GlobalConfig
                               Content = globalMessages.Content,
                               Subject = globalMessages.Subject,
 
-                          }).ToList();
+                          }).Where(x => x.Id == id).ToList();
 
             var emailId = await _CIRDBContext.GlobalConfigurationEmails.Where(x => x.Id == id).FirstOrDefaultAsync();
             var serializedParent = JsonConvert.SerializeObject(emailId);
@@ -83,16 +97,21 @@ namespace CIR.Data.Data.GlobalConfig
                 return new JsonResult(new CustomResponse<List<GlobalConfigurationEmailsGetModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
 
         }
-        public async Task<IActionResult> CreateOrUpdateGlobalEmail(List<GlobalConfigurationEmailsModel> globalEmailModel)
+        /// <summary>
+		/// This method is used by create method and update method of globalMessage controller
+		/// </summary>
+		/// <param name="globalEmailsModel"></param>
+		/// <returns>Success status if its valid else failure</returns>
+        public async Task<IActionResult> CreateOrUpdateGlobalEmails(List<GlobalConfigurationEmailsModel> globalEmailsModel)
         {
-            if (globalEmailModel.Any(x => x.Id == 0))
+            if (globalEmailsModel.Any(x => x.Id == 0))
             {
                 return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest });
 
             }
-            if (globalEmailModel != null)
+            if (globalEmailsModel != null)
             {
-                foreach (var item in globalEmailModel)
+                foreach (var item in globalEmailsModel)
                 {
                     if (item.Id != 0)
                     {
@@ -127,6 +146,7 @@ namespace CIR.Data.Data.GlobalConfig
             }
             return new JsonResult(new CustomResponse<GlobalConfigurationEmails>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
         }
+        #endregion
     }
 }
 

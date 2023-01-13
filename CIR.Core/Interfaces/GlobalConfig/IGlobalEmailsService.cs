@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace CIR.Core.Interfaces.GlobalConfig
 {
-    public interface IGlobalEmailService
+    public interface IGlobalEmailsService
     {
-        Task<IActionResult> SaveGlobalEmail(List<GlobalConfigurationEmailsModel> globalEmailSaveModel);
-        Task<IActionResult> globalEmailGetData(int id);
+        Task<IActionResult> CreateOrUpdateGlobalEmails(List<GlobalConfigurationEmailsModel> globalEmailsModel);
+        Task<IActionResult> GetGlobalEmailsDataList(int id);
     }
 }

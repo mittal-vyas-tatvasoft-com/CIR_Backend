@@ -12,13 +12,15 @@ namespace CIR.Controllers.GlobalConfig
     public class GlobalEmailController : ControllerBase
     {
         #region PROPERTIES
-        private readonly IGlobalEmailService _emailService;
+
+        private readonly IGlobalEmailsService _globalEmailsService;
+
         #endregion
 
         #region CONSTRUCTORS
-        public GlobalEmailController(IGlobalEmailService emailService)
+        public GlobalEmailController(IGlobalEmailsService emailService)
         {
-            _emailService = emailService;
+            _globalEmailsService = emailService;
         }
         #endregion
 
@@ -27,16 +29,16 @@ namespace CIR.Controllers.GlobalConfig
         /// <summary>
 		/// This method takes Email details as parameters and give details.
 		/// </summary>
-		/// <param name="Email"> this object contains different parameters as details of a email</param>
+		/// <param name="globalEmailsModel"> this object contains different parameters as details of a email</param>
 		/// <returns >update email</returns>
         [HttpPost]
-        public async Task<IActionResult> Post(List<GlobalConfigurationEmailsModel> globalEmailModel)
+        public async Task<IActionResult> Post(List<GlobalConfigurationEmailsModel> globalEmailsModel)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    return await _emailService.SaveGlobalEmail(globalEmailModel);
+                    return await _globalEmailsService.CreateOrUpdateGlobalEmails(globalEmailsModel);
 
                 }
                 catch (Exception ex)
@@ -58,7 +60,7 @@ namespace CIR.Controllers.GlobalConfig
         {
             try
             {
-                return await _emailService.globalEmailGetData(id);
+                return await _globalEmailsService.GetGlobalEmailsDataList(id);
             }
             catch (Exception ex)
             {

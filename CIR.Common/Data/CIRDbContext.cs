@@ -56,7 +56,7 @@ namespace CIR.Common.Data
             set;
         }
 
-        public DbSet<RoleGrouping2Per mission> RoleGrouping2Permissions
+        public DbSet<RoleGrouping2Permission> RoleGrouping2Permissions
         {
             get;
             set;
@@ -76,9 +76,7 @@ namespace CIR.Common.Data
 			modelBuilder.Entity<RoleGrouping2Permission>().HasKey(x => new { x.RoleGroupingId, x.PermissionEnumId });
 			modelBuilder.Entity<RoleGrouping2Culture>().HasKey(x => new { x.RoleGroupingId, x.CultureLcid });
 		}
-		public DbSet<Roles> Roles { get; set; }
-		public DbSet<Culture> Cultures { get; set; }
-		public DbSet<Holidays> Holidays { get; set; }
+	
 
         public DbSet<GlobalConfigurationEmails> GlobalConfigurationEmails
         {
