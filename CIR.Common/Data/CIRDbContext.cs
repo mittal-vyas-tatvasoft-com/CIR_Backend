@@ -3,6 +3,9 @@ using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Entities.Users;
 using CIR.Core.Entities.Website;
 using CIR.Core.ViewModel.GlobalConfiguration;
+using CIR.Core.Entities.Utilities.SystemSettings;
+using CIR.Core.ViewModel.GlobalConfig;
+using CIR.Core.ViewModel.Utilities.SystemSettings;
 using Microsoft.EntityFrameworkCore;
 
 namespace CIR.Common.Data
@@ -92,6 +95,8 @@ namespace CIR.Common.Data
 
         public DbSet<GlobalConfigurationReasons> GlobalConfigurationReasons { get; set; }
         public DbSet<Clients> Clients { get; set; }
+        public DbSet<LookupItemsText> LookupItemsText { get; set; }
+        public DbSet<SystemCode> SystemCodes { get; set; }
     }
 }
 
