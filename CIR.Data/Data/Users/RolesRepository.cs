@@ -36,16 +36,13 @@ namespace CIR.Data.Data.Users
 		{
 			try
 			{
-				var roles = await _CIRDbContext.Roles.Select(x => new Roles()
+				var roles = await _CIRDbContext.Roles.Select(x => new RoleViewModel()
 				{
 					Id = x.Id,
-					AllPermissions = x.AllPermissions,
-					CreatedOn = x.CreatedOn,
 					Description = x.Description,
-					LastEditedOn = x.LastEditedOn,
 					Name = x.Name
 				}).ToListAsync();
-				return new JsonResult(new CustomResponse<List<Roles>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = roles });
+				return new JsonResult(new CustomResponse<List<RoleViewModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = roles });
 			}
 			catch (Exception ex)
 			{
