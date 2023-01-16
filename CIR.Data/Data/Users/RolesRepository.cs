@@ -73,7 +73,7 @@ namespace CIR.Data.Data.Users
         /// <returns> if user exists true else false </returns>
         public async Task<Boolean> RoleExists(string rolename, long id)
         {
-            Roles checkroleExist = new Roles();
+            Roles checkroleExist;
             if (id == 0)
             {
                 checkroleExist = await _CIRDbContext.Roles.Where(x => x.Name == rolename).FirstOrDefaultAsync();
@@ -98,9 +98,13 @@ namespace CIR.Data.Data.Users
         {
             try
             {
+                if (roles.Name == "" || roles.Name == "string")
+                {
+                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Please enter valid Data" });
+                }
                 if (roles.Id == 0)
                 {
-                    Core.Entities.Users.Roles newrole = new()
+                    Roles newrole = new()
                     {
                         Name = roles.Name,
                         AllPermissions = roles.AllPermissions,
@@ -112,7 +116,7 @@ namespace CIR.Data.Data.Users
                     await _CIRDbContext.SaveChangesAsync();
 
                     var roleDetails = _CIRDbContext.Roles.Where(c => c.Name == roles.Name).FirstOrDefault();
-                    if (roleDetails != null)
+                    if (!roleDetails.AllPermissions)
                     {
                         foreach (var role in roles.Roles)
                         {
@@ -176,7 +180,7 @@ namespace CIR.Data.Data.Users
                                         where var.Id == roles.Id
                                         select var.CreatedOn);
 
-                    Core.Entities.Users.Roles updaterole = new()
+                    Roles updaterole = new()
                     {
                         Id = roles.Id,
                         Name = roles.Name,
@@ -189,7 +193,7 @@ namespace CIR.Data.Data.Users
                     await _CIRDbContext.SaveChangesAsync();
 
                     var roleDetails = _CIRDbContext.Roles.Where(c => c.Id == roles.Id).FirstOrDefault();
-                    if (roleDetails != null)
+                    if (!roleDetails.AllPermissions)
                     {
                         foreach (var role in roles.Roles)
                         {
@@ -294,16 +298,25 @@ namespace CIR.Data.Data.Users
                             }
                         }
                     }
+                    else
+                    {
+                        var roleGroupingData = _CIRDbContext.RolesGroupings.Where(r => r.RoleId == roleDetails.Id).ToList();
+                        foreach (var item in roleGroupingData)
+                        {
+                            _CIRDbContext.RolesGroupings.Remove(item);
+                            await _CIRDbContext.SaveChangesAsync();
+                        }
+                    }
                     if (roles.Name != null)
                     {
                         return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "Role Updated Successfully." });
                     }
                 }
-                return new JsonResult(new CustomResponse<Core.Entities.Users.Roles>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = false, Message = HttpStatusCodesMessages.UnprocessableEntity });
+                return new JsonResult(new CustomResponse<Roles>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = false, Message = HttpStatusCodesMessages.UnprocessableEntity });
             }
             catch (Exception ex)
             {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = true, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = ex });
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = false, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = ex });
             }
         }
 
@@ -314,12 +327,12 @@ namespace CIR.Data.Data.Users
         /// <returns></returns>
         public async Task<IActionResult> DeleteRoles(long roleId)
         {
-            var role = new Core.Entities.Users.Roles() { Id = roleId };
+            var role = new Roles() { Id = roleId };
             try
             {
                 _CIRDbContext.Roles.Remove(role);
                 await _CIRDbContext.SaveChangesAsync();
-                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "Role Deleted Successfully" });
+                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Deleted, Data = "Role Deleted Successfully" });
             }
             catch (Exception ex)
             {
@@ -341,7 +354,7 @@ namespace CIR.Data.Data.Users
                     _CIRDbContext.RolesGroupings.Remove(item);
                     await _CIRDbContext.SaveChangesAsync();
                 }
-                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "Section Deleted Successfully." });
+                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Deleted, Data = "Section Deleted Successfully." });
             }
             catch (Exception ex)
             {
@@ -354,24 +367,44 @@ namespace CIR.Data.Data.Users
         /// </summary>
         /// <param name="roleId"></param>
         /// <returns></returns>
-        public async Task<RolePermissionModel> GetRoleDetailById(long roleId)
+        public async Task<IActionResult> GetRoleDetailById(long roleId)
         {
-            RolePermissionModel rolePermissionModel = new RolePermissionModel();
-
-            var dictionaryobj = new Dictionary<string, object>
+            try
             {
-                { "roleId", roleId }
-            };
+                RolePermissionModel rolePermissionModel = new RolePermissionModel();
+                var dictionaryobj = new Dictionary<string, object>
+                {
+                    { "roleId", roleId }
+                };
 
-            DataTable dt = SQLHelper.ExecuteSqlQueryWithParams("spGetRoleDetailByRoleId", dictionaryobj);
-
-            rolePermissionModel = new();
-            rolePermissionModel.Id = Convert.ToInt64(dt.Rows[0]["Id"].ToString());
-            rolePermissionModel.Name = Convert.ToString(dt.Rows[1]["Name"].ToString());
-            rolePermissionModel.Description = Convert.ToString(dt.Rows[2]["Description"].ToString());
-            rolePermissionModel.AllPermissions = Convert.ToBoolean(dt.Rows[3]["AllPermissions"].ToString());
-            rolePermissionModel.Roles = GetRolesListData(dt);
-            return rolePermissionModel;
+                DataTable dt = SQLHelper.ExecuteSqlQueryWithParams("spGetRoleDetailByRoleId", dictionaryobj);
+                if (dt.Rows.Count > 0)
+                {
+                    rolePermissionModel = new();
+                    var listData = SQLHelper.ConvertToGenericModelList<RolePermissionModel>(dt);
+                    rolePermissionModel.Id = listData[0].Id;
+                    rolePermissionModel.Name = listData[0].Name;
+                    rolePermissionModel.Description = listData[0].Description;
+                    rolePermissionModel.AllPermissions = listData[0].AllPermissions;
+                    if (rolePermissionModel.AllPermissions == false)
+                    {
+                        rolePermissionModel.Roles = GetRolesListData(dt);
+                    }
+                    else
+                    {
+                        rolePermissionModel.Roles = null;
+                    }
+                    return new JsonResult(new CustomResponse<RolePermissionModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = rolePermissionModel });
+                }
+                else
+                {
+                    return new JsonResult(new CustomResponse<RolePermissionModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = rolePermissionModel });
+                }
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = true, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = ex });
+            }
         }
 
         /// <summary>
@@ -384,8 +417,8 @@ namespace CIR.Data.Data.Users
             List<SubRolesModel> subRoleList = new List<SubRolesModel>();
 
             var listMain = SQLHelper.ConvertToGenericModelList<SubModel>(dt);
-            var siteGroulp = listMain.GroupBy(x => x.SiteId);
-            foreach (var itemSite in siteGroulp)
+            var siteGroup = listMain.GroupBy(x => x.SiteId);
+            foreach (var itemSite in siteGroup)
             {
                 SubRolesModel subRole = new SubRolesModel();
                 subRole.site = new List<RoleGrouping2SubSiteModel>();
@@ -400,7 +433,7 @@ namespace CIR.Data.Data.Users
                     roleGrouping2CultureModel.CultureId = itemCulture.Key;
                     roleGrouping2CultureModel.Privileges = new List<RoleGrouping2PermissionModel>();
 
-                    var privilegesGroup = listMain.Where(x => x.SiteId == itemSite.Key && x.PrivilegesId == itemCulture.Key).GroupBy(x => x.CultureId);
+                    var privilegesGroup = listMain.Where(x => x.SiteId == itemSite.Key && x.CultureId == itemCulture.Key).GroupBy(x => x.PrivilegesId);
                     foreach (var itemprivileges in privilegesGroup)
                     {
                         RoleGrouping2PermissionModel roleGrouping2PermissionModel = new RoleGrouping2PermissionModel();

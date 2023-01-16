@@ -42,7 +42,7 @@ namespace CIR.Data.Data.GlobalConfiguration
                                                          Type = globalCongigReason.Type,
                                                          Enabled = globalCongigReason.Enabled,
                                                          Content = globalCongigReason.Content,
-                                                     }).ToListAsync();
+                                                     }).OrderBy(x => x.Type).ThenBy(x => x.Content).ToListAsync();
 
                 return new JsonResult(new CustomResponse<List<GlobalConfigurationReasons>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = globalConfigReasonsList });
             }

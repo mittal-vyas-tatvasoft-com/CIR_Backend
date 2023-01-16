@@ -2,8 +2,8 @@
 {
     public enum Type
     {
-        Return = 1,
-        Refund = 2,
+        Refund = 1,
+        Return = 2,
         ProductType = 3
     }
 }
