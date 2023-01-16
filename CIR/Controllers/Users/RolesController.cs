@@ -29,6 +29,22 @@ namespace CIR.Controllers.Users
         #region METHODS
 
         /// <summary>
+        /// This method takes a get Roles list
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("GetAllroles")]
+        public async Task<IActionResult> GetAllroles()
+        {
+            try
+            {
+                return await _rolesService.GetRoles();
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+            }
+        }
+        /// <summary>
         /// This method retuns filtered roles list using SP
         /// </summary>
         /// <param name="displayLength"> how many row/data we want to fetch(for pagination) </param>
@@ -37,14 +53,14 @@ namespace CIR.Controllers.Users
         /// <param name="search"> word that we want to search in user table </param>
         /// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
         /// <returns> filtered list of roles </returns>
-        [HttpGet]
-        public async Task<IActionResult> GetAllRoles(int displayLength, int displayStart, string? sortCol, string? search, bool sortAscending = true)
+        [HttpGet("GetFilterdRoles")]
+        public async Task<IActionResult> GetAllRoleFiltered(int displayLength, int displayStart, string? sortCol, string? search, bool sortAscending = true)
         {
             try
             {
                 search ??= string.Empty;
 
-                var rolesModel = await _rolesService.GetAllRoles(displayLength, displayStart, sortCol, search, sortAscending);
+                var rolesModel = await _rolesService.GetAllRolesFilterd(displayLength, displayStart, sortCol, search, sortAscending);
 
                 if (rolesModel.RolesList.Count > 0)
                 {

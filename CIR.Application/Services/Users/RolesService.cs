@@ -13,9 +13,15 @@ namespace CIR.Application.Services.Users
         {
             _rolesRepository = rolesRepository;
         }
-        public async Task<RolesModel> GetAllRoles(int displayLength, int displayStart, string? sortCol, string search, bool sortAscending = true)
+
+        public async Task<IActionResult> GetRoles()
         {
-            return await _rolesRepository.GetAllRoles(displayLength, displayStart, sortCol, search, sortAscending);
+            return await _rolesRepository.GetAllRoles();
+        }
+
+        public async Task<RolesModel> GetAllRolesFilterd(int displayLength, int displayStart, string? sortCol, string search, bool sortAscending = true)
+        {
+            return await _rolesRepository.GetAllRolesFilterd(displayLength, displayStart, sortCol, search, sortAscending);
         }
 
         public async Task<Boolean> RoleExists(string rolename, long id)
