@@ -105,6 +105,8 @@ builder.Services.AddScoped<IGlobalConfigurationEmailsRepository, GlobalConfigura
 builder.Services.AddScoped<JwtGenerateToken>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
+builder.Services.AddScoped<IPortal2GlobalConfigurationReasonsServices, Portal2GlobalConfigurationReasonsServices>();
+builder.Services.AddScoped<IPortal2GlobalConfigurationReasonsRepository, Portal2GlobalConfigurationReasonsRepository>();
 
 
 
