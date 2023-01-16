@@ -53,7 +53,7 @@ namespace CIR.Controllers.Users
         /// <param name="search"> word that we want to search in user table </param>
         /// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
         /// <returns> filtered list of roles </returns>
-        [HttpGet("GetFilterdRoles")]
+        [HttpGet("GetRoles")]
         public async Task<IActionResult> GetAllRoleFiltered(int displayLength, int displayStart, string? sortCol, string? search, bool sortAscending = true)
         {
             try
