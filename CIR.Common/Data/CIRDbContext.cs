@@ -1,7 +1,8 @@
 ﻿using CIR.Core.Entities;
-using CIR.Core.Entities.GlobalConfig;
+using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Entities.Users;
-using CIR.Core.Entities.Websites;
+using CIR.Core.Entities.Website;
+using CIR.Core.ViewModel.GlobalConfiguration;
 using Microsoft.EntityFrameworkCore;
 
 namespace CIR.Common.Data
@@ -71,15 +72,21 @@ namespace CIR.Common.Data
         public DbSet<GlobalConfigurationFonts> GlobalConfigurationFonts { get; set; }
         public DbSet<GlobalConfigurationWeekends> Weekends { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			modelBuilder.Entity<RoleGrouping2SubSite>().HasKey(x => new { x.RoleGroupingId, x.SubSiteId });
+			modelBuilder.Entity<RoleGrouping2Permission>().HasKey(x => new { x.RoleGroupingId, x.PermissionEnumId });
+			modelBuilder.Entity<RoleGrouping2Culture>().HasKey(x => new { x.RoleGroupingId, x.CultureLcid });
+		}
+	
+
+        public DbSet<GlobalConfigurationEmails> GlobalConfigurationEmails
         {
-            modelBuilder.Entity<RoleGrouping2SubSite>().HasKey(x => new { x.RoleGroupingId, x.SubSiteId });
-            modelBuilder.Entity<RoleGrouping2Permission>().HasKey(x => new { x.RoleGroupingId, x.PermissionEnumId });
-            modelBuilder.Entity<RoleGrouping2Culture>().HasKey(x => new { x.RoleGroupingId, x.CultureLcid });
+            get;
+            set;
         }
-
         public DbSet<GlobalConfigurationMessages> GlobalConfigurationMessages { get; set; }
-
+        
         public DbSet<GlobalConfigurationFonts> Fonts { get; set; }
         public DbSet<GlobalConfigurationStyle> GlobalConfigurationStyles { get; set; }
 

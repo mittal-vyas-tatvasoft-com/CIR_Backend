@@ -1,8 +1,8 @@
 using CIR.Application.Services;
 using CIR.Application.Services.Common;
-using CIR.Application.Services.GlobalConfig;
+using CIR.Application.Services.GlobalConfiguration;
 using CIR.Application.Services.Users;
-using CIR.Application.Services.Websites;
+using CIR.Application.Services.Website;
 using CIR.Common.CommonModels;
 using CIR.Common.CommonServices;
 using CIR.Common.Data;
@@ -10,14 +10,14 @@ using CIR.Common.EmailGeneration;
 using CIR.Common.Helper;
 using CIR.Core.Interfaces;
 using CIR.Core.Interfaces.Common;
-using CIR.Core.Interfaces.GlobalConfig;
+using CIR.Core.Interfaces.GlobalConfiguration;
 using CIR.Core.Interfaces.Users;
-using CIR.Core.Interfaces.Websites;
+using CIR.Core.Interfaces.Website;
 using CIR.Data.Data;
 using CIR.Data.Data.Common;
-using CIR.Data.Data.GlobalConfig;
+using CIR.Data.Data.GlobalConfiguration;
 using CIR.Data.Data.Users;
-using CIR.Data.Data.Websites;
+using CIR.Data.Data.Website;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -100,9 +100,12 @@ builder.Services.AddScoped<IGlobalConfigurationFontsServices, GlobalConfiguratio
 builder.Services.AddScoped<IGlobalConfigurationFontsRepository, GlobalConfigurationFontsRepository>();
 builder.Services.AddScoped<IGlobalConfigurationStylesService, GlobalConfigurationStylesService>();
 builder.Services.AddScoped<IGlobalConfigurationStylesRepository, GlobalConfigurationStylesRepository>();
+builder.Services.AddScoped<IGlobalConfigurationEmailsService, GlobalConfigurationEmailsService>();
+builder.Services.AddScoped<IGlobalConfigurationEmailsRepository, GlobalConfigurationEmailsRepository>();
 builder.Services.AddScoped<JwtGenerateToken>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
+
 
 
 //allow origin

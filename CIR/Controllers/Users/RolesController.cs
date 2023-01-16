@@ -54,27 +54,20 @@ namespace CIR.Controllers.Users
             }
             catch (Exception ex)
             {
-
                 return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
             }
         }
 
         [HttpGet("{roleId}")]
-        public async Task<CustomResponse<RolePermissionModel>> Get(int roleId)
+        public async Task<IActionResult> Get(int roleId)
         {
             try
             {
-                var roleDetail = await _rolesService.GetRoleDetailById(roleId);
-                if (roleDetail != null)
-                {
-                    return new CustomResponse<RolePermissionModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = roleDetail };
-                }
-                return new CustomResponse<RolePermissionModel>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = roleDetail };
-
+                return await _rolesService.GetRoleDetailById(roleId);
             }
-            catch
+            catch (Exception ex)
             {
-                return new CustomResponse<RolePermissionModel>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError };
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
             }
         }
 

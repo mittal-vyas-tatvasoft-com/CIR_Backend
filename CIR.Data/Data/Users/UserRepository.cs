@@ -4,6 +4,7 @@ using CIR.Common.Helper;
 using CIR.Core.Entities.Users;
 using CIR.Core.Interfaces.Users;
 using CIR.Core.ViewModel.Usersvm;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -32,10 +33,18 @@ namespace CIR.Data.Data.Users
         /// <param name="id"></param>
         /// <returns> user or null user if not found </returns>
 
-        public async Task<User> GetUserById(int id)
+        public async Task<IActionResult> GetUserById(int id)
         {
-            var user = await _CIRDBContext.Users.Where(x => x.Id == id).FirstOrDefaultAsync();
-            return user;
+            try
+            {
+                var userDetail = await _CIRDBContext.Users.Where(x => x.Id == id).FirstOrDefaultAsync();
+                return new JsonResult(new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = userDetail });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+            }
+
         }
 
         /// <summary>
@@ -44,11 +53,18 @@ namespace CIR.Data.Data.Users
         /// <param name="email"></param>
         /// <returns> if user exists true else false </returns>
 
-        public async Task<Boolean> UserExists(string email)
+        public async Task<Boolean> UserExists(string email, long id)
         {
-            var checkUserExist = await _CIRDBContext.Users.Where(x => x.Email == email).FirstOrDefaultAsync();
-
-            if (checkUserExist != null && checkUserExist.Id > 0)
+            User checkUserExists;
+            if (id == 0)
+            {
+                checkUserExists = await _CIRDBContext.Users.Where(x => x.Email == email).FirstOrDefaultAsync();
+            }
+            else
+            {
+                checkUserExists = await _CIRDBContext.Users.Where(x => x.Email == email && x.Id != id).FirstOrDefaultAsync();
+            }
+            if (checkUserExists != null)
             {
                 return true;
             }
@@ -63,41 +79,47 @@ namespace CIR.Data.Data.Users
 
         public async Task<IActionResult> CreateOrUpdateUser(User user)
         {
-            User newUser = new()
+            try
             {
-                Id = user.Id,
-                UserName = user.UserName,
-                Email = user.Email,
-                Password = user.Password,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                RoleId = 1,
-                Enabled = true,
-                CreatedOn = DateTime.Now,
-                ResetRequired = false,
-                DefaultAdminUser = false,
-                CultureLcid = 1,
-                TimeZone = user.TimeZone,
-                CompanyName = user.CompanyName,
-                PhoneNumber = user.PhoneNumber
-            };
+                string result = "";
+                using (DbConnection dbConnection = new DbConnection())
+                {
 
-            if (user.Id > 0)
-            {
-                _CIRDBContext.Users.Update(newUser);
+                    using (var connection = dbConnection.Connection)
+                    {
+                        DynamicParameters parameters = new DynamicParameters();
+                        parameters.Add("@Id", user.Id);
+                        parameters.Add("@UserName", user.UserName);
+                        parameters.Add("@Password", user.Password);
+                        parameters.Add("@Email", user.Email);
+                        parameters.Add("@SalutationLookupItemId", user.SalutationLookupItemId);
+                        parameters.Add("@FirstName", user.FirstName);
+                        parameters.Add("@LastName", user.LastName);
+                        parameters.Add("@RoleId", user.RoleId);
+                        parameters.Add("@Enabled", true);
+                        parameters.Add("@ResetRequired", false);
+                        parameters.Add("@DefaultAdminUser", false);
+                        parameters.Add("@TimeZone", user.TimeZone);
+                        parameters.Add("@CultureLcid", user.CultureLcid);
+                        parameters.Add("@EmployeeId", user.EmployeeId);
+                        parameters.Add("@PhoneNumber", user.PhoneNumber);
+                        parameters.Add("@ScheduledActiveChange", user.ScheduledActiveChange);
+                        parameters.Add("@LoginAttempts", user.LoginAttempts);
+                        parameters.Add("@CompanyName", user.CompanyName);
+                        parameters.Add("@PortalThemeId", user.PortalThemeId);
+                        result = Convert.ToString(connection.ExecuteScalar("spAddUpdateUsers", parameters, commandType: CommandType.StoredProcedure));
+                    }
+                }
+                if (result != null)
+                {
+                    return Ok(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = result });
+                }
+                return UnprocessableEntity(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = false, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = "error" });
             }
-            else
+            catch (Exception ex)
             {
-                _CIRDBContext.Users.Add(newUser);
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
             }
-
-            await _CIRDBContext.SaveChangesAsync();
-            if (user.Email != null)
-            {
-                return Ok(new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated });
-            }
-
-            return UnprocessableEntity(new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = false, Message = HttpStatusCodesMessages.UnprocessableEntity });
         }
 
         /// <summary>
@@ -108,21 +130,21 @@ namespace CIR.Data.Data.Users
 
         public async Task<IActionResult> DeleteUser(int id)
         {
-            User user = new()
-            {
-                Id = id,
-                Enabled = false
-            };
-
             try
             {
+                User user = new()
+                {
+                    Id = id,
+                    Enabled = false
+                };
+
                 _CIRDBContext.Entry(user).Property(x => x.Enabled).IsModified = true;
                 await _CIRDBContext.SaveChangesAsync();
-                return Ok(new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.NoContent, Result = true, Message = HttpStatusCodesMessages.NoContent, Data = user });
+                return Ok(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Deleted, Data = "UserDetail deleted successfully." });
             }
             catch
             {
-                return UnprocessableEntity(new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = user });
+                return UnprocessableEntity(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "error" });
             }
 
         }
@@ -136,7 +158,6 @@ namespace CIR.Data.Data.Users
         /// <param name="search"> word that we want to search in user table </param>
         /// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
         /// <returns> filtered list of users </returns>
-
 
         public UsersModel GetFilteredUsers(int displayLength, int displayStart, int sortCol, string sortDir, string? search)
         {
