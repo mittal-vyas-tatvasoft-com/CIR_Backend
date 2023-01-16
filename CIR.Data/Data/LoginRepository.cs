@@ -34,10 +34,6 @@ namespace CIR.Data.Data
 			{
 				var userRecords = _CIRDBContext.Users.Where((x) => x.Email == model.Email && x.Password == model.Password).FirstOrDefault();
 
-				if (userRecords != null && userRecords.ResetRequired == true)
-				{
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Forbidden, Result = false, Message = HttpStatusCodesMessages.Forbidden, Data = "Your Account is locked. To Unlock this account contact to Aramex Support team" });
-				}
 				if (userRecords == null)
 				{
 					var userDetails = _CIRDBContext.Users.Where(x => x.Email == model.Email).FirstOrDefault();
