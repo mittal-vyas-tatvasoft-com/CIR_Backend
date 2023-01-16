@@ -1,12 +1,14 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.GlobalConfiguration;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Controllers.GlobalConfiguration
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class GlobalConfigurationMessagesController : ControllerBase
     {
         #region PROPERTIES

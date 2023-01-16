@@ -6,9 +6,9 @@ namespace CIR.Core.Interfaces.Users
 {
 	public interface IUserService
 	{
-		Task<User> GetUserById(int id);
+		Task<IActionResult> GetUserById(int id);
 
-		Task<Boolean> UserExists(string email);
+		Task<Boolean> UserExists(string email, long id);
 
 		Task<IActionResult> CreateOrUpdateUser(User user);
 
