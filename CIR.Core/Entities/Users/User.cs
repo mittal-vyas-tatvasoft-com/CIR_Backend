@@ -11,7 +11,8 @@ namespace CIR.Core.Entities.Users
 		[RegularExpression(@"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$", ErrorMessage = "Your password must be at least 8 characters long, contain at least one number and have a mixture of uppercase and lowercase letters")]
 		public string Password { get; set; } = null!;
 
-		[RegularExpression(@"^\\S+@\\S+\\.\\S+$", ErrorMessage = "Please Enter Valid Email Address")]
+		[RegularExpression(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"
+ , ErrorMessage = "Please Enter Valid Email Address")]
 		public string? Email { get; set; }
 
 		public long? SalutationLookupItemId { get; set; }
@@ -40,7 +41,7 @@ namespace CIR.Core.Entities.Users
 
 		public string? EmployeeId { get; set; }
 
-		[RegularExpression(@"^\\+?[1-9][0-9]{7,14}$", ErrorMessage = "Please Enter Valid Phone Number")]
+		[MinLength(10)]
 		public string? PhoneNumber { get; set; }
 
 		public DateTime? ScheduledActiveChange { get; set; }

@@ -120,15 +120,7 @@ namespace CIR.Controllers.Users
             {
                 try
                 {
-                    var isExist = await _rolesService.RoleExists(roles.Name, roles.Id);
-                    if (isExist)
-                    {
-                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Role already exists" });
-                    }
-                    else
-                    {
-                        return await _rolesService.AddRole(roles);
-                    }
+                    return await _rolesService.AddRole(roles);
                 }
                 catch (Exception ex)
                 {
