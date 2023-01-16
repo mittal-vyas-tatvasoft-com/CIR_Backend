@@ -7,7 +7,7 @@ namespace CIR.Core.Interfaces.Users
     public interface IRolesService
     {
         Task<IActionResult> GetRoles();
-        Task<RolesModel> GetAllRolesFilterd(int displayLength, int displayStart, string? sortCol, string search, bool sortAscending = true);
+        Task<RolesModel> GetAllRoles(int displayLength, int displayStart, string? sortCol, string search, bool sortAscending = true);
         Task<Boolean> RoleExists(string rolename, long id);
         Task<IActionResult> GetRoleDetailById(long roleId);
         Task<IActionResult> AddRole(RolePermissionModel roles);

@@ -60,7 +60,7 @@ namespace CIR.Controllers.Users
             {
                 search ??= string.Empty;
 
-                var rolesModel = await _rolesService.GetAllRolesFilterd(displayLength, displayStart, sortCol, search, sortAscending);
+                var rolesModel = await _rolesService.GetAllRoles(displayLength, displayStart, sortCol, search, sortAscending);
 
                 if (rolesModel.RolesList.Count > 0)
                 {

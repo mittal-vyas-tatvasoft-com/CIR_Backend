@@ -32,7 +32,7 @@ namespace CIR.Data.Data.Users
 		/// This method is used by get globalconfiguration fonts list
 		/// </summary>
 		/// <returns></returns>
-		public async Task<IActionResult> GetAllRoles()
+		public async Task<IActionResult> GetRoles()
 		{
 			try
 			{
@@ -62,7 +62,7 @@ namespace CIR.Data.Data.Users
 		/// <param name="search"> word that we want to search in user table </param>
 		/// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
 		/// <returns> filtered list of roles </returns>
-		public async Task<RolesModel> GetAllRolesFilterd(int displayLength, int displayStart, string sortCol, string? search, bool sortAscending = true)
+		public async Task<RolesModel> GetAllRoles(int displayLength, int displayStart, string sortCol, string? search, bool sortAscending = true)
 		{
 			RolesModel roles = new();
 			IQueryable<Core.Entities.Users.Roles> temp = roles.RolesList.AsQueryable();
