@@ -191,7 +191,7 @@ namespace CIR.Data.Data.Users
         /// <returns> filtered list of users </returns>
 
 
-        public async Task<IActionResult> GetAllUsers(int displayLength, int displayStart, string? sortCol, string search, bool sortAscending = true)
+        public async Task<IActionResult> GetAllUsers(int displayLength, int displayStart, string? sortCol, string search, int roleId, bool? enabled = null, bool sortAscending = true)
         {
             UsersViewModel users = new();
 
@@ -236,6 +236,15 @@ namespace CIR.Data.Data.Users
                                           CompanyName = userData.CompanyName,
                                           PortalThemeId = userData.PortalThemeId
                                       }).ToListAsync();
+                if (roleId != 0)
+                {
+                    sortData = sortData.Where(y => y.RoleId == roleId).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
+                }
+                if (enabled != null)
+                {
+                    sortData = sortData.Where(y => y.Enabled == enabled).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
+                }
+
                 if (sortAscending)
                 {
                     sortData = sortData.Where(y => y.UserName.Contains(search) || y.Email.Contains(search) || y.FirstName.Contains(search)).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();

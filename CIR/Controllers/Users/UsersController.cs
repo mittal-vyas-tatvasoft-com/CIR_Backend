@@ -180,13 +180,12 @@ namespace CIR.Controllers.Users
         /// <returns> filtered list of users </returns>
 
         [HttpGet]
-        public async Task<IActionResult> UsersLinq(int displayLength, int displayStart, string? sortCol, string? search, bool sortAscending = true)
+        public async Task<IActionResult> UsersLinq(int displayLength, int displayStart, string? sortCol, string? search, int roleId, bool? enabled = null, bool sortAscending = true)
         {
             try
             {
                 search ??= string.Empty;
-
-                return await _userService.GetAllUsers(displayLength, displayStart, sortCol, search, sortAscending);
+                return await _userService.GetAllUsers(displayLength, displayStart, sortCol, search, roleId, enabled, sortAscending);
             }
             catch (Exception ex)
             {
