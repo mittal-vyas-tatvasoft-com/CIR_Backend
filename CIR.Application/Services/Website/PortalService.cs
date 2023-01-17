@@ -12,9 +12,9 @@ namespace CIR.Application.Services.Website
             _portalRepository = portalRepository;
         }
 
-        public async Task<IActionResult> CreatePortal(PortalModel portalModel, long clientId)
+        public async Task<IActionResult> CreateorUpdatePortal(PortalModel portalModel, long clientId)
         {
-            return await _portalRepository.CreatePortal(portalModel, clientId);
+            return await _portalRepository.CreateorUpdatePortal(portalModel, clientId);
         }
 
         public async Task<IActionResult> DisablePortal(long portalId)

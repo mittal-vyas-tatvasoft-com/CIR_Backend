@@ -57,7 +57,29 @@ namespace CIR.Controllers.Website
             {
                 try
                 {
-                    return await _clientService.CreateClient(clientModel);
+                    return await _clientService.CreateOrUpdateClient(clientModel);
+                }
+                catch (Exception ex)
+                {
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+                }
+            }
+            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
+        }
+
+        /// <summary>
+        /// This method takes client details and updates it
+        /// </summary>
+        /// <param name="clientModel"></param>
+        /// <returns></returns>
+        [HttpPut("Update")]
+        public async Task<IActionResult> Update(ClientModel clientModel)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    return await _clientService.CreateOrUpdateClient(clientModel);
                 }
                 catch (Exception ex)
                 {

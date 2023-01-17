@@ -5,6 +5,9 @@ namespace CIR.Core.ViewModel.Website
     public class PortalModel
     {
         [Required]
+        public long Id { get; set; }
+
+        [Required]
         public string DisplayName { get; set; }
 
         public string? Directory { get; set; }

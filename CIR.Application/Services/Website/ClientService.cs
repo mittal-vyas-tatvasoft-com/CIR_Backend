@@ -13,9 +13,9 @@ namespace CIR.Application.Services.Website
             _clientRepository = clientRepository;
         }
 
-        public async Task<IActionResult> CreateClient(ClientModel clientModel)
+        public async Task<IActionResult> CreateOrUpdateClient(ClientModel clientModel)
         {
-            return await _clientRepository.CreateClient(clientModel);
+            return await _clientRepository.CreateOrUpdateClient(clientModel);
         }
 
         public async Task<IActionResult> GetAllClients()

@@ -43,7 +43,7 @@ namespace CIR.Controllers.Website
             {
                 try
                 {
-                    return await _portalService.CreatePortal(portalModel, clientId);
+                    return await _portalService.CreateorUpdatePortal(portalModel, clientId);
                 }
                 catch (Exception ex)
                 {
@@ -69,6 +69,29 @@ namespace CIR.Controllers.Website
             {
                 return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
             }
+        }
+
+        /// <summary>
+        /// This method takes portal details and updates it
+        /// </summary>
+        /// <param name="portalModel"></param>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
+        [HttpPut("Update/{clientId}")]
+        public async Task<IActionResult> Update(PortalModel portalModel, long clientId)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    return await _portalService.CreateorUpdatePortal(portalModel, clientId);
+                }
+                catch (Exception ex)
+                {
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+                }
+            }
+            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
         }
 
         #endregion
