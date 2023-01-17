@@ -191,10 +191,9 @@ namespace CIR.Data.Data.Users
         /// <returns> filtered list of users </returns>
 
 
-        public async Task<UsersModel> GetAllUsers(int displayLength, int displayStart, string sortCol, string? search, bool sortAscending = true)
+        public async Task<IActionResult> GetAllUsers(int displayLength, int displayStart, string? sortCol, string search, bool sortAscending = true)
         {
-            UsersModel users = new();
-            IQueryable<User> temp = users.UsersList.AsQueryable();
+            UsersViewModel users = new();
 
             if (string.IsNullOrEmpty(sortCol))
             {
@@ -205,17 +204,52 @@ namespace CIR.Data.Data.Users
             {
                 users.Count = _CIRDBContext.Users.Where(y => y.UserName.Contains(search) || y.Email.Contains(search) || y.FirstName.Contains(search)).Count();
 
-                temp = sortAscending ? _CIRDBContext.Users.Where(y => y.UserName.Contains(search) || y.Email.Contains(search) || y.FirstName.Contains(search)).OrderBy(x => EF.Property<object>(x, sortCol)).AsQueryable()
-                                     : _CIRDBContext.Users.Where(y => y.UserName.Contains(search) || y.Email.Contains(search) || y.FirstName.Contains(search)).OrderByDescending(x => EF.Property<object>(x, sortCol)).AsQueryable();
-
-                var sortedData = await temp.Skip(displayStart).Take(displayLength).ToListAsync();
-                users.UsersList = sortedData;
-
-                return users;
+                var sortData = await (from userData in _CIRDBContext.Users
+                                      join roleData in _CIRDBContext.Roles on userData.RoleId equals roleData.Id
+                                      join cultureData in _CIRDBContext.Cultures on userData.CultureLcid equals cultureData.Id
+                                      select new UserModel()
+                                      {
+                                          Id = userData.Id,
+                                          UserName = userData.UserName,
+                                          Password = userData.Password,
+                                          Email = userData.Email,
+                                          SalutationLookupItemId = userData.SalutationLookupItemId,
+                                          FirstName = userData.FirstName,
+                                          LastName = userData.LastName,
+                                          FullName = userData.FirstName + ' ' + userData.LastName,
+                                          RoleId = userData.RoleId,
+                                          RoleName = roleData.Name,
+                                          Enabled = userData.Enabled,
+                                          LastLogOn = userData.LastLogOn,
+                                          CreatedOn = userData.CreatedOn,
+                                          LastEditedOn = userData.LastEditedOn,
+                                          ResetRequired = userData.ResetRequired,
+                                          DefaultAdminUser = userData.DefaultAdminUser,
+                                          TimeZone = userData.TimeZone,
+                                          CultureLcid = userData.CultureLcid,
+                                          CultureDisplayName = cultureData.DisplayName,
+                                          CultureNativeName = cultureData.NativeName,
+                                          EmployeeId = userData.EmployeeId,
+                                          PhoneNumber = userData.PhoneNumber,
+                                          ScheduledActiveChange = userData.ScheduledActiveChange,
+                                          LoginAttempts = userData.LoginAttempts,
+                                          CompanyName = userData.CompanyName,
+                                          PortalThemeId = userData.PortalThemeId
+                                      }).ToListAsync();
+                if (sortAscending)
+                {
+                    sortData = sortData.Where(y => y.UserName.Contains(search) || y.Email.Contains(search) || y.FirstName.Contains(search)).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
+                }
+                else
+                {
+                    sortData = sortData.Where(y => y.UserName.Contains(search) || y.Email.Contains(search) || y.FirstName.Contains(search)).OrderByDescending(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
+                }
+                users.UsersList = sortData;
+                return new JsonResult(new CustomResponse<UsersViewModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = users });
             }
-            catch
+            catch (Exception ex)
             {
-                return users;
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = true, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = ex });
             }
         }
         #endregion

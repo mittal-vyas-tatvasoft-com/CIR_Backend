@@ -16,7 +16,7 @@ namespace CIR.Core.Interfaces.Users
 
 		UsersModel GetFilteredUsers(int displayLength, int displayStart, int sortCol, string sortDir, string search);
 
-		Task<UsersModel> GetAllUsers(int displayLength, int displayStart, string? sortCol, string search, bool sortAscending = true);
+		Task<IActionResult> GetAllUsers(int displayLength, int displayStart, string? sortCol, string search, bool sortAscending = true);
 
 	}
 }

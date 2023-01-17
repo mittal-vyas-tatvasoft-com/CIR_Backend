@@ -186,14 +186,7 @@ namespace CIR.Controllers.Users
             {
                 search ??= string.Empty;
 
-                var usersData = await _userService.GetAllUsers(displayLength, displayStart, sortCol, search, sortAscending);
-                if (usersData.UsersList.Count > 0)
-                {
-                    return new JsonResult(new CustomResponse<UsersModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = usersData });
-                }
-
-                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Requested users were not found" });
-
+                return await _userService.GetAllUsers(displayLength, displayStart, sortCol, search, sortAscending);
             }
             catch (Exception ex)
             {

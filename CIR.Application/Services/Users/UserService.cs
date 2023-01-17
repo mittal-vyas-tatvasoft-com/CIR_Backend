@@ -40,10 +40,9 @@ namespace CIR.Application.Services.Users
 			return _userRepository.GetFilteredUsers(displayLength, displayStart, sortCol, sortDir, search);
 		}
 
-		public async Task<UsersModel> GetAllUsers(int displayLength, int displayStart, string? sortCol, string search, bool sortAscending = true)
+		public async Task<IActionResult> GetAllUsers(int displayLength, int displayStart, string? sortCol, string search, bool sortAscending = true)
 		{
 			return await _userRepository.GetAllUsers(displayLength, displayStart, sortCol, search, sortAscending);
 		}
-
 	}
 }
