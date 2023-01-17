@@ -3,6 +3,7 @@ using CIR.Application.Services.Common;
 using CIR.Application.Services.GlobalConfiguration;
 using CIR.Application.Services.Users;
 using CIR.Application.Services.Website;
+using CIR.Application.Services.Websites;
 using CIR.Common.CommonModels;
 using CIR.Common.CommonServices;
 using CIR.Common.Data;
@@ -13,11 +14,13 @@ using CIR.Core.Interfaces.Common;
 using CIR.Core.Interfaces.GlobalConfiguration;
 using CIR.Core.Interfaces.Users;
 using CIR.Core.Interfaces.Website;
+using CIR.Core.Interfaces.Websites;
 using CIR.Data.Data;
 using CIR.Data.Data.Common;
 using CIR.Data.Data.GlobalConfiguration;
 using CIR.Data.Data.Users;
 using CIR.Data.Data.Website;
+using CIR.Data.Data.Websites;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -105,6 +108,8 @@ builder.Services.AddScoped<IGlobalConfigurationEmailsRepository, GlobalConfigura
 builder.Services.AddScoped<JwtGenerateToken>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
+builder.Services.AddScoped<IPortal2GlobalConfigurationReasonsServices, Portal2GlobalConfigurationReasonsServices>();
+builder.Services.AddScoped<IPortal2GlobalConfigurationReasonsRepository, Portal2GlobalConfigurationReasonsRepository>();
 
 
 
