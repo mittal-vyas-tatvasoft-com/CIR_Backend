@@ -26,7 +26,7 @@ namespace CIR.Application.Services.Utilities.SystemSettings
         #endregion
 
         #region METHODS
-        public Task<IActionResult> UpdateSystemSettingsLanguage(CulturesModel culture)
+        public Task<IActionResult> UpdateSystemSettingsLanguage(List<CulturesModel> culture)
         {
             return _isystemSettingsLanguagesRepository.UpdateSystemSettingsLanguage(culture);
         }

@@ -33,7 +33,7 @@ namespace CIR.Controllers.Utilities.SystemSettings
         /// <param name="culture"> this object contains different parameters as details of a Languages </param>
         /// <returns ></returns>
         [HttpPut("[action]")]
-        public async Task<IActionResult> Update([FromBody] CulturesModel culture)
+        public async Task<IActionResult> Update([FromBody] List<CulturesModel> culture)
         {
                 try
                 {

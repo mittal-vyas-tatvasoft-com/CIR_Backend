@@ -3,6 +3,7 @@ using CIR.Common.Data;
 using CIR.Core.Entities;
 using CIR.Core.Interfaces.Utilities.SystemSettings;
 using CIR.Core.ViewModel.Utilities.SystemSettings;
+using Microsoft.AspNetCore.JsonPatch.Internal;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -31,20 +32,21 @@ namespace CIR.Data.Data.Utilities.SystemSettings
         /// <summary>
         /// This method is used by Update method of SystemSettings Languages
         /// </summary>
-        /// <param name="culture"> Update Languages data</param>
+        /// <param name="cultureList"> List of Culture</param>
         /// <returns></returns>
-        public async Task<IActionResult> UpdateSystemSettingsLanguage(CulturesModel culture)
+        public async Task<IActionResult> UpdateSystemSettingsLanguage(List<CulturesModel> cultureList)
         {
             try
             {
-                var cultureeData = _CIRDbContext.Cultures.FirstOrDefault(x => x.Id == culture.Id);
-                if(cultureeData != null)
+                var CultureData = GetListForUpdatedLanguages(cultureList);
+                if(CultureData != null)
                 {
-                    Culture _culture = cultureeData;
-
-                    _culture.Enabled = culture.Enabled;
-                   _CIRDbContext.Cultures.Update(_culture);
-                    await _CIRDbContext.SaveChangesAsync();
+                    
+                    foreach (Culture item in CultureData)
+                    {
+                        _CIRDbContext.Cultures.Update(item);
+                       await _CIRDbContext.SaveChangesAsync();
+                    }
 
                     return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated,Data= "Language Updated successfully" });
                 }
@@ -58,6 +60,27 @@ namespace CIR.Data.Data.Utilities.SystemSettings
             {
                 return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = ex });
             }
+        }
+
+        /// <summary>
+        /// This method is used for Getting Updated List for Languages
+        /// </summary>
+        /// <param name="culturesModels" ></param>
+        /// <returns></returns>
+        public List<Culture> GetListForUpdatedLanguages(List<CulturesModel> culturesModels)
+        {
+            List<Culture> list = new List<Culture>();
+            foreach (CulturesModel item in culturesModels)
+            {
+               var culture= _CIRDbContext.Cultures.FirstOrDefault(x=>x.Id== item.Id);
+                if (culture != null) 
+                {
+                    culture.Enabled = item.Enabled;
+                    list.Add( culture );    
+                }
+            }
+            return list;
+
         }
 
         #endregion

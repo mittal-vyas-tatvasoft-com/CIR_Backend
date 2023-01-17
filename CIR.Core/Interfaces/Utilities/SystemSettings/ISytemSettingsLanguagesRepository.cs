@@ -11,6 +11,6 @@ namespace CIR.Core.Interfaces.Utilities.SystemSettings
 {
     public interface ISytemSettingsLanguagesRepository
     {
-        public Task<IActionResult> UpdateSystemSettingsLanguage(CulturesModel culture);
+        public Task<IActionResult> UpdateSystemSettingsLanguage(List<CulturesModel> culture);
     }
 }
