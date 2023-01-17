@@ -1,4 +1,6 @@
-﻿using CIR.Core.Interfaces.Common;
+﻿using CIR.Core.Entities.Utilities;
+using CIR.Core.Interfaces.Common;
+using CIR.Core.ViewModel.Utilities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Application.Services.Common
@@ -32,5 +34,9 @@ namespace CIR.Application.Services.Common
         {
             return await _commonRepository.GetRolePrivileges();
         }
-    }
+		public async Task<IActionResult> GetSalutationtypeList(string code)
+		{
+			return await _commonRepository.GetSalutationtypeList(code);
+		}
+	}
 }

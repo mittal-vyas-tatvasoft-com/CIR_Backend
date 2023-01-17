@@ -3,10 +3,10 @@ using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Entities.Users;
 using CIR.Core.Entities.Website;
 using CIR.Core.ViewModel.GlobalConfiguration;
-using CIR.Core.Entities.Utilities.SystemSettings;
 using CIR.Core.ViewModel.GlobalConfig;
-using CIR.Core.ViewModel.Utilities.SystemSettings;
+using CIR.Core.ViewModel.Utilities;
 using Microsoft.EntityFrameworkCore;
+using CIR.Core.Entities.Utilities;
 
 namespace CIR.Common.Data
 {

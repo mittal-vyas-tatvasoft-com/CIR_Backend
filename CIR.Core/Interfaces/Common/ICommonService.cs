@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CIR.Core.Entities.Utilities;
+using CIR.Core.ViewModel.Utilities;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Core.Interfaces.Common
 {
@@ -9,5 +11,6 @@ namespace CIR.Core.Interfaces.Common
         Task<IActionResult> GetCultures();
         Task<IActionResult> GetSubSites();
         Task<IActionResult> GetRolePrivileges();
-    }
+		Task<IActionResult> GetSalutationtypeList(string code);
+	}
 }

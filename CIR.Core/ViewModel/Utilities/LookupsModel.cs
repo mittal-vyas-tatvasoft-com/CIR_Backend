@@ -1,5 +1,5 @@
 ﻿using CIR.Core.Entities;
-using CIR.Core.Entities.Utilities.SystemSettings;
+using CIR.Core.Entities.Utilities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CIR.Core.ViewModel.Utilities.SystemSettings
+namespace CIR.Core.ViewModel.Utilities
 {
-	public class LookupsModel
+    public class LookupsModel
 	{
 		public long Id { get; set; }
 

@@ -3,11 +3,10 @@ using CIR.Common.CustomResponse;
 using CIR.Common.Data;
 using CIR.Core.Entities.Users;
 using CIR.Core.Interfaces.Users;
-using CIR.Core.Interfaces.Utilities.SystemSettings;
 using CIR.Core.ViewModel;
 using CIR.Core.ViewModel.GlobalConfig;
 using CIR.Core.ViewModel.Usersvm;
-using CIR.Core.ViewModel.Utilities.SystemSettings;
+using CIR.Core.ViewModel.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,12 +17,14 @@ using System.Threading.Tasks;
 
 using CIR.Common.Helper;
 using System.Data;
-using CIR.Core.Entities.Utilities.SystemSettings;
+using CIR.Core.Entities.Utilities;
 using CIR.Core.Entities;
+using CIR.Core.Interfaces.Utilities;
+using CIR.Core.Entities.Utilities;
 
-namespace CIR.Data.Data.Utilities.SystemSettings
+namespace CIR.Data.Data.Utilities
 {
-	public class SystemSettingsLookupsRepository : ControllerBase, ILookupsRepository
+    public class SystemSettingsLookupsRepository : ControllerBase, ILookupsRepository
 	{
 		#region PROPERTIES   
 		private readonly CIRDbContext _CIRDBContext;
@@ -42,9 +43,7 @@ namespace CIR.Data.Data.Utilities.SystemSettings
 		/// <summary>
 		/// This method is used by create and update methods of Lookups
 		/// </summary>
-		/// <param name="CultureID"></param>
-		/// <param name="Code"></param>
-		/// <param name="LookupItemID"></param>
+		/// <param name="lookupModel></param>
 		/// <returns>Success status if its valid else failure</returns>
 		public async Task<IActionResult> CreateOrUpdateLookupItem(LookupsModel lookupsModel)
 		{
@@ -89,11 +88,14 @@ namespace CIR.Data.Data.Utilities.SystemSettings
 		/// <summary>
 		/// This method retuns filtered LookupItems list using LINQ
 		/// </summary>
+		/// <param name="cultureId"> </param>
+		/// <param name="code">cultureCode to get LookupItem</param>
 		/// <param name="sortCol"> name of column which we want to sort</param>
-		/// <param name="search"> word that we want to search in user table </param>
+		/// <param name="searchCultureCode"> word that we want to search in CultureCodeList </param>
+		/// <param name="searchLookupItems"> word that we want to search in LookupItemText table </param>
 		/// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
 		/// <returns> filtered list of LookupItems </returns>
-		public async Task<LookupsModel> GetAllLookupsItems(string sortCol, string? searchCultureCode, string? searchLookupItems, bool sortAscending = true)
+		public async Task<LookupsModel> GetAllLookupsItems(long cultureId, string code, string sortCol, string? searchCultureCode, string? searchLookupItems, bool sortAscending = true)
 		{
 			LookupsModel lookupModel = new LookupsModel();
 			try
@@ -109,7 +111,18 @@ namespace CIR.Data.Data.Utilities.SystemSettings
 											  }).ToList();
 
 				lookupModel.CulturalCodesList = GetCulturalCodesList(0, string.Empty, searchCultureCode);
-				lookupModel.LookupItemsList = GetLookupItemList(1, "Salutation-type", searchLookupItems);
+
+				if (lookupModel.CulturalCodesList != null && lookupModel.CulturalCodesList.Count > 0)
+				{
+					CulturalCodesModel culturalCodes = new CulturalCodesModel();
+					culturalCodes = lookupModel.CulturalCodesList.ToList().FirstOrDefault();
+
+					if (cultureId == 0)
+						cultureId = culturalCodes.CultureId;
+					code ??= culturalCodes.Code;
+
+					lookupModel.LookupItemsList = GetLookupItemList(cultureId, code, searchLookupItems);
+				}
 
 				return lookupModel;
 			}
@@ -122,10 +135,11 @@ namespace CIR.Data.Data.Utilities.SystemSettings
 		/// <summary>
 		/// This method retuns filtered LookupItems list
 		/// </summary>
-		/// <param name="Code">Defalut Loaded Code=Salutation-type, It will change base on dropdown selection change</param>
-		/// <param name="CultureId"> Default CultureId = 1 , It will change base on Culture dropdown change</param>
+		/// <param name="code">Defalut Loaded Code=Salutation-type, It will change base on dropdown selection change</param>
+		/// <param name="cultureId"> Default CultureId = 1 , It will change base on Culture dropdown change</param>
+		/// <param name="searchLookupItems"> filter LookupItemList</param>
 		/// <returns> filtered list of LookupItemsList </returns>
-		private List<LookupItemsText> GetLookupItemList(Int64 cultureId, string code, string searchLookupItems = null)
+		private List<LookupItemsText> GetLookupItemList(long cultureId, string code, string searchLookupItems = null)
 		{
 			List<LookupItemsText> lookupsItemList = new List<LookupItemsText>();
 			var dictionaryobj = new Dictionary<string, object>
@@ -157,10 +171,11 @@ namespace CIR.Data.Data.Utilities.SystemSettings
 		/// <summary>
 		/// This method retuns filtered LookupItems list
 		/// </summary>
-		/// <param name="Code">Defalut Loaded Code=null, It will change base on dropdown selection change</param>
-		/// <param name="CultureId"> Default CultureId = 0 , It will change base on Culture dropdown change</param>
+		/// <param name="code">Defalut Loaded Code=null, It will change base on dropdown selection change</param>
+		/// <param name="cultureId"> Default CultureId = 0 , It will change base on Culture dropdown change</param>
+		/// <param name="searchCultureCode"> filter CultureCodeList</param>
 		/// <returns> filtered list of LookupItemsList </returns>
-		private List<CulturalCodesModel> GetCulturalCodesList(Int64 cultureId, string code, string searchCultureCode = null)
+		private List<CulturalCodesModel> GetCulturalCodesList(long cultureId, string code, string searchCultureCode = null)
 		{
 			List<CulturalCodesModel> codeList = new List<CulturalCodesModel>();
 
