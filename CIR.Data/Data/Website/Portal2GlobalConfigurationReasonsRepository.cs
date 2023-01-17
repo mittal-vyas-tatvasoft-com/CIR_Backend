@@ -134,30 +134,14 @@ namespace CIR.Data.Data.Websites
 										GlobalConfigurationReasonId = Portal2GlobalConfigurationReason.GlobalConfigurationReasonId,
 										PortalId = Portal2GlobalConfigurationReason.PortalId
 									}).ToListAsync();
-				if (reason.Count > 0)
-				{
-					return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationReasonsModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = reason });
-				}
-				else
-				{
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NoContent, Result = true, Message = HttpStatusCodesMessages.NoContent, Data = "No Data is present" });
-				}
+
+				return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationReasonsModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = reason });
 			}
 			catch (Exception ex)
 			{
 				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
 			}
 		}
-
-
-
-
-
-
-
-
-
-
 		#endregion
 	}
 }
