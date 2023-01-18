@@ -29,6 +29,23 @@ namespace CIR.Controllers.Users
         #region METHODS
 
         /// <summary>
+        /// This method takes a get Roles list
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("GetAllroles")]
+        public async Task<IActionResult> GetRoles()
+        {
+            try
+            {
+                return await _rolesService.GetRoles();
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+            }
+        }
+
+        /// <summary>
         /// This method retuns filtered roles list using SP
         /// </summary>
         /// <param name="displayLength"> how many row/data we want to fetch(for pagination) </param>

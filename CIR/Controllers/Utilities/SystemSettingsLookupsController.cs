@@ -16,7 +16,7 @@ namespace CIR.Controllers.Utilities
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	//[Authorize]
+	[Authorize]
 	public class SystemSettingsLookupsController : ControllerBase
 	{
 		#region PROPERTIES

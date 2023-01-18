@@ -9,55 +9,41 @@ namespace CIR.Controllers.Website
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class ClientsController : ControllerBase
+    public class PortalsController : ControllerBase
     {
         #region PROPERTIES
 
-        private readonly IClientService _clientService;
+        private readonly IPortalService _portalService;
 
         #endregion
+
 
         #region CONSTRUCTORS
 
-        public ClientsController(IClientService clientService)
+        public PortalsController(IPortalService portalService)
         {
-            _clientService = clientService;
+            _portalService = portalService;
         }
 
         #endregion
+
 
         #region METHODS
 
         /// <summary>
-        /// This method fetched the list of clients
+        /// This method takes all the portal details and adds it
         /// </summary>
-        /// <returns>list of the clients</returns>
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            try
-            {
-                return await _clientService.GetAllClients();
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
-            }
-        }
-
-        /// <summary>
-        /// This method takes client details and adds it
-        /// </summary>
-        /// <param name="clientModel"></param>
+        /// <param name="portalModel"></param>
+        /// <param name="clientId"></param>
         /// <returns></returns>
-        [HttpPost("Create")]
-        public async Task<IActionResult> Create(ClientModel clientModel)
+        [HttpPost("Create/{clientId}")]
+        public async Task<IActionResult> Create(PortalModel portalModel, long clientId)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    return await _clientService.CreateOrUpdateClient(clientModel);
+                    return await _portalService.CreateorUpdatePortal(portalModel, clientId);
                 }
                 catch (Exception ex)
                 {
@@ -68,18 +54,37 @@ namespace CIR.Controllers.Website
         }
 
         /// <summary>
-        /// This method takes client details and updates it
+        /// This method disbles the portal of given portal Id
         /// </summary>
-        /// <param name="clientModel"></param>
+        /// <param name="portalId"></param>
         /// <returns></returns>
-        [HttpPut("Update")]
-        public async Task<IActionResult> Update(ClientModel clientModel)
+        [HttpDelete("Delete/{portalId}")]
+        public async Task<IActionResult> Delete(long portalId)
+        {
+            try
+            {
+                return await _portalService.DisablePortal(portalId);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+            }
+        }
+
+        /// <summary>
+        /// This method takes portal details and updates it
+        /// </summary>
+        /// <param name="portalModel"></param>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
+        [HttpPut("Update/{clientId}")]
+        public async Task<IActionResult> Update(PortalModel portalModel, long clientId)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    return await _clientService.CreateOrUpdateClient(clientModel);
+                    return await _portalService.CreateorUpdatePortal(portalModel, clientId);
                 }
                 catch (Exception ex)
                 {
