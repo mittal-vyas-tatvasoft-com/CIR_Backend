@@ -191,10 +191,9 @@ namespace CIR.Data.Data.Users
         /// <returns> filtered list of users </returns>
 
 
-        public async Task<UsersModel> GetAllUsers(int displayLength, int displayStart, string sortCol, string? search, bool sortAscending = true)
+        public async Task<IActionResult> GetAllUsers(int displayLength, int displayStart, string? sortCol, string search, int roleId, bool? enabled = null, bool sortAscending = true)
         {
-            UsersModel users = new();
-            IQueryable<User> temp = users.UsersList.AsQueryable();
+            UsersViewModel users = new();
 
             if (string.IsNullOrEmpty(sortCol))
             {
@@ -204,18 +203,39 @@ namespace CIR.Data.Data.Users
             try
             {
                 users.Count = _CIRDBContext.Users.Where(y => y.UserName.Contains(search) || y.Email.Contains(search) || y.FirstName.Contains(search)).Count();
+                List<UserModel> sortData;
+                using (DbConnection dbConnection = new DbConnection())
+                {
 
-                temp = sortAscending ? _CIRDBContext.Users.Where(y => y.UserName.Contains(search) || y.Email.Contains(search) || y.FirstName.Contains(search)).OrderBy(x => EF.Property<object>(x, sortCol)).AsQueryable()
-                                     : _CIRDBContext.Users.Where(y => y.UserName.Contains(search) || y.Email.Contains(search) || y.FirstName.Contains(search)).OrderByDescending(x => EF.Property<object>(x, sortCol)).AsQueryable();
-
-                var sortedData = await temp.Skip(displayStart).Take(displayLength).ToListAsync();
-                users.UsersList = sortedData;
-
-                return users;
+                    using (var connection = dbConnection.Connection)
+                    {
+                        sortData = connection.Query<UserModel>("spGetUserDetailList", null, commandType: CommandType.StoredProcedure).ToList();
+                    }
+                }
+                if (roleId != 0)
+                {
+                    sortData = sortData.Where(y => y.RoleId == roleId).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
+                }
+                if (enabled != null)
+                {
+                    sortData = sortData.Where(y => y.Enabled == enabled).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
+                }
+                sortData = sortData.Where(y => y.UserName.Contains(search) || y.Email.Contains(search) || y.FirstName.Contains(search)).ToList();
+                users.Count = sortData.Count();
+                if (sortAscending)
+                {
+                    sortData = sortData.OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
+                }
+                else
+                {
+                    sortData = sortData.OrderByDescending(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
+                }
+                users.UsersList = sortData;
+                return new JsonResult(new CustomResponse<UsersViewModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = users });
             }
-            catch
+            catch (Exception ex)
             {
-                return users;
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = true, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = ex });
             }
         }
         #endregion

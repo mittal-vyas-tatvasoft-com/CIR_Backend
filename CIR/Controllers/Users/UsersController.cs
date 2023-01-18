@@ -180,20 +180,12 @@ namespace CIR.Controllers.Users
         /// <returns> filtered list of users </returns>
 
         [HttpGet]
-        public async Task<IActionResult> UsersLinq(int displayLength, int displayStart, string? sortCol, string? search, bool sortAscending = true)
+        public async Task<IActionResult> UsersLinq(int displayLength, int displayStart, string? sortCol, string? search, int roleId, bool? enabled = null, bool sortAscending = true)
         {
             try
             {
                 search ??= string.Empty;
-
-                var usersData = await _userService.GetAllUsers(displayLength, displayStart, sortCol, search, sortAscending);
-                if (usersData.UsersList.Count > 0)
-                {
-                    return new JsonResult(new CustomResponse<UsersModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = usersData });
-                }
-
-                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Requested users were not found" });
-
+                return await _userService.GetAllUsers(displayLength, displayStart, sortCol, search, roleId, enabled, sortAscending);
             }
             catch (Exception ex)
             {
