@@ -111,7 +111,6 @@ namespace CIR.Data.Data.Website
                 if (portalToGlobalConfigurationEmails.Any(x => x.Id == 0))
                 {
                     return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest });
-
                 }
                 if (portalToGlobalConfigurationEmails != null)
                 {
