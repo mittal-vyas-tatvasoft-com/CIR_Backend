@@ -203,39 +203,15 @@ namespace CIR.Data.Data.Users
             try
             {
                 users.Count = _CIRDBContext.Users.Where(y => y.UserName.Contains(search) || y.Email.Contains(search) || y.FirstName.Contains(search)).Count();
+                List<UserModel> sortData;
+                using (DbConnection dbConnection = new DbConnection())
+                {
 
-                var sortData = await (from userData in _CIRDBContext.Users
-                                      join roleData in _CIRDBContext.Roles on userData.RoleId equals roleData.Id
-                                      join cultureData in _CIRDBContext.Cultures on userData.CultureLcid equals cultureData.Id
-                                      select new UserModel()
-                                      {
-                                          Id = userData.Id,
-                                          UserName = userData.UserName,
-                                          Password = userData.Password,
-                                          Email = userData.Email,
-                                          SalutationLookupItemId = userData.SalutationLookupItemId,
-                                          FirstName = userData.FirstName,
-                                          LastName = userData.LastName,
-                                          FullName = userData.FirstName + ' ' + userData.LastName,
-                                          RoleId = userData.RoleId,
-                                          RoleName = roleData.Name,
-                                          Enabled = userData.Enabled,
-                                          LastLogOn = userData.LastLogOn,
-                                          CreatedOn = userData.CreatedOn,
-                                          LastEditedOn = userData.LastEditedOn,
-                                          ResetRequired = userData.ResetRequired,
-                                          DefaultAdminUser = userData.DefaultAdminUser,
-                                          TimeZone = userData.TimeZone,
-                                          CultureLcid = userData.CultureLcid,
-                                          CultureDisplayName = cultureData.DisplayName,
-                                          CultureNativeName = cultureData.NativeName,
-                                          EmployeeId = userData.EmployeeId,
-                                          PhoneNumber = userData.PhoneNumber,
-                                          ScheduledActiveChange = userData.ScheduledActiveChange,
-                                          LoginAttempts = userData.LoginAttempts,
-                                          CompanyName = userData.CompanyName,
-                                          PortalThemeId = userData.PortalThemeId
-                                      }).ToListAsync();
+                    using (var connection = dbConnection.Connection)
+                    {
+                        sortData = connection.Query<UserModel>("spGetUserDetailList", null, commandType: CommandType.StoredProcedure).ToList();
+                    }
+                }
                 if (roleId != 0)
                 {
                     sortData = sortData.Where(y => y.RoleId == roleId).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
