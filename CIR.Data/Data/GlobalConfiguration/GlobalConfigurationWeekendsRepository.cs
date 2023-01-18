@@ -96,7 +96,10 @@ namespace CIR.Data.Data.GlobalConfiguration
         /// <returns> filtered list of Weekends </returns>
         public async Task<ActionResult> GetGlobalConfigurationWeekends(int displayLength, int displayStart, string sortCol, string? search, bool sortAscending = true)
         {
+            string SerchText = string.Empty;
             GlobalConfigurationWeekendsModel weekends = new();
+            if (search != null & search != string.Empty)
+                SerchText = search.ToLower();
 
 
             if (string.IsNullOrEmpty(sortCol))
@@ -107,7 +110,7 @@ namespace CIR.Data.Data.GlobalConfiguration
             try
 
             {
-                var weekendList = (from week in _CIRDbContext.Weekends
+                var weekendList = sortAscending ? (from week in _CIRDbContext.Weekends
                                    join country in _CIRDbContext.CountryCodes
                                                                 on week.CountryId equals country.Id
                                    select new WeekendModel()
@@ -117,7 +120,18 @@ namespace CIR.Data.Data.GlobalConfiguration
                                        DayOfWeekId = week.DayOfWeekId,
                                        CountryCode = country.Code,
                                        CountryName = country.CountryName,
-                                   }).OrderBy(x => EF.Property<object>(x, sortCol));
+                                   }).OrderBy(x => EF.Property<object>(x, sortCol))
+                                   : (from week in _CIRDbContext.Weekends
+                                      join country in _CIRDbContext.CountryCodes
+                                                                   on week.CountryId equals country.Id
+                                      select new WeekendModel()
+                                      {
+                                          Id = week.Id,
+                                          CountryId = country.Id,
+                                          DayOfWeekId = week.DayOfWeekId,
+                                          CountryCode = country.Code,
+                                          CountryName = country.CountryName,
+                                      }).OrderByDescending(x => EF.Property<object>(x, sortCol));
                 foreach (var item in weekendList)
                 {
                     WeekendModel weekendModel = item;
@@ -143,18 +157,18 @@ namespace CIR.Data.Data.GlobalConfiguration
                             weekendModel.DayOfWeek = "Friday";
                             break;
                         case System.DayOfWeek.Saturday:
-                            weekendModel.DayOfWeek = "SaturDay";
+                            weekendModel.DayOfWeek = "Saturday";
                             break;
                     }
                     weekends.WeekendsList.Add(weekendModel);
                 }
 
-                IQueryable<WeekendModel> weekendLists = weekends.WeekendsList.AsQueryable();
+                IEnumerable<WeekendModel> weekendLists = weekends.WeekendsList;
 
-                weekends.Count = weekends.WeekendsList.Where(x => x.CountryName.Contains(search) || x.CountryCode.Contains(search) || x.DayOfWeek.Contains(search)).Count();
+                weekends.Count = weekends.WeekendsList.Where(x => x.CountryName.ToLower().Contains(SerchText) || x.CountryCode.ToLower().Contains(SerchText) || x.DayOfWeek.ToLower().Contains(SerchText)).Count();
 
-                weekendLists = sortAscending ? weekends.WeekendsList.Where(x => x.CountryName.Contains(search) || x.CountryCode.Contains(search) || x.DayOfWeek.Contains(search)).AsQueryable()
-                                     : weekends.WeekendsList.Where(x => x.CountryName.Contains(search) || x.CountryCode.Contains(search) || x.DayOfWeek.Contains(search)).AsQueryable();
+                weekendLists = weekends.WeekendsList.Where(x => x.CountryName.ToLower().Contains(SerchText) || x.CountryCode.ToLower().Contains(SerchText) || x.DayOfWeek.ToLower().Contains(SerchText));
+                                     
 
                 var sortedData = weekendLists.Skip(displayStart).Take(displayLength);
                 weekends.WeekendsList = sortedData.ToList();
