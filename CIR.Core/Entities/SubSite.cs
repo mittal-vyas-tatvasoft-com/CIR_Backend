@@ -1,4 +1,6 @@
-﻿namespace CIR.Core.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace CIR.Core.Entities
 {
     public partial class SubSite
     {
@@ -16,6 +18,7 @@
 
         public bool? Enabled { get; set; }
 
+        [EmailAddress(ErrorMessage = "Please Enter Valid Email Address")]
         public string? SystemEmailFromAddress { get; set; }
 
         public long? FaviconAssetId { get; set; }
@@ -28,6 +31,7 @@
 
         public long? PortalId { get; set; }
 
+        [EmailAddress(ErrorMessage = "Please Enter Valid Email Address")]
         public string? BccemailAddress { get; set; }
 
         public string? CloudFrontDistributionId { get; set; }

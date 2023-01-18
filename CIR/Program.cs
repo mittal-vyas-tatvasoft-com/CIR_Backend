@@ -112,6 +112,8 @@ builder.Services.AddScoped<IPortal2GlobalConfigurationReasonsServices, Portal2Gl
 builder.Services.AddScoped<IPortal2GlobalConfigurationReasonsRepository, Portal2GlobalConfigurationReasonsRepository>();
 builder.Services.AddScoped<IPortalToGlobalConfigurationEmailsService, PortalToGlobalConfigurationEmailsService>();
 builder.Services.AddScoped<IPortalToGlobalConfigurationEmailsRepository, PortalToGlobalConfigurationEmailsRepository>();
+builder.Services.AddScoped<IPortalService, PortalService>();
+builder.Services.AddScoped<IPortalRepository, PortalRepository>();
 
 
 
