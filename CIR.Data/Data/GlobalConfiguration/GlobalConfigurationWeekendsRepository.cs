@@ -5,6 +5,7 @@ using CIR.Core.Interfaces.GlobalConfiguration;
 using CIR.Core.ViewModel.GlobalConfiguration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 
 namespace CIR.Data.Data.GlobalConfiguration
 {
@@ -134,30 +135,31 @@ namespace CIR.Data.Data.GlobalConfiguration
                                       }).OrderByDescending(x => EF.Property<object>(x, sortCol));
                 foreach (var item in weekendList)
                 {
+                    
                     WeekendModel weekendModel = item;
                     switch ((DayOfWeek)item.DayOfWeekId)
                     {
                         case System.DayOfWeek.Sunday:
-                            weekendModel.DayOfWeek = "Sunday";
+                            weekendModel.DayOfWeek = Enum.GetName(System.DayOfWeek.Sunday.GetType(), System.DayOfWeek.Sunday);
                             break;
                         case System.DayOfWeek.Monday:
 
-                            weekendModel.DayOfWeek = "Monday";
+                            weekendModel.DayOfWeek = Enum.GetName(System.DayOfWeek.Monday.GetType(), System.DayOfWeek.Monday);
                             break;
                         case System.DayOfWeek.Tuesday:
-                            weekendModel.DayOfWeek = "Tuesday";
+                            weekendModel.DayOfWeek = Enum.GetName(System.DayOfWeek.Tuesday.GetType(), System.DayOfWeek.Tuesday);
                             break;
                         case System.DayOfWeek.Wednesday:
-                            weekendModel.DayOfWeek = "Wednesday";
+                            weekendModel.DayOfWeek = Enum.GetName(System.DayOfWeek.Wednesday.GetType(), System.DayOfWeek.Wednesday);
                             break;
                         case System.DayOfWeek.Thursday:
-                            weekendModel.DayOfWeek = "Thursday";
+                            weekendModel.DayOfWeek = Enum.GetName(System.DayOfWeek.Thursday.GetType(), System.DayOfWeek.Thursday);
                             break;
                         case System.DayOfWeek.Friday:
-                            weekendModel.DayOfWeek = "Friday";
+                            weekendModel.DayOfWeek = Enum.GetName(System.DayOfWeek.Friday.GetType(), System.DayOfWeek.Friday);
                             break;
                         case System.DayOfWeek.Saturday:
-                            weekendModel.DayOfWeek = "Saturday";
+                            weekendModel.DayOfWeek = Enum.GetName(System.DayOfWeek.Saturday.GetType(), System.DayOfWeek.Saturday);
                             break;
                     }
                     weekends.WeekendsList.Add(weekendModel);
