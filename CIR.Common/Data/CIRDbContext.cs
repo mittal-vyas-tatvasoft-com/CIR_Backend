@@ -1,10 +1,4 @@
-﻿using CIR.Core.Entities;
-using CIR.Core.Entities.GlobalConfiguration;
-using CIR.Core.Entities.Users;
-using CIR.Core.Entities.Website;
-using Microsoft.EntityFrameworkCore;
-
-namespace CIR.Common.Data
+﻿namespace CIR.Common.Data
 {
     public class CIRDbContext : DbContext
     {
@@ -91,7 +85,9 @@ namespace CIR.Common.Data
 
         public DbSet<GlobalConfigurationReasons> GlobalConfigurationReasons { get; set; }
         public DbSet<Clients> Clients { get; set; }
-        public DbSet<PortalToGlobalConfigurationEmails> Portal2GlobalConfigurationEmails { get; set; }
+        public DbSet<Portal2GlobalConfigurationReasons> portal2GlobalConfigurationReasons { get; set; }
+        public DbSet<Offices> offices { get; set; }
+        public DbSet<Portals> portals { get; set; }
     }
 }
 
