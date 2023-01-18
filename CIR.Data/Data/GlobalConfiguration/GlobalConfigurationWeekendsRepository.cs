@@ -97,10 +97,10 @@ namespace CIR.Data.Data.GlobalConfiguration
         /// <returns> filtered list of Weekends </returns>
         public async Task<ActionResult> GetGlobalConfigurationWeekends(int displayLength, int displayStart, string sortCol, string? search, bool sortAscending = true)
         {
-            string SerchText = string.Empty;
-            GlobalConfigurationWeekendsModel weekends = new();
+            string SearchText = string.Empty;
+            GlobalConfigurationWeekendsModel Weekends = new();
             if (search != null & search != string.Empty)
-                SerchText = search.ToLower();
+                SearchText = search.ToLower();
 
 
             if (string.IsNullOrEmpty(sortCol))
@@ -162,20 +162,20 @@ namespace CIR.Data.Data.GlobalConfiguration
                             weekendModel.DayOfWeek = Enum.GetName(System.DayOfWeek.Saturday.GetType(), System.DayOfWeek.Saturday);
                             break;
                     }
-                    weekends.WeekendsList.Add(weekendModel);
+                    Weekends.WeekendsList.Add(weekendModel);
                 }
 
-                IEnumerable<WeekendModel> weekendLists = weekends.WeekendsList;
+                IEnumerable<WeekendModel> weekendLists = Weekends.WeekendsList;
 
-                weekends.Count = weekends.WeekendsList.Where(x => x.CountryName.ToLower().Contains(SerchText) || x.CountryCode.ToLower().Contains(SerchText) || x.DayOfWeek.ToLower().Contains(SerchText)).Count();
+                Weekends.Count = Weekends.WeekendsList.Where(x => x.CountryName.ToLower().Contains(SearchText) || x.CountryCode.ToLower().Contains(SearchText) || x.DayOfWeek.ToLower().Contains(SearchText)).Count();
 
-                weekendLists = weekends.WeekendsList.Where(x => x.CountryName.ToLower().Contains(SerchText) || x.CountryCode.ToLower().Contains(SerchText) || x.DayOfWeek.ToLower().Contains(SerchText));
+                weekendLists = Weekends.WeekendsList.Where(x => x.CountryName.ToLower().Contains(SearchText) || x.CountryCode.ToLower().Contains(SearchText) || x.DayOfWeek.ToLower().Contains(SearchText));
                                      
 
                 var sortedData = weekendLists.Skip(displayStart).Take(displayLength);
-                weekends.WeekendsList = sortedData.ToList();
+                Weekends.WeekendsList = sortedData.ToList();
 
-                return new JsonResult(new CustomResponse<GlobalConfigurationWeekendsModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = weekends });
+                return new JsonResult(new CustomResponse<GlobalConfigurationWeekendsModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = Weekends });
 
             }
             catch (Exception ex)
