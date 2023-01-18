@@ -66,10 +66,10 @@ namespace CIR.Data.Data.GlobalConfiguration
         {
             try
             {
-                var weekend = _CIRDbContext.Weekends.FirstOrDefault(x => x.Id == id);
-                if (weekend != null)
+                var Weekend = _CIRDbContext.Weekends.FirstOrDefault(x => x.Id == id);
+                if (Weekend != null)
                 {
-                    _CIRDbContext.Weekends.Remove(weekend);
+                    _CIRDbContext.Weekends.Remove(Weekend);
                     await _CIRDbContext.SaveChangesAsync();
                     return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Deleted, Data = "Weekends Deleted Successfully." });
                 }
@@ -99,7 +99,7 @@ namespace CIR.Data.Data.GlobalConfiguration
         {
             string SearchText = string.Empty;
             GlobalConfigurationWeekendsModel Weekends = new();
-            if (search != null & search != string.Empty)
+            if (search != null && search != string.Empty)
                 SearchText = search.ToLower();
 
 
@@ -136,43 +136,43 @@ namespace CIR.Data.Data.GlobalConfiguration
                 foreach (var item in weekendList)
                 {
                     
-                    WeekendModel weekendModel = item;
+                    WeekendModel WeekendModel = item;
                     switch ((DayOfWeek)item.DayOfWeekId)
                     {
                         case System.DayOfWeek.Sunday:
-                            weekendModel.DayOfWeek = Enum.GetName(System.DayOfWeek.Sunday.GetType(), System.DayOfWeek.Sunday);
+                            WeekendModel.DayOfWeek = Enum.GetName(System.DayOfWeek.Sunday.GetType(), System.DayOfWeek.Sunday);
                             break;
                         case System.DayOfWeek.Monday:
 
-                            weekendModel.DayOfWeek = Enum.GetName(System.DayOfWeek.Monday.GetType(), System.DayOfWeek.Monday);
+                            WeekendModel.DayOfWeek = Enum.GetName(System.DayOfWeek.Monday.GetType(), System.DayOfWeek.Monday);
                             break;
                         case System.DayOfWeek.Tuesday:
-                            weekendModel.DayOfWeek = Enum.GetName(System.DayOfWeek.Tuesday.GetType(), System.DayOfWeek.Tuesday);
+                            WeekendModel.DayOfWeek = Enum.GetName(System.DayOfWeek.Tuesday.GetType(), System.DayOfWeek.Tuesday);
                             break;
                         case System.DayOfWeek.Wednesday:
-                            weekendModel.DayOfWeek = Enum.GetName(System.DayOfWeek.Wednesday.GetType(), System.DayOfWeek.Wednesday);
+                            WeekendModel.DayOfWeek = Enum.GetName(System.DayOfWeek.Wednesday.GetType(), System.DayOfWeek.Wednesday);
                             break;
                         case System.DayOfWeek.Thursday:
-                            weekendModel.DayOfWeek = Enum.GetName(System.DayOfWeek.Thursday.GetType(), System.DayOfWeek.Thursday);
+                            WeekendModel.DayOfWeek = Enum.GetName(System.DayOfWeek.Thursday.GetType(), System.DayOfWeek.Thursday);
                             break;
                         case System.DayOfWeek.Friday:
-                            weekendModel.DayOfWeek = Enum.GetName(System.DayOfWeek.Friday.GetType(), System.DayOfWeek.Friday);
+                            WeekendModel.DayOfWeek = Enum.GetName(System.DayOfWeek.Friday.GetType(), System.DayOfWeek.Friday);
                             break;
                         case System.DayOfWeek.Saturday:
-                            weekendModel.DayOfWeek = Enum.GetName(System.DayOfWeek.Saturday.GetType(), System.DayOfWeek.Saturday);
+                            WeekendModel.DayOfWeek = Enum.GetName(System.DayOfWeek.Saturday.GetType(), System.DayOfWeek.Saturday);
                             break;
                     }
-                    Weekends.WeekendsList.Add(weekendModel);
+                    Weekends.WeekendsList.Add(WeekendModel);
                 }
 
-                IEnumerable<WeekendModel> weekendLists = Weekends.WeekendsList;
+                IEnumerable<WeekendModel> WeekendLists = Weekends.WeekendsList;
 
-                Weekends.Count = Weekends.WeekendsList.Where(x => x.CountryName.ToLower().Contains(SearchText) || x.CountryCode.ToLower().Contains(SearchText) || x.DayOfWeek.ToLower().Contains(SearchText)).Count();
 
-                weekendLists = Weekends.WeekendsList.Where(x => x.CountryName.ToLower().Contains(SearchText) || x.CountryCode.ToLower().Contains(SearchText) || x.DayOfWeek.ToLower().Contains(SearchText));
+                WeekendLists = Weekends.WeekendsList.Where(x => x.CountryName.ToLower().Contains(SearchText) || x.CountryCode.ToLower().Contains(SearchText) || x.DayOfWeek.ToLower().Contains(SearchText));
                                      
+                Weekends.Count = WeekendLists.Count();
 
-                var sortedData = weekendLists.Skip(displayStart).Take(displayLength);
+                var sortedData = WeekendLists.Skip(displayStart).Take(displayLength);
                 Weekends.WeekendsList = sortedData.ToList();
 
                 return new JsonResult(new CustomResponse<GlobalConfigurationWeekendsModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = Weekends });
