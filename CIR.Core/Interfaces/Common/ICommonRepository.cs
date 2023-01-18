@@ -12,5 +12,6 @@ namespace CIR.Core.Interfaces.Common
 		Task<IActionResult> GetSubSites();
 		Task<IActionResult> GetRolePrivileges();
 		Task<IActionResult> GetSalutationtypeList(string code);
+		Task<IActionResult> GetSystemCodes();
 	}
 }

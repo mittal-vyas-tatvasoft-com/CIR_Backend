@@ -15,7 +15,7 @@ using System.Data;
 
 namespace CIR.Data.Data.Common
 {
-    public class CommonRepository : ICommonRepository
+	public class CommonRepository : ICommonRepository
 	{
 		#region PROPERTIES
 
@@ -141,7 +141,6 @@ namespace CIR.Data.Data.Common
 				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
 			}
 		}
-
 		public async Task<IActionResult> GetSalutationList(string code)
 		{
 			List<LookupItemsText> SalutationList = new List<LookupItemsText>();
@@ -164,6 +163,30 @@ namespace CIR.Data.Data.Common
 			}
 			return new JsonResult(new CustomResponse<List<LookupItemsText>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = SalutationList });
 		}
+
+		/// <summary>
+		/// This method used by get System codes list
+		/// </summary>
+		/// <returns></returns>
+		public async Task<IActionResult> GetSystemCodes()
+		{
+			try
+			{
+				var systemCodeList = (from sc in _CIRDBContext.SystemCodes
+									  select new SystemCodeModel()
+									  {
+										  Id = sc.Id,
+										  Code = sc.Code
+									  }).ToList();
+
+				return new JsonResult(new CustomResponse<List<SystemCodeModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = systemCodeList });
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+			}
+		}
+
 		#endregion
 	}
 }

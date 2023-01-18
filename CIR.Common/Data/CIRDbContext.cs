@@ -97,6 +97,7 @@ namespace CIR.Common.Data
         public DbSet<Clients> Clients { get; set; }
         public DbSet<LookupItemsText> LookupItemsText { get; set; }
         public DbSet<SystemCode> SystemCodes { get; set; }
+        public DbSet<LookupItem> LookupItems { get; set; }
     }
 }
 

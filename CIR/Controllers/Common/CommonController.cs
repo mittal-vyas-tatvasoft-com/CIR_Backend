@@ -135,6 +135,24 @@ namespace CIR.Controllers.Common
 				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = true, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
 			}
 		}
+
+		/// <summary>
+		/// This method get a SystemCode list
+		/// </summary>
+		/// <returns></returns>
+		[HttpGet("[action]")]
+		public async Task<IActionResult> GetSystemCodes()
+		{
+			try
+			{
+				return await _commonService.GetSystemCodes();
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = true, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+			}
+		}
+
 		#endregion
 	}
 }

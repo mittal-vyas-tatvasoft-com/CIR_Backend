@@ -14,17 +14,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using CIR.Common.Helper;
 using System.Data;
 using CIR.Core.Entities.Utilities;
 using CIR.Core.Entities;
 using CIR.Core.Interfaces.Utilities;
 using CIR.Core.Entities.Utilities;
+using CIR.Core.ViewModel.GlobalConfiguration;
 
 namespace CIR.Data.Data.Utilities
 {
-    public class SystemSettingsLookupsRepository : ControllerBase, ILookupsRepository
+	public class SystemSettingsLookupsRepository : ControllerBase, ILookupsRepository
 	{
 		#region PROPERTIES   
 		private readonly CIRDbContext _CIRDBContext;
@@ -43,45 +43,64 @@ namespace CIR.Data.Data.Utilities
 		/// <summary>
 		/// This method is used by create and update methods of Lookups
 		/// </summary>
-		/// <param name="lookupModel></param>
+		/// <param name="lookupItemsTextmodel></param>
 		/// <returns>Success status if its valid else failure</returns>
-		public async Task<IActionResult> CreateOrUpdateLookupItem(LookupsModel lookupsModel)
+		public async Task<IActionResult> CreateOrUpdateLookupItem(LookupItemsTextModel lookupItemsTextmodel)
 		{
 			try
 			{
-				if (lookupsModel.Code == null || lookupsModel.CultureId == 0)
+				if (lookupItemsTextmodel.Code == null || lookupItemsTextmodel.CultureId == 0)
 				{
 					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest });
 				}
 
-				int displayOrder;
-				var displayOrderId = _CIRDBContext.LookupItemsText.OrderByDescending(x => x.DisplayOrder).FirstOrDefault();
-				if (displayOrderId != null)
-					displayOrder = displayOrderId.DisplayOrder + 1;
-				else
-					displayOrder = 0;
-
-				LookupItemsText lookupsData = new()
+				if (lookupItemsTextmodel.Id == 0)
 				{
-					CultureId = lookupsModel.CultureId,
-					Id = lookupsModel.Id,
-					LookupItemId = lookupsModel.LookupItemId,
-					DisplayOrder = displayOrder,
-					Text = lookupsModel.Text,
-					Active = lookupsModel.Active,
-				};
+					int displayOrder;
+					var displayOrderId = _CIRDBContext.LookupItemsText.OrderByDescending(x => x.DisplayOrder).FirstOrDefault();
+					if (displayOrderId != null)
+						displayOrder = displayOrderId.DisplayOrder + 1;
+					else
+						displayOrder = 1;
 
-				if (lookupsModel.Id > 0)
-					_CIRDBContext.LookupItemsText.Update(lookupsData);
+					var lookupItemId = (from sc in _CIRDBContext.SystemCodes
+										join lookup in _CIRDBContext.LookupItems on sc.Id equals lookup.SystemCodeId
+										select new LookupItem
+										{
+											LookupItemId = lookup.LookupItemId
+										}).FirstOrDefault();
+
+					LookupItemsText newItem = new()
+					{
+						LookupItemId = lookupItemsTextmodel.LookupItemId,
+						CultureId = lookupItemsTextmodel.CultureId,
+						DisplayOrder = displayOrder,
+						Text = lookupItemsTextmodel.Text,
+						Active = lookupItemsTextmodel.Active,
+					};
+					_CIRDBContext.LookupItemsText.Add(newItem);
+					_CIRDBContext.SaveChanges();
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "Lookup Item Saved Successfully." });
+				}
 				else
-					_CIRDBContext.LookupItemsText.Add(lookupsData);
+				{
+					var lookupItemTextData = _CIRDBContext.LookupItemsText.FirstOrDefault(x => x.Id == lookupItemsTextmodel.Id);
+					if (lookupItemTextData != null)
+					{
+						LookupItemsText updateItem = lookupItemTextData;
+						updateItem.Text = lookupItemsTextmodel.Text;
+						updateItem.Active = lookupItemsTextmodel.Active;
 
-				_CIRDBContext.SaveChanges();
-				return new JsonResult(new CustomResponse<LookupItemsText>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = lookupsData });
+						_CIRDBContext.LookupItemsText.Update(updateItem);
+						_CIRDBContext.SaveChanges();
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "Lookup Item Updated Successfully." });
+					}
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Requested Lookup Item were not found" });
+				}
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = false, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = ex });
 			}
 		}
 
@@ -92,43 +111,29 @@ namespace CIR.Data.Data.Utilities
 		/// <param name="code">cultureCode to get LookupItem</param>
 		/// <param name="sortCol"> name of column which we want to sort</param>
 		/// <param name="searchCultureCode"> word that we want to search in CultureCodeList </param>
-		/// <param name="searchLookupItems"> word that we want to search in LookupItemText table </param>
-		/// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
 		/// <returns> filtered list of LookupItems </returns>
-		public async Task<LookupsModel> GetAllLookupsItems(long cultureId, string code, string sortCol, string? searchCultureCode, string? searchLookupItems, bool sortAscending = true)
+		public async Task<IActionResult> GetAllCultureCodeList(long? cultureId, string? code, string? sortCol, string? searchCultureCode, bool sortAscending = true)
 		{
+			long? cultureCodeCultureId = 0;
 			LookupsModel lookupModel = new LookupsModel();
+
 			try
 			{
 				searchCultureCode ??= string.Empty;
-				searchLookupItems ??= string.Empty;
 
-				lookupModel.SystemCodeList = (from sc in _CIRDBContext.SystemCodes
-											  select new SystemCode()
-											  {
-												  Id = sc.Id,
-												  Code = sc.Code
-											  }).ToList();
+				if (cultureId == null)
+					cultureCodeCultureId = 0;
+				else
+					cultureCodeCultureId = cultureId;
+				if (code == string.Empty || code == null) code = string.Empty;
 
-				lookupModel.CulturalCodesList = GetCulturalCodesList(0, string.Empty, searchCultureCode);
+				lookupModel.CulturalCodesList = GetCulturalCodesList(cultureCodeCultureId, code, searchCultureCode);
 
-				if (lookupModel.CulturalCodesList != null && lookupModel.CulturalCodesList.Count > 0)
-				{
-					CulturalCodesModel culturalCodes = new CulturalCodesModel();
-					culturalCodes = lookupModel.CulturalCodesList.ToList().FirstOrDefault();
-
-					if (cultureId == 0)
-						cultureId = culturalCodes.CultureId;
-					code ??= culturalCodes.Code;
-
-					lookupModel.LookupItemsList = GetLookupItemList(cultureId, code, searchLookupItems);
-				}
-
-				return lookupModel;
+				return new JsonResult(new CustomResponse<LookupsModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = lookupModel });
 			}
 			catch (Exception ex)
 			{
-				return lookupModel;
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
 			}
 		}
 
@@ -138,34 +143,42 @@ namespace CIR.Data.Data.Utilities
 		/// <param name="code">Defalut Loaded Code=Salutation-type, It will change base on dropdown selection change</param>
 		/// <param name="cultureId"> Default CultureId = 1 , It will change base on Culture dropdown change</param>
 		/// <param name="searchLookupItems"> filter LookupItemList</param>
+		/// <param name="sortAscending"> filter LookupItemList</param>
 		/// <returns> filtered list of LookupItemsList </returns>
-		private List<LookupItemsText> GetLookupItemList(long cultureId, string code, string searchLookupItems = null)
+		public async Task<IActionResult> GetAllLookupsItems(long cultureId, string code, string? searchLookupItems, bool sortAscending = true)
 		{
-			List<LookupItemsText> lookupsItemList = new List<LookupItemsText>();
-			var dictionaryobj = new Dictionary<string, object>
+			try
+			{
+				List<LookupItemsText> lookupsItemList = new List<LookupItemsText>();
+				var dictionaryobj = new Dictionary<string, object>
 			{
 					{"CultureId", cultureId},
 					{ "Code", code},
-					{ "SearchLookupItems", searchLookupItems},
+					{ "SearchLookupItems", searchLookupItems}
 			};
 
-			DataTable dt = SQLHelper.ExecuteSqlQueryWithParams("spGetLookupItemList", dictionaryobj);
-			if (dt != null)
-			{
-				foreach (DataRow row in dt.Rows)
+				DataTable dt = SQLHelper.ExecuteSqlQueryWithParams("spGetLookupItemList", dictionaryobj);
+				if (dt != null)
 				{
-					LookupItemsText lookupModel = new LookupItemsText();
+					foreach (DataRow row in dt.Rows)
+					{
+						LookupItemsText lookupModel = new LookupItemsText();
 
-					lookupModel.Id = Convert.ToInt64(row["Id"]);
-					lookupModel.Text = Convert.ToString(row["Text"]);
-					lookupModel.LookupItemId = Convert.ToInt64(row["LookupItemId"]);
-					lookupModel.Active = Convert.ToBoolean(row["Active"]);
-					lookupModel.CultureId = Convert.ToInt64(row["CultureId"]);
-					lookupsItemList.Add(lookupModel);
+						lookupModel.Id = Convert.ToInt64(row["Id"]);
+						lookupModel.Text = Convert.ToString(row["Text"]);
+						lookupModel.LookupItemId = Convert.ToInt64(row["LookupItemId"]);
+						lookupModel.Active = Convert.ToBoolean(row["Active"]);
+						lookupModel.CultureId = Convert.ToInt64(row["CultureId"]);
+						lookupsItemList.Add(lookupModel);
+					}
 				}
-			}
 
-			return lookupsItemList;
+				return new JsonResult(new CustomResponse<List<LookupItemsText>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = lookupsItemList });
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+			}
 		}
 
 		/// <summary>
@@ -175,7 +188,7 @@ namespace CIR.Data.Data.Utilities
 		/// <param name="cultureId"> Default CultureId = 0 , It will change base on Culture dropdown change</param>
 		/// <param name="searchCultureCode"> filter CultureCodeList</param>
 		/// <returns> filtered list of LookupItemsList </returns>
-		private List<CulturalCodesModel> GetCulturalCodesList(long cultureId, string code, string searchCultureCode = null)
+		private List<CulturalCodesModel> GetCulturalCodesList(long? cultureId, string code, string searchCultureCode = null)
 		{
 			List<CulturalCodesModel> codeList = new List<CulturalCodesModel>();
 
@@ -211,7 +224,7 @@ namespace CIR.Data.Data.Utilities
 		/// <returns> if LookupItem exists true else false </returns>
 		public async Task<Boolean> LookupItemExists(long cultureId, long lookupItemId)
 		{
-			var checkItemExist = await _CIRDBContext.LookupItemsText.Where(x => x.CultureId == cultureId && x.LookupItemId != lookupItemId).FirstOrDefaultAsync();
+			var checkItemExist = await _CIRDBContext.LookupItemsText.Where(x => x.CultureId == cultureId && x.LookupItemId == lookupItemId).FirstOrDefaultAsync();
 
 			if (checkItemExist != null)
 			{
