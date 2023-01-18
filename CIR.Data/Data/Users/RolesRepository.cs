@@ -27,6 +27,27 @@ namespace CIR.Data.Data.Users
         #endregion
 
         #region METHODS
+        /// <summary>
+        /// This method is used by get globalconfiguration fonts list
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> GetRoles()
+        {
+            try
+            {
+                var roles = await _CIRDbContext.Roles.Select(x => new RoleViewModel()
+                {
+                    Id = x.Id,
+                    Description = x.Description,
+                    Name = x.Name
+                }).ToListAsync();
+                return new JsonResult(new CustomResponse<List<RoleViewModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = roles });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+            }
+        }
 
         /// <summary>
         /// This method retuns filtered role list using LINQ

@@ -1,41 +1,42 @@
 ﻿using CIR.Common.CustomResponse;
-using CIR.Core.Entities.GlobalConfiguration;
-using CIR.Core.Interfaces.GlobalConfiguration;
+using CIR.Core.Entities.Website;
+using CIR.Core.Interfaces.Website;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CIR.Controllers.GlobalConfiguration
+namespace CIR.Controllers.Website
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class GlobalConfigurationEmailsController : ControllerBase
+    public class PortalToGlobalConfigurationEmailsController : ControllerBase
     {
         #region PROPERTIES
-        private readonly IGlobalConfigurationEmailsService _globalConfigurationEmailsService;
+        private readonly IPortalToGlobalConfigurationEmailsService _portalToGlobalConfigurationEmailsService;
         #endregion
 
         #region CONSTRUCTORS
-        public GlobalConfigurationEmailsController(IGlobalConfigurationEmailsService globalConfigurationEmailsService)
+        public PortalToGlobalConfigurationEmailsController(IPortalToGlobalConfigurationEmailsService portalToGlobalConfigurationEmailsService)
         {
-            _globalConfigurationEmailsService = globalConfigurationEmailsService;
+            _portalToGlobalConfigurationEmailsService = portalToGlobalConfigurationEmailsService;
         }
         #endregion
+
         #region METHODS
 
         /// <summary>
-		/// This method takes a update globalconfiguration Emails
+		/// This method takes a update website portalToGlobalConfigurationEmails
 		/// </summary>
-		/// <param name="globalEmailsModel"></param>
+		/// <param name="portalToGlobalConfigurationEmails"></param>
 		/// <returns></returns>
         [HttpPost("[action]")]
-        public async Task<IActionResult> Post(List<GlobalConfigurationEmails> globalConfigurationEmails)
+        public async Task<IActionResult> Post(List<PortalToGlobalConfigurationEmails> portalToGlobalConfigurationEmails)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    return await _globalConfigurationEmailsService.CreateOrUpdateGlobalConfigurationEmails(globalConfigurationEmails);
+                    return await _portalToGlobalConfigurationEmailsService.CreateOrUpdatePortalToGlobalConfigurationEmails(portalToGlobalConfigurationEmails);
 
                 }
                 catch (Exception ex)
@@ -47,7 +48,7 @@ namespace CIR.Controllers.GlobalConfiguration
 
         }
         /// <summary>
-		/// This method takes a get globalconfiguration email list
+		/// This method takes a get website portalToGlobalConfigurationEmails list
 		/// </summary>
 		/// <returns></returns>
         [HttpGet("{id}")]
@@ -55,7 +56,7 @@ namespace CIR.Controllers.GlobalConfiguration
         {
             try
             {
-                return await _globalConfigurationEmailsService.GetGlobalConfigurationEmailsDataList(id);
+                return await _portalToGlobalConfigurationEmailsService.GetPortalToGlobalConfigurationEmailsList(id);
             }
             catch (Exception ex)
             {
