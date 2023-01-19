@@ -220,25 +220,25 @@ namespace CIR.Data.Data.Users
                         {
                             if (role.groupId != 0)
                             {
-                                RoleGrouping roleGrouping = new()
-                                {
-                                    Id = role.groupId,
-                                    RoleId = roleDetails.Id
-                                };
-                                _CIRDbContext.RolesGroupings.Update(roleGrouping);
-                                await _CIRDbContext.SaveChangesAsync();
-
                                 var roleGroupingDetail = _CIRDbContext.RolesGroupings.Where(c => c.Id == role.groupId && c.RoleId == roleDetails.Id).FirstOrDefault();
                                 if (roleGroupingDetail != null)
                                 {
+                                    _CIRDbContext.RoleGrouping2SubSites.RemoveRange(_CIRDbContext.RoleGrouping2SubSites.Where(x => x.RoleGroupingId == roleGroupingDetail.Id));
+                                    await _CIRDbContext.SaveChangesAsync();
+                                    _CIRDbContext.RoleGrouping2Cultures.RemoveRange(_CIRDbContext.RoleGrouping2Cultures.Where(x => x.RoleGroupingId == roleGroupingDetail.Id));
+                                    await _CIRDbContext.SaveChangesAsync();
+                                    _CIRDbContext.RoleGrouping2Permissions.RemoveRange(_CIRDbContext.RoleGrouping2Permissions.Where(x => x.RoleGroupingId == roleGroupingDetail.Id));
+                                    await _CIRDbContext.SaveChangesAsync();
+
                                     foreach (var item in role.site)
                                     {
+
                                         RoleGrouping2SubSite roleGrouping2SubSite = new RoleGrouping2SubSite()
                                         {
                                             RoleGroupingId = roleGroupingDetail.Id,
                                             SubSiteId = item.SiteId
                                         };
-                                        _CIRDbContext.RoleGrouping2SubSites.Update(roleGrouping2SubSite);
+                                        _CIRDbContext.RoleGrouping2SubSites.Add(roleGrouping2SubSite);
                                         await _CIRDbContext.SaveChangesAsync();
                                         foreach (var items in item.Languages)
                                         {
@@ -247,8 +247,11 @@ namespace CIR.Data.Data.Users
                                                 RoleGroupingId = roleGroupingDetail.Id,
                                                 CultureLcid = items.CultureId
                                             };
-                                            _CIRDbContext.RoleGrouping2Cultures.Update(roleGrouping2Culture);
-                                            await _CIRDbContext.SaveChangesAsync();
+                                            if (!_CIRDbContext.RoleGrouping2Cultures.Any(c => c.RoleGroupingId == roleGrouping2Culture.RoleGroupingId && c.CultureLcid == roleGrouping2Culture.CultureLcid))
+                                            {
+                                                await _CIRDbContext.RoleGrouping2Cultures.AddAsync(roleGrouping2Culture);
+                                                await _CIRDbContext.SaveChangesAsync();
+                                            }
 
                                             foreach (var subitem in items.Privileges)
                                             {
@@ -260,7 +263,7 @@ namespace CIR.Data.Data.Users
                                                 };
                                                 if (!_CIRDbContext.RoleGrouping2Permissions.Any(c => c.RoleGroupingId == roleGrouping2Permission.RoleGroupingId && c.PermissionEnumId == roleGrouping2Permission.PermissionEnumId))
                                                 {
-                                                    _CIRDbContext.RoleGrouping2Permissions.Update(roleGrouping2Permission);
+                                                    _CIRDbContext.RoleGrouping2Permissions.Add(roleGrouping2Permission);
                                                     await _CIRDbContext.SaveChangesAsync();
                                                 }
                                             }
@@ -296,8 +299,11 @@ namespace CIR.Data.Data.Users
                                                 RoleGroupingId = roleGroupingDetail.Id,
                                                 CultureLcid = items.CultureId
                                             };
-                                            await _CIRDbContext.RoleGrouping2Cultures.AddAsync(roleGrouping2Culture);
-                                            await _CIRDbContext.SaveChangesAsync();
+                                            if (!_CIRDbContext.RoleGrouping2Cultures.Any(c => c.RoleGroupingId == roleGrouping2Culture.RoleGroupingId && c.CultureLcid == roleGrouping2Culture.CultureLcid))
+                                            {
+                                                await _CIRDbContext.RoleGrouping2Cultures.AddAsync(roleGrouping2Culture);
+                                                await _CIRDbContext.SaveChangesAsync();
+                                            }
 
                                             foreach (var subitem in items.Privileges)
                                             {
@@ -351,8 +357,15 @@ namespace CIR.Data.Data.Users
             var role = new Roles() { Id = roleId };
             try
             {
-                _CIRDbContext.Roles.Remove(role);
-                await _CIRDbContext.SaveChangesAsync();
+                if (_CIRDbContext.Users.Any(x => x.RoleId == roleId))
+                {
+                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = true, Message = HttpStatusCodesMessages.BadRequest, Data = "You can not remove this record because it is currently in use." });
+                }
+                else
+                {
+                    _CIRDbContext.Roles.Remove(role);
+                    await _CIRDbContext.SaveChangesAsync();
+                }
                 return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Deleted, Data = "Role Deleted Successfully" });
             }
             catch (Exception ex)
@@ -438,33 +451,37 @@ namespace CIR.Data.Data.Users
             List<SubRolesModel> subRoleList = new List<SubRolesModel>();
 
             var listMain = SQLHelper.ConvertToGenericModelList<SubModel>(dt);
-            var siteGroup = listMain.GroupBy(x => x.SiteId);
-            foreach (var itemSite in siteGroup)
+            var groupData = listMain.GroupBy(x => x.GroupId);
+            foreach (var item in groupData)
             {
+                var siteGroup = listMain.Where(x => x.GroupId == item.Key).GroupBy(x => x.SiteId);
                 SubRolesModel subRole = new SubRolesModel();
                 subRole.site = new List<RoleGrouping2SubSiteModel>();
-                RoleGrouping2SubSiteModel roleGrouping2SubSiteModel = new RoleGrouping2SubSiteModel();
-                roleGrouping2SubSiteModel.SiteId = itemSite.Key;
-                roleGrouping2SubSiteModel.Languages = new List<RoleGrouping2CultureModel>();
-
-                var cultureGroup = listMain.Where(x => x.SiteId == itemSite.Key).GroupBy(x => x.CultureId);
-                foreach (var itemCulture in cultureGroup)
+                foreach (var itemSite in siteGroup)
                 {
-                    RoleGrouping2CultureModel roleGrouping2CultureModel = new RoleGrouping2CultureModel();
-                    roleGrouping2CultureModel.CultureId = itemCulture.Key;
-                    roleGrouping2CultureModel.Privileges = new List<RoleGrouping2PermissionModel>();
+                    RoleGrouping2SubSiteModel roleGrouping2SubSiteModel = new RoleGrouping2SubSiteModel();
+                    roleGrouping2SubSiteModel.SiteId = itemSite.Key;
+                    roleGrouping2SubSiteModel.Languages = new List<RoleGrouping2CultureModel>();
 
-                    var privilegesGroup = listMain.Where(x => x.SiteId == itemSite.Key && x.CultureId == itemCulture.Key).GroupBy(x => x.PrivilegesId);
-                    foreach (var itemprivileges in privilegesGroup)
+                    var cultureGroup = listMain.Where(x => x.GroupId == item.Key && x.SiteId == itemSite.Key).GroupBy(x => x.CultureId);
+                    foreach (var itemCulture in cultureGroup)
                     {
-                        RoleGrouping2PermissionModel roleGrouping2PermissionModel = new RoleGrouping2PermissionModel();
-                        roleGrouping2PermissionModel.PrivilegesId = itemprivileges.Key;
-                        roleGrouping2CultureModel.Privileges.Add(roleGrouping2PermissionModel);
+                        RoleGrouping2CultureModel roleGrouping2CultureModel = new RoleGrouping2CultureModel();
+                        roleGrouping2CultureModel.CultureId = itemCulture.Key;
+                        roleGrouping2CultureModel.Privileges = new List<RoleGrouping2PermissionModel>();
+
+                        var privilegesGroup = listMain.Where(x => x.GroupId == item.Key && x.SiteId == itemSite.Key && x.CultureId == itemCulture.Key).GroupBy(x => x.PrivilegesId);
+                        foreach (var itemprivileges in privilegesGroup)
+                        {
+                            RoleGrouping2PermissionModel roleGrouping2PermissionModel = new RoleGrouping2PermissionModel();
+                            roleGrouping2PermissionModel.PrivilegesId = itemprivileges.Key;
+                            roleGrouping2CultureModel.Privileges.Add(roleGrouping2PermissionModel);
+                        }
+                        roleGrouping2SubSiteModel.Languages.Add(roleGrouping2CultureModel);
                     }
-                    roleGrouping2SubSiteModel.Languages.Add(roleGrouping2CultureModel);
+                    subRole.groupId = listMain.Where(x => x.SiteId == itemSite.Key).FirstOrDefault().GroupId;
+                    subRole.site.Add(roleGrouping2SubSiteModel);
                 }
-                subRole.groupId = listMain.Where(x => x.SiteId == itemSite.Key).FirstOrDefault().GroupId;
-                subRole.site.Add(roleGrouping2SubSiteModel);
                 subRoleList.Add(subRole);
             }
             return subRoleList;
