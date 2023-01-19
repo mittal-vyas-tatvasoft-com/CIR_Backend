@@ -83,24 +83,24 @@ namespace CIR.Data.Data.GlobalConfiguration
                             bool globalConfigurationCurrenciesUpdate = item.Id > 0;
                             if (globalConfigurationCurrenciesUpdate)
                             {
-                                GlobalConfigurationCurrency curr = new GlobalConfigurationCurrency()
+                                GlobalConfigurationCurrency globalConfigurationCurrency = new GlobalConfigurationCurrency()
                                 {
                                     Id = item.Id,
                                     CountryId = item.CountryId,
                                     CurrencyId = item.CurrencyId,
                                     Enabled = item.Enabled
                                 };
-                                _CIRDBContext.GlobalConfigurationCurrencies.Update(curr);
+                                _CIRDBContext.GlobalConfigurationCurrencies.Update(globalConfigurationCurrency);
                             }
                             else
                             {
-                                GlobalConfigurationCurrency curr = new GlobalConfigurationCurrency()
+                                GlobalConfigurationCurrency globalConfigurationCurrency = new GlobalConfigurationCurrency()
                                 {
                                     CountryId = item.CountryId,
                                     CurrencyId = item.CurrencyId,
                                     Enabled = item.Enabled
                                 };
-                                _CIRDBContext.GlobalConfigurationCurrencies.Add(curr);
+                                _CIRDBContext.GlobalConfigurationCurrencies.Add(globalConfigurationCurrency);
                             }
                         }
                         else
