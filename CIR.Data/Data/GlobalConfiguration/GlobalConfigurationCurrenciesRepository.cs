@@ -76,26 +76,36 @@ namespace CIR.Data.Data.GlobalConfiguration
                 {
                     foreach (var item in globalCurrencyModel)
                     {
-                        if (item.Id != 0)
+                        bool globalConfigurationCurrenciesDuplicate = _CIRDBContext.GlobalConfigurationCurrencies.Any(x => x.CountryId == item.CountryId && x.CurrencyId == item.CurrencyId && x.Id != item.Id);
+
+                        if (!globalConfigurationCurrenciesDuplicate)
                         {
-                            GlobalConfigurationCurrency curr = new GlobalConfigurationCurrency()
+                            bool globalConfigurationCurrenciesUpdate = item.Id > 0;
+                            if (globalConfigurationCurrenciesUpdate)
                             {
-                                Id = item.Id,
-                                CountryId = item.CountryId,
-                                CurrencyId = item.CurrencyId,
-                                Enabled = item.Enabled
-                            };
-                            _CIRDBContext.GlobalConfigurationCurrencies.Update(curr);
+                                GlobalConfigurationCurrency curr = new GlobalConfigurationCurrency()
+                                {
+                                    Id = item.Id,
+                                    CountryId = item.CountryId,
+                                    CurrencyId = item.CurrencyId,
+                                    Enabled = item.Enabled
+                                };
+                                _CIRDBContext.GlobalConfigurationCurrencies.Update(curr);
+                            }
+                            else
+                            {
+                                GlobalConfigurationCurrency curr = new GlobalConfigurationCurrency()
+                                {
+                                    CountryId = item.CountryId,
+                                    CurrencyId = item.CurrencyId,
+                                    Enabled = item.Enabled
+                                };
+                                _CIRDBContext.GlobalConfigurationCurrencies.Add(curr);
+                            }
                         }
                         else
                         {
-                            GlobalConfigurationCurrency curr = new GlobalConfigurationCurrency()
-                            {
-                                CountryId = item.CountryId,
-                                CurrencyId = item.CurrencyId,
-                                Enabled = item.Enabled
-                            };
-                            _CIRDBContext.GlobalConfigurationCurrencies.Add(curr);
+                            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "CountryId or CurrencyId is already exist." });
                         }
                     }
                     await _CIRDBContext.SaveChangesAsync();

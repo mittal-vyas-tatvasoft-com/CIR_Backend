@@ -44,9 +44,9 @@ namespace CIR.Data.Data.GlobalConfiguration
                                   Content = globalMessages.Content,
                                   Subject = globalMessages.Subject,
 
-                              }).Where(x => x.Id == id).ToList();
+                              }).Where(x => x.CultureId == id).ToList();
 
-                var emailId = await _CIRDBContext.GlobalConfigurationEmails.Where(x => x.Id == id).FirstOrDefaultAsync();
+                var emailId = await _CIRDBContext.GlobalConfigurationEmails.Where(x => x.CultureId == id).FirstOrDefaultAsync();
                 var serializedParent = JsonConvert.SerializeObject(emailId);
                 GlobalConfigurationEmailsGetModel email = JsonConvert.DeserializeObject<GlobalConfigurationEmailsGetModel>(serializedParent);
 
