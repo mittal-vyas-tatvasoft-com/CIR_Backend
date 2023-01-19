@@ -116,6 +116,9 @@ builder.Services.AddScoped<IOfficeService, OfficeService>();
 builder.Services.AddScoped<IOfficesRepository, OfficesRepository>();
 builder.Services.AddScoped<IPortalService, PortalService>();
 builder.Services.AddScoped<IPortalRepository, PortalRepository>();
+builder.Services.AddScoped<IPortalToGlobalConfigurationCurrenciesRepository, PortalToGlobalConfigurationCurrenciesRepository>();
+builder.Services.AddScoped<IPortalToGlobalConfigurationCurrenciesService, PortalToGlobalConfigurationCurrenciesService>();
+
 
 
 
