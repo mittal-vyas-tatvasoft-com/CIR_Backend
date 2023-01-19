@@ -7,6 +7,6 @@ namespace CIR.Core.Interfaces.GlobalConfiguration
     {
         Task<IActionResult> CreateGlobalConfigurationWeekendsWeekends(GlobalConfigurationWeekends globalConfigurationWeekends);
         Task<IActionResult> DeleteGlobalConfigurationWeekend(int id);
-        Task<ActionResult> GetGlobalConfigurationWeekends(int displayLength, int displayStart, string sortCol, string? search, bool sortAscending = true);
+        Task<ActionResult> GetGlobalConfigurationWeekends(int displayLength, int displayStart, string? sortCol, string? filterCountryCode, string? filterCountryName, string? search, bool sortAscending = true);
     }
 }
