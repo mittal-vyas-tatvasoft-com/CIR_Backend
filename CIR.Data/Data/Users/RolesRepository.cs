@@ -172,7 +172,6 @@ namespace CIR.Data.Data.Users
                                             await _CIRDbContext.RoleGrouping2Cultures.AddAsync(roleGrouping2Culture);
                                             await _CIRDbContext.SaveChangesAsync();
                                         }
-
                                         foreach (var subitem in items.Privileges)
                                         {
 
