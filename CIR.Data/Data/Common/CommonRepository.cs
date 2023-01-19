@@ -41,6 +41,11 @@ namespace CIR.Data.Data.Common
                     CodeName = x.CodeName,
                     Symbol = x.Symbol
                 }).ToListAsync();
+
+                if (currenciesList.Count == 0)
+                {
+                    return new JsonResult(new CustomResponse<List<Currency>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+                }
                 return new JsonResult(new CustomResponse<List<Currency>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = currenciesList });
             }
             catch (Exception ex)
@@ -58,6 +63,10 @@ namespace CIR.Data.Data.Common
             try
             {
                 var countriesList = await _CIRDBContext.CountryCodes.ToListAsync();
+                if (countriesList.Count == 0)
+                {
+                    return new JsonResult(new CustomResponse<List<CountryCode>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+                }
                 return new JsonResult(new CustomResponse<List<CountryCode>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = countriesList });
             }
             catch (Exception ex)
@@ -75,6 +84,10 @@ namespace CIR.Data.Data.Common
             try
             {
                 var culturesList = await _CIRDBContext.Cultures.ToListAsync();
+                if (culturesList.Count == 0)
+                {
+                    return new JsonResult(new CustomResponse<List<Culture>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+                }
                 return new JsonResult(new CustomResponse<List<Culture>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = culturesList });
             }
             catch (Exception ex)
@@ -92,6 +105,10 @@ namespace CIR.Data.Data.Common
             try
             {
                 var subsitesList = await _CIRDBContext.SubSites.ToListAsync();
+                if (subsitesList.Count == 0)
+                {
+                    return new JsonResult(new CustomResponse<List<SubSite>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+                }
                 return new JsonResult(new CustomResponse<List<SubSite>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = subsitesList });
             }
             catch (Exception ex)
@@ -109,6 +126,10 @@ namespace CIR.Data.Data.Common
             try
             {
                 var rolePrivilegesList = await _CIRDBContext.RolePrivileges.ToListAsync();
+                if (rolePrivilegesList.Count == 0)
+                {
+                    return new JsonResult(new CustomResponse<List<RolePrivileges>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+                }
                 return new JsonResult(new CustomResponse<List<RolePrivileges>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = rolePrivilegesList });
             }
             catch (Exception ex)

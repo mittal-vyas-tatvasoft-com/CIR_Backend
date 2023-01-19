@@ -33,35 +33,24 @@ namespace CIR.Data.Data.GlobalConfiguration
         {
             try
             {
-                if (cultureId == 0)
-                {
-                    var globalConfigurationMessagesList = await (from globalMessages in _CIRDBContext.GlobalConfigurationMessages
-                                                                 join culture in _CIRDBContext.Cultures on globalMessages.CultureId equals culture.Id
-                                                                 select new GlobalMessagesModel()
-                                                                 {
-                                                                     Id = globalMessages.Id,
-                                                                     Type = globalMessages.Type,
-                                                                     Content = globalMessages.Content,
-                                                                     CultureId = globalMessages.CultureId,
-                                                                     CultureName = culture.Name
-                                                                 }).ToListAsync();
 
-                    return new JsonResult(new CustomResponse<List<GlobalMessagesModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = globalConfigurationMessagesList });
-                }
-                else
+                var globalConfigurationMessagesList = await (from globalMessages in _CIRDBContext.GlobalConfigurationMessages
+                                                             join culture in _CIRDBContext.Cultures on globalMessages.CultureId equals culture.Id
+                                                             select new GlobalMessagesModel()
+                                                             {
+                                                                 Id = globalMessages.Id,
+                                                                 Type = globalMessages.Type,
+                                                                 Content = globalMessages.Content,
+                                                                 CultureId = globalMessages.CultureId,
+                                                                 CultureName = culture.Name
+                                                             }).Where(x => x.CultureId == cultureId).ToListAsync();
+
+                if (globalConfigurationMessagesList.Count == 0)
                 {
-                    var globalConfigurationMessagesList = await (from globalMessages in _CIRDBContext.GlobalConfigurationMessages
-                                                                 join culture in _CIRDBContext.Cultures on globalMessages.CultureId equals culture.Id
-                                                                 select new GlobalMessagesModel()
-                                                                 {
-                                                                     Id = globalMessages.Id,
-                                                                     Type = globalMessages.Type,
-                                                                     Content = globalMessages.Content,
-                                                                     CultureId = globalMessages.CultureId,
-                                                                     CultureName = culture.Name
-                                                                 }).Where(x => x.CultureId == cultureId).ToListAsync();
-                    return new JsonResult(new CustomResponse<List<GlobalMessagesModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = globalConfigurationMessagesList });
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
                 }
+                return new JsonResult(new CustomResponse<List<GlobalMessagesModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = globalConfigurationMessagesList });
+
             }
             catch (Exception ex)
             {
@@ -78,10 +67,6 @@ namespace CIR.Data.Data.GlobalConfiguration
         {
             try
             {
-                if (globalConfigurationMessages.Any(x => x.CultureId == 0))
-                {
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Please enter valid Data" });
-                }
                 if (globalConfigurationMessages != null)
                 {
                     foreach (var item in globalConfigurationMessages)

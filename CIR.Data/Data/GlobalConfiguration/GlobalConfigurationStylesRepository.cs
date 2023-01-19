@@ -43,6 +43,11 @@ namespace CIR.Data.Data.GlobalConfiguration
                     SortOrder = x.SortOrder
 
                 }).ToListAsync();
+
+                if (globalConfigurationStyleList.Count == 0)
+                {
+                    return new JsonResult(new CustomResponse<List<GlobalConfigurationStyle>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+                }
                 return new JsonResult(new CustomResponse<List<GlobalConfigurationStyle>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = globalConfigurationStyleList });
             }
             catch (Exception ex)

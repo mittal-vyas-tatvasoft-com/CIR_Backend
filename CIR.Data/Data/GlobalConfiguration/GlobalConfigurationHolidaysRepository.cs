@@ -66,6 +66,13 @@ namespace CIR.Data.Data.GlobalConfiguration
 		/// <summary>
 		/// This method is used by get globalconfiguration holidays list
 		/// </summary>
+		/// <param name="displayLength"> how many row/data we want to fetch(for pagination) </param>
+		/// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
+		/// <param name="sortCol"> name of column which we want to sort</param>
+		/// <param name="search"> word that we want to search in user table </param>
+		/// <param name="countrycode"> used to filter table based on country code</param>
+		/// <param name="countryname">used to filter table based on country name</param>
+		/// <param name="sortAscending"> 'asc' or 'desc' direction for sort </param>
 		/// <returns></returns>
 		public async Task<IActionResult> GetGlobalConfigurationHolidays(int displayLength, int displayStart, string sortCol, string? search, string? countrycode, string? countryname, bool sortAscending = true)
 		{
@@ -91,6 +98,10 @@ namespace CIR.Data.Data.GlobalConfiguration
 										  Date = holidaydata.Date,
 										  Description = holidaydata.Description,
 									  }).ToListAsync();
+				if (sortData.Count == 0)
+				{
+					return new JsonResult(new CustomResponse<List<HolidayModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+				}
 				if (countrycode != "")
 				{
 					sortData = sortData.Where(y => y.Code == countrycode).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
@@ -129,12 +140,12 @@ namespace CIR.Data.Data.GlobalConfiguration
 		{
 			try
 			{
-				var holidayList = await _CIRDbContext.Holidays.Where(x => x.Id == id).FirstOrDefaultAsync();
-				if (holidayList == null)
+				var holiday = await _CIRDbContext.Holidays.Where(x => x.Id == id).FirstOrDefaultAsync();
+				if (holiday == null)
 				{
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NoContent, Result = true, Message = HttpStatusCodesMessages.NoContent, Data = "No data available" });
+					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
 				}
-				return new JsonResult(new CustomResponse<Holidays>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = holidayList });
+				return new JsonResult(new CustomResponse<Holidays>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = holiday });
 			}
 			catch (Exception ex)
 			{

@@ -27,7 +27,7 @@ namespace CIR.Data.Data.Website
         /// <summary>
         /// This method used by PortalToGlobalConfigurationEmails list
         /// </summary>
-        /// <param name="Id"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
         public async Task<IActionResult> GetPortalToGlobalConfigurationEmailsList(int id)
         {
@@ -43,6 +43,10 @@ namespace CIR.Data.Data.Website
                                   SubjectOverride = portal2GlobalConfigurationEmails.SubjectOverride,
 
                               }).Where(x => x.Id == id).ToList();
+                if (result.Count == 0)
+                {
+                    return new JsonResult(new CustomResponse<List<PortalToGlobalConfigurationEmailsGetModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+                }
 
                 var emailId = await _CIRDBContext.Portal2GlobalConfigurationEmails.Where(x => x.Id == id).FirstOrDefaultAsync();
                 var serializedParent = JsonConvert.SerializeObject(emailId);

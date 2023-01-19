@@ -38,6 +38,10 @@ namespace CIR.Data.Data.Users
             try
             {
                 var userDetail = await _CIRDBContext.Users.Where(x => x.Id == id).FirstOrDefaultAsync();
+                if (userDetail == null)
+                {
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
+                }
                 return new JsonResult(new CustomResponse<User>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = userDetail });
             }
             catch (Exception ex)
@@ -51,6 +55,7 @@ namespace CIR.Data.Data.Users
         /// this meethod checks if user exists or not based on input user email
         /// </summary>
         /// <param name="email"></param>
+        /// <param name="id"></param>
         /// <returns> if user exists true else false </returns>
 
         public async Task<Boolean> UserExists(string email, long id)
@@ -231,6 +236,10 @@ namespace CIR.Data.Data.Users
                     sortData = sortData.OrderByDescending(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
                 }
                 users.UsersList = sortData;
+                if (users.Count == 0)
+                {
+                    return new JsonResult(new CustomResponse<List<UsersViewModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+                }
                 return new JsonResult(new CustomResponse<UsersViewModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = users });
             }
             catch (Exception ex)

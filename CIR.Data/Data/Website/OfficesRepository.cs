@@ -85,9 +85,9 @@ namespace CIR.Data.Data.Website
 		/// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
 		/// <param name="sortCol"> name of column which we want to sort</param>
 		/// <param name="search"> word that we want to search in user table </param>
-		/// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
+		/// <param name="sortAscending"> 'asc' or 'desc' direction for sort </param>
 		/// <returns> filtered list of users </returns>
-		public async Task<IActionResult> GetHolidays(int displayLength, int displayStart, string sortCol, string search, bool sortAscending = true)
+		public async Task<IActionResult> GetOffices(int displayLength, int displayStart, string sortCol, string search, bool sortAscending = true)
 		{
 			OfficeModel Office = new();
 
@@ -110,6 +110,11 @@ namespace CIR.Data.Data.Website
 										  country = country.CountryName,
 										  Name = officedata.Name
 									  }).ToListAsync();
+
+				if (sortData.Count == 0)
+				{
+					return new JsonResult(new CustomResponse<List<OfficeModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+				}
 
 
 				sortData = sortData.Where(y => y.Name.Contains(search) || y.Address.Contains(search) || y.country.Contains(search)).ToList();
@@ -142,6 +147,10 @@ namespace CIR.Data.Data.Website
 			try
 			{
 				var officeList = await _CIRDbContext.offices.Where(x => x.Id == id).FirstOrDefaultAsync();
+				if (officeList == null)
+				{
+					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
+				}
 				return new JsonResult(new CustomResponse<Offices>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = officeList });
 			}
 			catch (Exception ex)

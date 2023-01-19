@@ -50,6 +50,11 @@ namespace CIR.Data.Data.GlobalConfiguration
                                                                    CountryName = country.CountryName,
                                                                    CodeName = currency.CodeName
                                                                }).Where(x => x.CountryId == countryId).ToListAsync();
+
+                if (globalConfigurationCurrenciesList.Count == 0)
+                {
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
+                }
                 return new JsonResult(new CustomResponse<List<GlobalConfigurationCurrencyModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = globalConfigurationCurrenciesList });
             }
             catch (Exception ex)

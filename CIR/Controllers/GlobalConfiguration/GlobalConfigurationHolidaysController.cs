@@ -31,7 +31,7 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// <summary>
 		/// This method takes holiday details as parameters and creates user and returns that user
 		/// </summary>
-		/// <param name="Holiday"> this object contains different parameters as details of a user </param>
+		/// <param name="uploadedfile"> this object contains different parameters as details of a user </param>
 		/// <returns > created user </returns>
 		[HttpPost]
 		public async Task<IActionResult> GetHolidayCSV(IFormFile uploadedfile)
@@ -80,7 +80,9 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
 		/// <param name="sortCol"> name of column which we want to sort</param>
 		/// <param name="search"> word that we want to search in user table </param>
-		/// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
+		/// <param name="countrycode"> used to filter table based on country code</param>
+		/// <param name="countryname">used to filter table based on country name</param>
+		/// <param name="sortAscending"> 'asc' or 'desc' direction for sort </param>
 		/// <returns> filtered list of holidays </returns>
 		[HttpGet]
 		public async Task<IActionResult> GetAllHolidays(int displayLength, int displayStart, string? sortCol, string? search, string? countrycode, string? countryname, bool sortAscending = true)
@@ -119,7 +121,7 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// <summary>
 		/// This method takes roles details and update role
 		/// </summary>
-		/// <param name="holidayId"></param>
+		/// <param name="holidaymodel"></param>
 		/// <returns></returns>
 		[HttpPut]
 		public async Task<IActionResult> Update(Holidays holidaymodel)

@@ -46,6 +46,11 @@ namespace CIR.Data.Data.GlobalConfiguration
 
                               }).Where(x => x.Id == id).ToList();
 
+                if (result.Count == 0)
+                {
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
+                }
+
                 var emailId = await _CIRDBContext.GlobalConfigurationEmails.Where(x => x.Id == id).FirstOrDefaultAsync();
                 var serializedParent = JsonConvert.SerializeObject(emailId);
                 GlobalConfigurationEmailsGetModel email = JsonConvert.DeserializeObject<GlobalConfigurationEmailsGetModel>(serializedParent);

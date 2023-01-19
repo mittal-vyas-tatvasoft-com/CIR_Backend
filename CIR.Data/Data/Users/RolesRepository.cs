@@ -41,6 +41,11 @@ namespace CIR.Data.Data.Users
                     Description = x.Description,
                     Name = x.Name
                 }).ToListAsync();
+
+                if (roles.Count == 0)
+                {
+                    return new JsonResult(new CustomResponse<List<RoleViewModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+                }
                 return new JsonResult(new CustomResponse<List<RoleViewModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = roles });
             }
             catch (Exception ex)
@@ -56,7 +61,7 @@ namespace CIR.Data.Data.Users
         /// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
         /// <param name="sortCol"> name of column which we want to sort</param>
         /// <param name="search"> word that we want to search in user table </param>
-        /// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
+        /// <param name="sortAscending"> 'asc' or 'desc' direction for sort </param>
         /// <returns> filtered list of roles </returns>
         public async Task<RolesModel> GetAllRoles(int displayLength, int displayStart, string sortCol, string? search, bool sortAscending = true)
         {
@@ -90,7 +95,8 @@ namespace CIR.Data.Data.Users
         /// <summary>
         /// this meethod checks if role exists or not based on input role name
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="rolename"></param>
+        /// <param name="id"></param>
         /// <returns> if user exists true else false </returns>
         public async Task<Boolean> RoleExists(string rolename, long id)
         {
@@ -428,11 +434,15 @@ namespace CIR.Data.Data.Users
                     {
                         rolePermissionModel.Roles = null;
                     }
+                    if (rolePermissionModel == null)
+                    {
+                        return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = true, Message = HttpStatusCodesMessages.NotFound });
+                    }
                     return new JsonResult(new CustomResponse<RolePermissionModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = rolePermissionModel });
                 }
                 else
                 {
-                    return new JsonResult(new CustomResponse<RolePermissionModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = rolePermissionModel });
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = true, Message = HttpStatusCodesMessages.NotFound });
                 }
             }
             catch (Exception ex)
