@@ -52,7 +52,7 @@ namespace CIR.Data.Data.Website
                               
                               x.PortalId == id).ToList();
 
-                //var CurrencyId = _CIRDBContext.Portal2GlobalConfigurationCurrencies.FirstOrDefault(x => x.PortalId == id);
+                
                 var CurrencyId = (from PGCC in _CIRDBContext.Portal2GlobalConfigurationCurrencies
                                   select new PortalToGlobalConfigurationCurrency()
                                   {
@@ -70,7 +70,7 @@ namespace CIR.Data.Data.Website
                 }
                
                 if (result != null)
-                    return new JsonResult(new CustomResponse<List<PortalToGlobalConfigurationCurrency>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = result });
+                    return new JsonResult(new CustomResponse<List<PortalToGlobalConfigurationCurrency>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = Result });
                 else
                     return new JsonResult(new CustomResponse<List<PortalToGlobalConfigurationCurrency>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
 
