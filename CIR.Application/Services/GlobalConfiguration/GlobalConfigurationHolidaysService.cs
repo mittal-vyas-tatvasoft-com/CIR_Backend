@@ -1,6 +1,5 @@
 ﻿using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.GlobalConfiguration;
-using CIR.Core.ViewModel.GlobalConfiguration;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Application.Services.GlobalConfiguration
@@ -18,9 +17,9 @@ namespace CIR.Application.Services.GlobalConfiguration
 		{
 			return _globalConfigurationHolidaysService.CreateOrUpdateGlobalConfigurationHolidays(holidays);
 		}
-		public async Task<HolidayModel> GetGlobalConfigurationHolidays(int displayLength, int displayStart, string sortCol, string? search, bool sortAscending = true)
+		public async Task<IActionResult> GetGlobalConfigurationHolidays(int displayLength, int displayStart, string sortCol, string? search, string countrycode, string countryname, bool sortAscending = true)
 		{
-			return await _globalConfigurationHolidaysService.GetGlobalConfigurationHolidays(displayLength, displayStart, sortCol, search, sortAscending);
+			return await _globalConfigurationHolidaysService.GetGlobalConfigurationHolidays(displayLength, displayStart, sortCol, search, countrycode, countryname, sortAscending);
 		}
 		public async Task<IActionResult> GetHolidayById(long id)
 		{

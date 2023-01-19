@@ -2,7 +2,6 @@
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.Common;
 using CIR.Core.Interfaces.GlobalConfiguration;
-using CIR.Core.ViewModel.GlobalConfiguration;
 using CsvHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -84,18 +83,14 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
 		/// <returns> filtered list of holidays </returns>
 		[HttpGet]
-		public async Task<IActionResult> GetAllHolidays(int displayLength, int displayStart, string? sortCol, string? search, bool sortAscending = true)
+		public async Task<IActionResult> GetAllHolidays(int displayLength, int displayStart, string? sortCol, string? search, string? countrycode, string? countryname, bool sortAscending = true)
 		{
 			try
 			{
 				search ??= string.Empty;
-
-				var holidaydata = await _globalConfigurationHolidaysService.GetGlobalConfigurationHolidays(displayLength, displayStart, sortCol, search, sortAscending);
-				if (holidaydata.Count > 0)
-				{
-					return new JsonResult(new CustomResponse<HolidayModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = holidaydata });
-				}
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Requested holidays were not found" });
+				countrycode ??= string.Empty;
+				countryname ??= string.Empty;
+				return await _globalConfigurationHolidaysService.GetGlobalConfigurationHolidays(displayLength, displayStart, sortCol, search, countrycode, countryname, sortAscending);
 			}
 			catch (Exception ex)
 			{
