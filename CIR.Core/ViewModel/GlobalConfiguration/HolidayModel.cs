@@ -1,10 +1,12 @@
-﻿using CIR.Core.Entities.GlobalConfiguration;
-
-namespace CIR.Core.ViewModel.GlobalConfiguration
+﻿namespace CIR.Core.ViewModel.GlobalConfiguration
 {
 	public class HolidayModel
 	{
-		public List<Holidays> HolidayList { get; set; } = new();
-		public int Count { get; set; }
+		public long Id { get; set; }
+		public long CountryId { get; set; }
+		public DateTime Date { get; set; }
+		public string Description { get; set; }
+		public string Code { get; set; }
+		public string CountryName { get; set; }
 	}
 }
