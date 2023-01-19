@@ -1,13 +1,4 @@
-﻿using CIR.Common.CustomResponse;
-using CIR.Common.Data;
-using CIR.Core.Entities;
-using CIR.Core.Entities.GlobalConfiguration;
-using CIR.Core.Entities.Users;
-using CIR.Core.Interfaces.Common;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
-namespace CIR.Data.Data.Common
+﻿namespace CIR.Data.Data.Common
 {
     public class CommonRepository : ICommonRepository
     {
@@ -131,6 +122,70 @@ namespace CIR.Data.Data.Common
                     return new JsonResult(new CustomResponse<List<RolePrivileges>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
                 }
                 return new JsonResult(new CustomResponse<List<RolePrivileges>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = rolePrivilegesList });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+            }
+        }
+
+        /// <summary>
+        /// This method used by get Salutation type list
+        /// <param name="code">
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> GetSalutationtypeList(string code)
+        {
+            List<LookupItemsText> lookupItemList = new List<LookupItemsText>();
+
+            try
+            {
+                return await GetSalutationList(code);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+            }
+        }
+        public async Task<IActionResult> GetSalutationList(string code)
+        {
+            List<LookupItemsText> SalutationList = new List<LookupItemsText>();
+            var dictionaryobj = new Dictionary<string, object>
+            {
+                { "Code", code}
+            };
+
+            var dt = SQLHelper.ExecuteSqlQueryWithParams("spGetSalutationTypeList", dictionaryobj);
+            if (dt != null)
+            {
+                foreach (DataRow row in dt.Rows)
+                {
+                    LookupItemsText lookupItemsText = new LookupItemsText();
+
+                    lookupItemsText.Id = Convert.ToInt64(row["Id"]);
+                    lookupItemsText.Text = Convert.ToString(row["Text"]);
+                    SalutationList.Add(lookupItemsText);
+                }
+            }
+            return new JsonResult(new CustomResponse<List<LookupItemsText>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = SalutationList });
+        }
+
+        /// <summary>
+        /// This method used by get System codes list
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> GetSystemCodes()
+        {
+            try
+            {
+                var systemCodeList = (from sc in _CIRDBContext.SystemCodes
+                                      select new SystemCodeModel()
+                                      {
+                                          Id = sc.Id,
+                                          Code = sc.Code
+                                      }).ToList();
+
+                return new JsonResult(new CustomResponse<List<SystemCodeModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = systemCodeList });
             }
             catch (Exception ex)
             {
