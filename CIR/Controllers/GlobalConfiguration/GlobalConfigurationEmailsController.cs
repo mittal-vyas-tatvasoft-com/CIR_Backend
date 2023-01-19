@@ -1,7 +1,6 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.GlobalConfiguration;
-using CIR.Core.ViewModel.GlobalConfig;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

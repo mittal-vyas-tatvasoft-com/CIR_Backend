@@ -6,7 +6,7 @@ namespace CIR.Core.Interfaces.Website
     public interface IClientService
     {
         Task<IActionResult> GetAllClients();
-        Task<IActionResult> CreateClient(ClientModel clientModel);
+        Task<IActionResult> CreateOrUpdateClient(ClientModel clientModel);
 
     }
 }

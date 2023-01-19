@@ -1,8 +1,8 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
 using CIR.Core.Entities;
-using CIR.Core.Interfaces.Utilities.SystemSettings;
-using CIR.Core.ViewModel.Utilities.SystemSettings;
+using CIR.Core.Interfaces.Utilities;
+using CIR.Core.ViewModel.Utilities;
 using Microsoft.AspNetCore.JsonPatch.Internal;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CIR.Data.Data.Utilities.SystemSettings
+namespace CIR.Data.Data.Utilities
 {
     public class SystemSettingsLanguagesRepository :ISytemSettingsLanguagesRepository
     {

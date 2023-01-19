@@ -17,8 +17,4 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="7.0.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Entities\Utilities\SystemSettings\" />
-  </ItemGroup>
-
 </Project>

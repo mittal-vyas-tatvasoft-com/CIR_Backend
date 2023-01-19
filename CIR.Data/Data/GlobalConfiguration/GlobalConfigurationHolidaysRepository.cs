@@ -2,7 +2,9 @@
 using CIR.Common.Data;
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.GlobalConfiguration;
+using CIR.Core.ViewModel.GlobalConfiguration;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CIR.Data.Data.GlobalConfiguration
 {
@@ -59,6 +61,134 @@ namespace CIR.Data.Data.GlobalConfiguration
 			catch (Exception ex)
 			{
 				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+			}
+		}
+		/// <summary>
+		/// This method is used by get globalconfiguration holidays list
+		/// </summary>
+		/// <returns></returns>
+		public async Task<IActionResult> GetGlobalConfigurationHolidays(int displayLength, int displayStart, string sortCol, string? search, string? countrycode, string? countryname, bool sortAscending = true)
+		{
+			HolidayViewModel holiday = new();
+			if (string.IsNullOrEmpty(sortCol))
+			{
+				sortCol = "Id";
+			}
+			try
+			{
+				holiday.Count = _CIRDbContext.Holidays.Where(x => x.Description.Contains(search)).Count();
+
+				var sortData = await (from holidaydata in _CIRDbContext.Holidays
+									  join countrydata in _CIRDbContext.CountryCodes
+									  on holidaydata.CountryId equals countrydata.Id
+
+									  select new HolidayModel()
+									  {
+										  Id = holidaydata.Id,
+										  CountryId = holidaydata.CountryId,
+										  Code = countrydata.Code,
+										  CountryName = countrydata.CountryName,
+										  Date = holidaydata.Date,
+										  Description = holidaydata.Description,
+									  }).ToListAsync();
+				if (countrycode != "")
+				{
+					sortData = sortData.Where(y => y.Code == countrycode).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
+				}
+				if (countryname != "")
+				{
+					sortData = sortData.Where(y => y.CountryName == countryname).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
+				}
+
+				sortData = sortData.Where(y => y.Description.Contains(search) || y.CountryName.Contains(search) || y.Code.Contains(search)).ToList();
+				holiday.Count = sortData.Count();
+
+				if (sortAscending)
+				{
+					sortData = sortData.OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
+				}
+				else
+				{
+					sortData = sortData.OrderByDescending(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
+				}
+				holiday.HolidayList = sortData;
+				return new JsonResult(new CustomResponse<HolidayViewModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = holiday });
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = true, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = ex });
+			}
+		}
+
+		/// <summary>
+		/// fetches holidays based on input holiday id
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns> holiday or null holiday if not found </returns>
+		public async Task<IActionResult> GetHolidayById(long id)
+		{
+			try
+			{
+				var holidayList = await _CIRDbContext.Holidays.Where(x => x.Id == id).FirstOrDefaultAsync();
+				if (holidayList == null)
+				{
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NoContent, Result = true, Message = HttpStatusCodesMessages.NoContent, Data = "No data available" });
+				}
+				return new JsonResult(new CustomResponse<Holidays>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = holidayList });
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+			}
+		}
+
+		/// <summary>
+		/// This method takes a holiday data and update it
+		/// </summary>
+		/// <param name="HolidayId"></param>
+		/// <returns></returns>
+		public async Task<IActionResult> UpdateHoliday(Holidays HolidayModel)
+		{
+			try
+			{
+				if (HolidayModel.Id != 0)
+				{
+					Holidays newholiday = new Holidays()
+					{
+						Id = HolidayModel.Id,
+						CountryId = HolidayModel.CountryId,
+						Date = HolidayModel.Date,
+						Description = HolidayModel.Description
+					};
+					_CIRDbContext.Holidays.Update(newholiday);
+					await _CIRDbContext.SaveChangesAsync();
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "holiday saved successfully" });
+				}
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Error occurred while updating holidays" });
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = true, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = ex });
+			}
+		}
+
+		/// <summary>
+		/// This method takes a delete holiday 
+		/// </summary>
+		/// <param name="holidayId"></param>
+		/// <returns></returns>
+		public async Task<IActionResult> DeleteHolidays(long holidayId)
+		{
+			var holiday = new Holidays() { Id = holidayId };
+			try
+			{
+				_CIRDbContext.Holidays.Remove(holiday);
+				await _CIRDbContext.SaveChangesAsync();
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Deleted, Data = "Holiday Deleted Successfully" });
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = true, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = ex });
 			}
 		}
 		#endregion
