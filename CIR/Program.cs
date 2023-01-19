@@ -19,6 +19,7 @@ using CIR.Data.Data;
 using CIR.Data.Data.Common;
 using CIR.Data.Data.GlobalConfiguration;
 using CIR.Data.Data.Users;
+using CIR.Data.Data.Utilities;
 using CIR.Data.Data.Website;
 using CIR.Data.Data.Websites;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -26,6 +27,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using CIR.Core.Interfaces.Utilities;
+using CIR.Application.Services.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -105,6 +108,12 @@ builder.Services.AddScoped<IGlobalConfigurationStylesService, GlobalConfiguratio
 builder.Services.AddScoped<IGlobalConfigurationStylesRepository, GlobalConfigurationStylesRepository>();
 builder.Services.AddScoped<IGlobalConfigurationEmailsService, GlobalConfigurationEmailsService>();
 builder.Services.AddScoped<IGlobalConfigurationEmailsRepository, GlobalConfigurationEmailsRepository>();
+builder.Services.AddScoped<IGlobalConfigurationFontsServices, GlobalConfigurationFontsServices>();
+builder.Services.AddScoped<IGlobalConfigurationFontsRepository, GlobalConfigurationFontsRepository>();
+builder.Services.AddScoped<IGlobalConfigurationStylesService, GlobalConfigurationStylesService>();
+builder.Services.AddScoped<IGlobalConfigurationStylesRepository, GlobalConfigurationStylesRepository>();
+builder.Services.AddScoped<ISystemSettingsLookupsService, SystemSettingsLookupsService>();
+builder.Services.AddScoped<ILookupsRepository, SystemSettingsLookupsRepository>();
 builder.Services.AddScoped<JwtGenerateToken>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
