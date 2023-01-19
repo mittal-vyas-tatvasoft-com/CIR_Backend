@@ -23,6 +23,7 @@ using CIR.Data.Data.Website;
 using CIR.Data.Data.Websites;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -114,6 +115,7 @@ builder.Services.AddScoped<IPortalToGlobalConfigurationEmailsService, PortalToGl
 builder.Services.AddScoped<IPortalToGlobalConfigurationEmailsRepository, PortalToGlobalConfigurationEmailsRepository>();
 builder.Services.AddScoped<IPortalService, PortalService>();
 builder.Services.AddScoped<IPortalRepository, PortalRepository>();
+builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 
 

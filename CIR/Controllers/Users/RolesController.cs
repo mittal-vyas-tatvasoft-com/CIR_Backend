@@ -4,6 +4,8 @@ using CIR.Core.ViewModel;
 using CIR.Core.ViewModel.Usersvm;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Security.Claims;
 
 namespace CIR.Controllers.Users
 {
@@ -15,14 +17,15 @@ namespace CIR.Controllers.Users
         #region PROPETRTIES 
         private readonly IRolesService _rolesService;
         private readonly ILogger<RolesController> _logger;
-
+        private IHttpContextAccessor _httpContextAccessor;
         #endregion
 
         #region CONSTRUCTOR
-        public RolesController(IRolesService rolesService, ILogger<RolesController> logger)
+        public RolesController(IRolesService rolesService, ILogger<RolesController> logger, IHttpContextAccessor httpContextAccessor)
         {
             _rolesService = rolesService;
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
         }
         #endregion
 
@@ -158,11 +161,15 @@ namespace CIR.Controllers.Users
         {
             try
             {
-                if (roleId > 0)
+                if (TestsData())
                 {
-                    return await _rolesService.DeleteRoles(roleId);
+                    if (roleId > 0)
+                    {
+                        return await _rolesService.DeleteRoles(roleId);
+                    }
+                    return new JsonResult(new CustomResponse<String>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Invalid input id" });
                 }
-                return new JsonResult(new CustomResponse<String>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Invalid input id" });
+                return new JsonResult(new CustomResponse<String>() { StatusCode = (int)HttpStatusCodes.Forbidden, Result = false, Message = HttpStatusCodesMessages.Forbidden, Data = "You don’t have permission to access [Delete Role] on this server" });
             }
             catch (Exception ex)
             {
@@ -190,6 +197,36 @@ namespace CIR.Controllers.Users
             {
                 return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = ex });
             }
+        }
+
+        [HttpGet("[action]")]
+        public bool TestsData()
+        {
+            ClaimsPrincipal claimsPrincipal = _httpContextAccessor.HttpContext.User;
+            var listAccessCode = (claimsPrincipal.Claims.FirstOrDefault(x => x.Type == "Roles").Value);
+            RolePermissionModel rolesData = JsonConvert.DeserializeObject<RolePermissionModel>(listAccessCode);
+            if (rolesData != null)
+            {
+                if (rolesData.AllPermissions)
+                {
+                    return true;
+                }
+                else
+                {
+                    foreach (var role in rolesData.Roles)
+                    {
+                        foreach (var item in role.site)
+                        {
+                            if (item.SiteId == 6)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                }
+            }
+            return false;
         }
         #endregion
     }

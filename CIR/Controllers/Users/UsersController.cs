@@ -1,9 +1,12 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Core.Entities.Users;
 using CIR.Core.Interfaces.Users;
+using CIR.Core.ViewModel;
 using CIR.Core.ViewModel.Usersvm;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Security.Claims;
 
 namespace CIR.Controllers.Users
 {
@@ -15,13 +18,15 @@ namespace CIR.Controllers.Users
         #region PROPERTIES
         private readonly IUserService _userService;
         private readonly ILogger<UsersController> _logger;
+        private IHttpContextAccessor _httpContextAccessor;
         #endregion
 
         #region CONSTRUCTOR
-        public UsersController(IUserService userService, ILogger<UsersController> logger)
+        public UsersController(IUserService userService, ILogger<UsersController> logger, IHttpContextAccessor httpContextAccessor)
         {
             _userService = userService;
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
         }
         #endregion
 
@@ -191,6 +196,22 @@ namespace CIR.Controllers.Users
             {
                 return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
             }
+        }
+
+        [HttpGet("TestData")]
+        public async Task<IActionResult> TestData()
+        {
+            ClaimsPrincipal claimsPrincipal = _httpContextAccessor.HttpContext.User;
+            var listAccessCode = (claimsPrincipal.Claims.FirstOrDefault(x => x.Type == "Roles").Value);
+            RolePermissionModel rolesData = JsonConvert.DeserializeObject<RolePermissionModel>(listAccessCode);
+            if (rolesData != null)
+            {
+                foreach (var role in rolesData.Roles)
+                {
+                    var data = role;
+                }
+            }
+            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = false, Message = HttpStatusCodesMessages.Success, Data = "test" });
         }
         #endregion
     }

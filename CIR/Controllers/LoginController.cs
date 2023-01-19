@@ -1,13 +1,8 @@
 ﻿using CIR.Common.CustomResponse;
-using CIR.Core.Entities.Users;
 using CIR.Core.Interfaces;
 using CIR.Core.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace CIR.Controllers
 {
@@ -37,44 +32,6 @@ namespace CIR.Controllers
                 return await _loginService.Login(value);
             }
             return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
-        }
-
-        /// <summary>
-        /// This method takes generate Jwt token
-        /// </summary>
-        /// <param name="user">this object contains different parameters as details of a user</param>
-        /// <returns></returns>
-        private async Task<string> GenerateJwtToken(User user)
-        {
-            string jwtToken = string.Empty;
-            try
-            {
-                // generate token that is valid for 20 minutes
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(_appSettings.AuthKey);
-                var tokenDescriptor = new SecurityTokenDescriptor
-                {
-                    Subject = new ClaimsIdentity(new[]
-                        {
-                        new Claim("Id", user.Id.ToString()),
-                        new Claim("UserName", user.UserName),
-                        new Claim("FirstName", user.FirstName),
-                        new Claim("LastName", user.LastName),
-                    }),
-                    Expires = DateTime.UtcNow.AddMinutes(20),
-                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-                };
-                var token = tokenHandler.CreateToken(tokenDescriptor);
-                jwtToken = tokenHandler.WriteToken(token);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            return await Task.Run(() =>
-            {
-                return jwtToken;
-            });
         }
 
         /// <summary>
