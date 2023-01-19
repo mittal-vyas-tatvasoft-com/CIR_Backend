@@ -35,20 +35,20 @@ namespace CIR.Data.Data.GlobalConfiguration
         {
             try
             {
-                var result = (from globalMessages in _CIRDBContext.GlobalConfigurationEmails
-                              select new GlobalConfigurationEmailsGetModel()
-                              {
-                                  Id = globalMessages.Id,
-                                  CultureId = globalMessages.CultureId,
-                                  FieldTypeId = globalMessages.FieldTypeId,
-                                  Content = globalMessages.Content,
-                                  Subject = globalMessages.Subject,
+                var emailIdList = (from globalMessages in _CIRDBContext.GlobalConfigurationEmails
+                                   select new GlobalConfigurationEmailsGetModel()
+                                   {
+                                       Id = globalMessages.Id,
+                                       CultureId = globalMessages.CultureId,
+                                       FieldTypeId = globalMessages.FieldTypeId,
+                                       Content = globalMessages.Content,
+                                       Subject = globalMessages.Subject,
 
-                              }).Where(x => x.CultureId == id).ToList();
+                                   }).Where(x => x.CultureId == id).ToList();
 
                 var emailId = await _CIRDBContext.GlobalConfigurationEmails.Where(x => x.CultureId == id).FirstOrDefaultAsync();
-                var serializedParent = JsonConvert.SerializeObject(emailId);
-                GlobalConfigurationEmailsGetModel email = JsonConvert.DeserializeObject<GlobalConfigurationEmailsGetModel>(serializedParent);
+                var globalConfigurationEmailsId = JsonConvert.SerializeObject(emailId);
+                GlobalConfigurationEmailsGetModel email = JsonConvert.DeserializeObject<GlobalConfigurationEmailsGetModel>(globalConfigurationEmailsId);
 
                 if (email.Content.Contains("[Reference])") || email.Subject.Contains("[Reference])"))
                 {
@@ -86,8 +86,8 @@ namespace CIR.Data.Data.GlobalConfiguration
                 {
                     email.BookingURL = true;
                 }
-                if (result != null)
-                    return new JsonResult(new CustomResponse<List<GlobalConfigurationEmailsGetModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = result });
+                if (emailIdList != null)
+                    return new JsonResult(new CustomResponse<List<GlobalConfigurationEmailsGetModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = emailIdList });
                 else
                     return new JsonResult(new CustomResponse<List<GlobalConfigurationEmailsGetModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
 
