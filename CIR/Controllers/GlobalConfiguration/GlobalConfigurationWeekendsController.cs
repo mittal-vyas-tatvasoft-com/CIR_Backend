@@ -82,13 +82,13 @@ namespace CIR.Controllers.GlobalConfiguration
         /// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
         /// <returns> filtered list of Weekends </returns>
         [HttpGet]
-        public async Task<IActionResult> Get(int displayLength, int displayStart, string? sortCol, string? filterCountryCode, string? filterCountryName, string? search, bool sortAscending = true)
+        public async Task<IActionResult> Get(int displayLength, int displayStart, string? sortCol, int? filterCountryNameId, int? filterCountryCodeId, string? search, bool sortAscending = true)
         {
             try
             {
                 search ??= string.Empty;
 
-                return await _globalConfigurationWeekendsService.GetGlobalConfigurationWeekends(displayLength, displayStart, sortCol, filterCountryCode, filterCountryName, search, sortAscending);
+                return await _globalConfigurationWeekendsService.GetGlobalConfigurationWeekends(displayLength, displayStart, sortCol, filterCountryNameId, filterCountryCodeId, search, sortAscending);
             }
             catch (Exception ex)
             {
