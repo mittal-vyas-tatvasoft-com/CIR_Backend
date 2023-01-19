@@ -33,7 +33,7 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// </summary>
 		/// <param name="Holiday"> this object contains different parameters as details of a user </param>
 		/// <returns > created user </returns>
-		[HttpPost]
+		[HttpPost("Create")]
 		public async Task<IActionResult> GetHolidayCSV(IFormFile uploadedfile)
 		{
 			try
@@ -121,7 +121,7 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// </summary>
 		/// <param name="holidayId"></param>
 		/// <returns></returns>
-		[HttpPut]
+		[HttpPut("Update")]
 		public async Task<IActionResult> Update(Holidays holidaymodel)
 		{
 			try
@@ -139,7 +139,8 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// </summary>
 		/// <param name="holidayId"></param>
 		/// <returns></returns>
-		[HttpDelete]
+		[HttpDelete("Delete")]
+
 		public async Task<IActionResult> Delete(long holidayId)
 		{
 			try
