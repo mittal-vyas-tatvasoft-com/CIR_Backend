@@ -33,7 +33,6 @@ namespace CIR.Data.Data.GlobalConfiguration
 		{
 			try
 			{
-
 				Holidays newholiday = new()
 				{
 					Id = holiday.Id,
@@ -55,6 +54,10 @@ namespace CIR.Data.Data.GlobalConfiguration
 				if (holiday.Id != 0)
 				{
 					return Ok(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "GlobalConfiguration holiday saved successfully." });
+				}
+				if (holiday.Id == 0)
+				{
+					return Ok(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "GlobalConfiguration holiday created successfully." });
 				}
 				return UnprocessableEntity(new CustomResponse<Holidays>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = false, Message = HttpStatusCodesMessages.UnprocessableEntity });
 			}
@@ -175,11 +178,11 @@ namespace CIR.Data.Data.GlobalConfiguration
 		/// <summary>
 		/// This method takes a delete holiday 
 		/// </summary>
-		/// <param name="holidayId"></param>
+		/// <param name="Id"></param>
 		/// <returns></returns>
-		public async Task<IActionResult> DeleteHolidays(long holidayId)
+		public async Task<IActionResult> DeleteHolidays(long Id)
 		{
-			var holiday = new Holidays() { Id = holidayId };
+			var holiday = new Holidays() { Id = Id };
 			try
 			{
 				_CIRDbContext.Holidays.Remove(holiday);

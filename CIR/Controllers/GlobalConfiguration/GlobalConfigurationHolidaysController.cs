@@ -33,7 +33,7 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// </summary>
 		/// <param name="Holiday"> this object contains different parameters as details of a user </param>
 		/// <returns > created user </returns>
-		[HttpPost("Create")]
+		[HttpPost("AddCSV")]
 		public async Task<IActionResult> GetHolidayCSV(IFormFile uploadedfile)
 		{
 			try
@@ -127,6 +127,24 @@ namespace CIR.Controllers.GlobalConfiguration
 			try
 			{
 				return await _globalConfigurationHolidaysService.UpdateHoliday(holidaymodel);
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+			}
+		}
+
+		/// <summary>
+		/// This method takes roles details and update role
+		/// </summary>
+		/// <param name="holidayId"></param>
+		/// <returns></returns>
+		[HttpPost("Create")]
+		public async Task<IActionResult> Create(Holidays holidaymodel)
+		{
+			try
+			{
+				return await _globalConfigurationHolidaysService.CreateOrUpdateGlobalConfigurationHolidays(holidaymodel);
 			}
 			catch (Exception ex)
 			{
