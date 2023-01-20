@@ -34,20 +34,20 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// <param name="Holiday"> this object contains different parameters as details of a user </param>
 		/// <returns > created user </returns>
 		[HttpPost("AddCSV")]
-		public async Task<IActionResult> GetHolidayCSV(IFormFile uploadedfile)
+		public async Task<IActionResult> GetHolidayCSV(IFormFile uploadedFile)
 		{
 			try
 			{
-				var fileextension = Path.GetExtension(uploadedfile.FileName);
-				var filename = Guid.NewGuid().ToString() + fileextension;
-				var filepath = Path.Combine(Directory.GetCurrentDirectory(), filename);
-				using (FileStream fs = System.IO.File.Create(filepath))
+				var filExtension = Path.GetExtension(uploadedFile.FileName);
+				var fileName = Guid.NewGuid().ToString() + filExtension;
+				var filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+				using (FileStream fs = System.IO.File.Create(filePath))
 				{
-					uploadedfile.CopyTo(fs);
+					uploadedFile.CopyTo(fs);
 				}
-				if (fileextension == ".csv" || fileextension == ".xlsx")
+				if (filExtension == ".csv" || filExtension == ".xlsx")
 				{
-					using (var reader = new StreamReader(filepath))
+					using (var reader = new StreamReader(filePath))
 					using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
 					{
 						var records = csv.GetRecords<Holidays>();
@@ -83,14 +83,14 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
 		/// <returns> filtered list of holidays </returns>
 		[HttpGet]
-		public async Task<IActionResult> GetAllHolidays(int displayLength, int displayStart, string? sortCol, string? search, string? countrycode, string? countryname, bool sortAscending = true)
+		public async Task<IActionResult> GetAllHolidays(int displayLength, int displayStart, string? sortCol, string? search, string? countryCode, string? countryName, bool sortAscending = true)
 		{
 			try
 			{
 				search ??= string.Empty;
-				countrycode ??= string.Empty;
-				countryname ??= string.Empty;
-				return await _globalConfigurationHolidaysService.GetGlobalConfigurationHolidays(displayLength, displayStart, sortCol, search, countrycode, countryname, sortAscending);
+				countryCode ??= string.Empty;
+				countryName ??= string.Empty;
+				return await _globalConfigurationHolidaysService.GetGlobalConfigurationHolidays(displayLength, displayStart, sortCol, search, countryCode, countryName, sortAscending);
 			}
 			catch (Exception ex)
 			{
