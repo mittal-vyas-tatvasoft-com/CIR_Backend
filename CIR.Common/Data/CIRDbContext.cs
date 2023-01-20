@@ -3,7 +3,11 @@ using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Entities.Users;
 using CIR.Core.Entities.Website;
 using CIR.Core.Entities.Websites;
+using CIR.Core.ViewModel.GlobalConfiguration;
+using CIR.Core.ViewModel.GlobalConfig;
+using CIR.Core.ViewModel.Utilities;
 using Microsoft.EntityFrameworkCore;
+using CIR.Core.Entities.Utilities;
 
 
 namespace CIR.Common.Data
@@ -98,6 +102,9 @@ namespace CIR.Common.Data
         public DbSet<Portals> portals { get; set; }
         public DbSet<PortalToGlobalConfigurationEmails> Portal2GlobalConfigurationEmails { get; set; }
         public DbSet<PortalServiceTypes> PortalServiceTypes { get; set; }
+        public DbSet<LookupItemsText> LookupItemsText { get; set; }
+        public DbSet<SystemCode> SystemCodes { get; set; }
+        public DbSet<LookupItem> LookupItems { get; set; }
     }
 }
 
