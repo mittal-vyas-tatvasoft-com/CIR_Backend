@@ -158,7 +158,6 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// <param name="holidayId"></param>
 		/// <returns></returns>
 		[HttpDelete("Delete")]
-
 		public async Task<IActionResult> Delete(long holidayId)
 		{
 			try

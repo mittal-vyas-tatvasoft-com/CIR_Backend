@@ -128,11 +128,11 @@ namespace CIR.Data.Data.GlobalConfiguration
 		/// </summary>
 		/// <param name="Holidayid"></param>
 		/// <returns> holiday or null holiday if not found </returns>
-		public async Task<IActionResult> GetHolidayById(long Holidayid)
+		public async Task<IActionResult> GetHolidayById(long HolidayId)
 		{
 			try
 			{
-				var holidayList = await _CIRDbContext.Holidays.Where(x => x.Id == Holidayid).FirstOrDefaultAsync();
+				var holidayList = await _CIRDbContext.Holidays.Where(x => x.Id == HolidayId).FirstOrDefaultAsync();
 				if (holidayList == null)
 				{
 					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
@@ -178,11 +178,11 @@ namespace CIR.Data.Data.GlobalConfiguration
 		/// <summary>
 		/// This method takes a delete holiday 
 		/// </summary>
-		/// <param name="Holidayid"></param>
+		/// <param name="holidayId"></param>
 		/// <returns></returns>
-		public async Task<IActionResult> DeleteHolidays(long Holidayid)
+		public async Task<IActionResult> DeleteHolidays(long holidayId)
 		{
-			var holiday = new Holidays() { Id = Holidayid };
+			var holiday = new Holidays() { Id = holidayId };
 			try
 			{
 				_CIRDbContext.Holidays.Remove(holiday);
