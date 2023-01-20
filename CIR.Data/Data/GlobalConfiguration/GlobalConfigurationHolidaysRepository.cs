@@ -33,8 +33,7 @@ namespace CIR.Data.Data.GlobalConfiguration
 		{
 			try
 			{
-
-				Holidays newholiday = new()
+				Holidays newHoliday = new()
 				{
 					Id = holiday.Id,
 					CountryId = holiday.CountryId,
@@ -44,17 +43,21 @@ namespace CIR.Data.Data.GlobalConfiguration
 
 				if (holiday.Id > 0)
 				{
-					_CIRDbContext.Holidays.Update(newholiday);
+					_CIRDbContext.Holidays.Update(newHoliday);
 				}
 				else
 				{
-					_CIRDbContext.Holidays.Add(newholiday);
+					_CIRDbContext.Holidays.Add(newHoliday);
 				}
 
 				await _CIRDbContext.SaveChangesAsync();
 				if (holiday.Id != 0)
 				{
 					return Ok(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "GlobalConfiguration holiday saved successfully." });
+				}
+				if (holiday.Id == 0)
+				{
+					return Ok(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "GlobalConfiguration holiday created successfully." });
 				}
 				return UnprocessableEntity(new CustomResponse<Holidays>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = false, Message = HttpStatusCodesMessages.UnprocessableEntity });
 			}
@@ -78,40 +81,40 @@ namespace CIR.Data.Data.GlobalConfiguration
 			{
 				holiday.Count = _CIRDbContext.Holidays.Where(x => x.Description.Contains(search)).Count();
 
-				var sortData = await (from holidaydata in _CIRDbContext.Holidays
-									  join countrydata in _CIRDbContext.CountryCodes
-									  on holidaydata.CountryId equals countrydata.Id
+				var sortedHolidayData = await (from holidaydata in _CIRDbContext.Holidays
+											   join countrydata in _CIRDbContext.CountryCodes
+											   on holidaydata.CountryId equals countrydata.Id
 
-									  select new HolidayModel()
-									  {
-										  Id = holidaydata.Id,
-										  CountryId = holidaydata.CountryId,
-										  Code = countrydata.Code,
-										  CountryName = countrydata.CountryName,
-										  Date = holidaydata.Date,
-										  Description = holidaydata.Description,
-									  }).ToListAsync();
+											   select new HolidayModel()
+											   {
+												   Id = holidaydata.Id,
+												   CountryId = holidaydata.CountryId,
+												   Code = countrydata.Code,
+												   CountryName = countrydata.CountryName,
+												   Date = holidaydata.Date,
+												   Description = holidaydata.Description,
+											   }).ToListAsync();
 				if (countrycode != "")
 				{
-					sortData = sortData.Where(y => y.Code == countrycode).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
+					sortedHolidayData = sortedHolidayData.Where(y => y.Code == countrycode).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
 				}
 				if (countryname != "")
 				{
-					sortData = sortData.Where(y => y.CountryName == countryname).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
+					sortedHolidayData = sortedHolidayData.Where(y => y.CountryName == countryname).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
 				}
 
-				sortData = sortData.Where(y => y.Description.Contains(search) || y.CountryName.Contains(search) || y.Code.Contains(search)).ToList();
-				holiday.Count = sortData.Count();
+				sortedHolidayData = sortedHolidayData.Where(y => y.Description.Contains(search) || y.CountryName.Contains(search) || y.Code.Contains(search)).ToList();
+				holiday.Count = sortedHolidayData.Count();
 
 				if (sortAscending)
 				{
-					sortData = sortData.OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
+					sortedHolidayData = sortedHolidayData.OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
 				}
 				else
 				{
-					sortData = sortData.OrderByDescending(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
+					sortedHolidayData = sortedHolidayData.OrderByDescending(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
 				}
-				holiday.HolidayList = sortData;
+				holiday.HolidayList = sortedHolidayData;
 				return new JsonResult(new CustomResponse<HolidayViewModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = holiday });
 			}
 			catch (Exception ex)
@@ -123,16 +126,16 @@ namespace CIR.Data.Data.GlobalConfiguration
 		/// <summary>
 		/// fetches holidays based on input holiday id
 		/// </summary>
-		/// <param name="id"></param>
+		/// <param name="Holidayid"></param>
 		/// <returns> holiday or null holiday if not found </returns>
-		public async Task<IActionResult> GetHolidayById(long id)
+		public async Task<IActionResult> GetHolidayById(long HolidayId)
 		{
 			try
 			{
-				var holidayList = await _CIRDbContext.Holidays.Where(x => x.Id == id).FirstOrDefaultAsync();
+				var holidayList = await _CIRDbContext.Holidays.Where(x => x.Id == HolidayId).FirstOrDefaultAsync();
 				if (holidayList == null)
 				{
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NoContent, Result = true, Message = HttpStatusCodesMessages.NoContent, Data = "No data available" });
+					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
 				}
 				return new JsonResult(new CustomResponse<Holidays>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = holidayList });
 			}
@@ -153,14 +156,14 @@ namespace CIR.Data.Data.GlobalConfiguration
 			{
 				if (HolidayModel.Id != 0)
 				{
-					Holidays newholiday = new Holidays()
+					Holidays newHoliday = new Holidays()
 					{
 						Id = HolidayModel.Id,
 						CountryId = HolidayModel.CountryId,
 						Date = HolidayModel.Date,
 						Description = HolidayModel.Description
 					};
-					_CIRDbContext.Holidays.Update(newholiday);
+					_CIRDbContext.Holidays.Update(newHoliday);
 					await _CIRDbContext.SaveChangesAsync();
 					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "holiday saved successfully" });
 				}
