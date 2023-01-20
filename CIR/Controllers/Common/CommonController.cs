@@ -124,11 +124,11 @@ namespace CIR.Controllers.Common
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet("[action]")]
-		public async Task<IActionResult> GetSalutationtypeList(string code)
+		public async Task<IActionResult> GetSalutationTypeList(string code)
 		{
 			try
 			{
-				return await _commonService.GetSalutationtypeList(code);
+				return await _commonService.GetSalutationTypeList(code);
 			}
 			catch (Exception ex)
 			{
