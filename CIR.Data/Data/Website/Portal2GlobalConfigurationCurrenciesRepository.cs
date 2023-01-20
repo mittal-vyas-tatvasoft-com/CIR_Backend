@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace CIR.Data.Data.Website
 {
-    public class PortalToGlobalConfigurationCurrenciesRepository :IPortalToGlobalConfigurationCurrenciesRepository
+    public class Portal2GlobalConfigurationCurrenciesRepository :IPortal2GlobalConfigurationCurrenciesRepository
     {
         #region PROPERTIES
 
@@ -23,7 +23,7 @@ namespace CIR.Data.Data.Website
 
         #endregion
         #region CONSTRUCTOR
-        public PortalToGlobalConfigurationCurrenciesRepository(CIRDbContext context)
+        public Portal2GlobalConfigurationCurrenciesRepository(CIRDbContext context)
         {
             _CIRDBContext = context ??
                 throw new ArgumentNullException(nameof(context));
@@ -40,7 +40,7 @@ namespace CIR.Data.Data.Website
             try
             {
                 var result = (from PGCurrency in _CIRDBContext.Portal2GlobalConfigurationCurrencies
-                              select new PortalToGlobalConfigurationCurrency()
+                              select new Portal2GlobalConfigurationCurrency()
                               {
                                   Id = PGCurrency.Id,
                                   PortalId = PGCurrency.PortalId,
@@ -54,7 +54,7 @@ namespace CIR.Data.Data.Website
 
                 
                 var CurrencyId = (from PGCC in _CIRDBContext.Portal2GlobalConfigurationCurrencies
-                                  select new PortalToGlobalConfigurationCurrency()
+                                  select new Portal2GlobalConfigurationCurrency()
                                   {
                                       Id = PGCC.Id,
                                       PortalId = PGCC.PortalId,
@@ -62,7 +62,7 @@ namespace CIR.Data.Data.Website
                                       EnabledOverride = PGCC.EnabledOverride
                                   }).FirstOrDefault(x => x.PortalId == id);
                 var serializedParent = JsonConvert.SerializeObject(CurrencyId);
-                PortalToGlobalConfigurationCurrency Currency = JsonConvert.DeserializeObject<PortalToGlobalConfigurationCurrency>(serializedParent);
+                Portal2GlobalConfigurationCurrency Currency = JsonConvert.DeserializeObject<Portal2GlobalConfigurationCurrency>(serializedParent);
 
                 if (Currency.EnabledOverride)
                 {
@@ -70,9 +70,9 @@ namespace CIR.Data.Data.Website
                 }
                
                 if (result != null)
-                    return new JsonResult(new CustomResponse<List<PortalToGlobalConfigurationCurrency>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = Result });
+                    return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationCurrency>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = result });
                 else
-                    return new JsonResult(new CustomResponse<List<PortalToGlobalConfigurationCurrency>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
+                    return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationCurrency>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
 
             }
             catch (Exception ex)
@@ -85,7 +85,7 @@ namespace CIR.Data.Data.Website
 		/// </summary>
 		/// <param name="portalToGlobalConfigurationCurrencies"></param>
 		/// <returns>Success status if its valid else failure</returns>
-        public async Task<IActionResult> UpdatePortalToGlobalConfigurationCurrencies(List<PortalToGlobalConfigurationCurrency> portalToGlobalConfigurationCurrencies)
+        public async Task<IActionResult> UpdatePortalToGlobalConfigurationCurrencies(List<Portal2GlobalConfigurationCurrency> portalToGlobalConfigurationCurrencies)
         {
             try
             {

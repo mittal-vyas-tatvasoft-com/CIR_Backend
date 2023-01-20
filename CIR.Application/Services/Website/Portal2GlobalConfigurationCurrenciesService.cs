@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace CIR.Application.Services.Website
 {
-    public class PortalToGlobalConfigurationCurrenciesService: IPortalToGlobalConfigurationCurrenciesService
+    public class Portal2GlobalConfigurationCurrenciesService: IPortal2GlobalConfigurationCurrenciesService
     {
-        private readonly IPortalToGlobalConfigurationCurrenciesRepository _portalToGlobalConfigurationCurrenciesRepository;
-        public PortalToGlobalConfigurationCurrenciesService (IPortalToGlobalConfigurationCurrenciesRepository portalToGlobalConfigurationCurrenciesRepository)
+        private readonly IPortal2GlobalConfigurationCurrenciesRepository _portalToGlobalConfigurationCurrenciesRepository;
+        public Portal2GlobalConfigurationCurrenciesService (IPortal2GlobalConfigurationCurrenciesRepository portalToGlobalConfigurationCurrenciesRepository)
         {
             _portalToGlobalConfigurationCurrenciesRepository = portalToGlobalConfigurationCurrenciesRepository;
         }
@@ -21,7 +21,7 @@ namespace CIR.Application.Services.Website
         {
             return await _portalToGlobalConfigurationCurrenciesRepository.GetPortalToGlobalConfigurationCurrenciesList(id);
         }
-        public async Task<IActionResult> UpdatePortalToGlobalConfigurationCurrencies(List<PortalToGlobalConfigurationCurrency> portalToGlobalConfigurationCurrencies)
+        public async Task<IActionResult> UpdatePortalToGlobalConfigurationCurrencies(List<Portal2GlobalConfigurationCurrency> portalToGlobalConfigurationCurrencies)
         {
             return await _portalToGlobalConfigurationCurrenciesRepository.UpdatePortalToGlobalConfigurationCurrencies(portalToGlobalConfigurationCurrencies);
         }

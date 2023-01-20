@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace CIR.Core.Interfaces.Website
 {
-    public interface IPortalToGlobalConfigurationCurrenciesService
+    public interface IPortal2GlobalConfigurationCurrenciesService
     {
         Task<IActionResult> GetPortalToGlobalConfigurationCurrenciesList(int id);
-        Task<IActionResult> UpdatePortalToGlobalConfigurationCurrencies(List<PortalToGlobalConfigurationCurrency> portalToGlobalConfigurationCurrencies);
+        Task<IActionResult> UpdatePortalToGlobalConfigurationCurrencies(List<Portal2GlobalConfigurationCurrency> portalToGlobalConfigurationCurrencies);
     }
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace CIR.Core.Entities.Websites;
 
-public partial class PortalToGlobalConfigurationCurrency
+public partial class Portal2GlobalConfigurationCurrency
 {
     public long Id { get; set; }
 

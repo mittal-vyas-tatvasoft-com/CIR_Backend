@@ -11,14 +11,14 @@ namespace CIR.Controllers.Website
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class PortalToGlobalConfigurationCurrenciesController : Controller
+    public class Portal2GlobalConfigurationCurrenciesController : Controller
     {
         #region PROPERTIES
-        private readonly IPortalToGlobalConfigurationCurrenciesService _portalToGlobalConfigurationCurrenciesService;
+        private readonly IPortal2GlobalConfigurationCurrenciesService _portalToGlobalConfigurationCurrenciesService;
         #endregion
 
         #region CONSTRUCTORS
-        public PortalToGlobalConfigurationCurrenciesController(IPortalToGlobalConfigurationCurrenciesService portalToGlobalConfigurationCurrenciesService)
+        public Portal2GlobalConfigurationCurrenciesController(IPortal2GlobalConfigurationCurrenciesService portalToGlobalConfigurationCurrenciesService)
         {
             _portalToGlobalConfigurationCurrenciesService = portalToGlobalConfigurationCurrenciesService;
         }
@@ -32,7 +32,7 @@ namespace CIR.Controllers.Website
 		/// <param name="portalToGlobalConfigurationEmails"></param>
 		/// <returns></returns>
         [HttpPost("[action]")]
-        public async Task<IActionResult> Post(List<PortalToGlobalConfigurationCurrency> portalToGlobalConfigurationCurrency)
+        public async Task<IActionResult> Post(List<Portal2GlobalConfigurationCurrency> portalToGlobalConfigurationCurrency)
         {
             if (ModelState.IsValid)
             {
