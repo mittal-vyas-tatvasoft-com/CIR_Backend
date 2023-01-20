@@ -67,10 +67,17 @@ namespace CIR.Data.Data.GlobalConfiguration
 			}
 		}
 		/// <summary>
-		/// This method is used by get globalconfiguration holidays list
+		/// This method retuns filtered holidays list using SP
 		/// </summary>
-		/// <returns></returns>
-		public async Task<IActionResult> GetGlobalConfigurationHolidays(int displayLength, int displayStart, string sortCol, string? search, string? countrycode, string? countryname, bool sortAscending = true)
+		/// <param name="displayLength"> how many row/data we want to fetch(for pagination) </param>
+		/// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
+		/// <param name="sortCol"> name of column which we want to sort</param>
+		/// <param name="search"> word that we want to search in user table </param>
+		/// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
+		/// <param name="countryName"> word takes country name </param>
+		/// <param name="countryCode"> word takes country name </param>
+		/// <returns> filtered list of holidays </returns>
+		public async Task<IActionResult> GetGlobalConfigurationHolidays(int displayLength, int displayStart, string sortCol, string? search, string? countryCode, string? countryName, bool sortAscending = true)
 		{
 			HolidayViewModel holiday = new();
 			if (string.IsNullOrEmpty(sortCol))
@@ -94,13 +101,13 @@ namespace CIR.Data.Data.GlobalConfiguration
 												   Date = holidaydata.Date,
 												   Description = holidaydata.Description,
 											   }).ToListAsync();
-				if (countrycode != "")
+				if (countryCode != "")
 				{
-					sortedHolidayData = sortedHolidayData.Where(y => y.Code == countrycode).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
+					sortedHolidayData = sortedHolidayData.Where(y => y.Code == countryCode).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
 				}
-				if (countryname != "")
+				if (countryName != "")
 				{
-					sortedHolidayData = sortedHolidayData.Where(y => y.CountryName == countryname).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
+					sortedHolidayData = sortedHolidayData.Where(y => y.CountryName == countryName).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
 				}
 
 				sortedHolidayData = sortedHolidayData.Where(y => y.Description.Contains(search) || y.CountryName.Contains(search) || y.Code.Contains(search)).ToList();
@@ -126,13 +133,13 @@ namespace CIR.Data.Data.GlobalConfiguration
 		/// <summary>
 		/// fetches holidays based on input holiday id
 		/// </summary>
-		/// <param name="Holidayid"></param>
+		/// <param name="holidayid"></param>
 		/// <returns> holiday or null holiday if not found </returns>
-		public async Task<IActionResult> GetHolidayById(long HolidayId)
+		public async Task<IActionResult> GetHolidayById(long holidayId)
 		{
 			try
 			{
-				var holidayList = await _CIRDbContext.Holidays.Where(x => x.Id == HolidayId).FirstOrDefaultAsync();
+				var holidayList = await _CIRDbContext.Holidays.Where(x => x.Id == holidayId).FirstOrDefaultAsync();
 				if (holidayList == null)
 				{
 					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
@@ -148,20 +155,20 @@ namespace CIR.Data.Data.GlobalConfiguration
 		/// <summary>
 		/// This method takes a holiday data and update it
 		/// </summary>
-		/// <param name="HolidayId"></param>
+		/// <param name="holidayModel"></param>
 		/// <returns></returns>
-		public async Task<IActionResult> UpdateHoliday(Holidays HolidayModel)
+		public async Task<IActionResult> UpdateHoliday(Holidays holidayModel)
 		{
 			try
 			{
-				if (HolidayModel.Id != 0)
+				if (holidayModel.Id != 0)
 				{
 					Holidays newHoliday = new Holidays()
 					{
-						Id = HolidayModel.Id,
-						CountryId = HolidayModel.CountryId,
-						Date = HolidayModel.Date,
-						Description = HolidayModel.Description
+						Id = holidayModel.Id,
+						CountryId = holidayModel.CountryId,
+						Date = holidayModel.Date,
+						Description = holidayModel.Description
 					};
 					_CIRDbContext.Holidays.Update(newHoliday);
 					await _CIRDbContext.SaveChangesAsync();

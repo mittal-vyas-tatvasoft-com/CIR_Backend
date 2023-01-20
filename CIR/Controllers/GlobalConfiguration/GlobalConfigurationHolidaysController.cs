@@ -31,7 +31,7 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// <summary>
 		/// This method takes holiday details as parameters and creates user and returns that user
 		/// </summary>
-		/// <param name="Holiday"> this object contains different parameters as details of a user </param>
+		/// <param name="uploadedFile"> this object contains different parameters as details of a user </param>
 		/// <returns > created user </returns>
 		[HttpPost("AddCSV")]
 		public async Task<IActionResult> GetHolidayCSV(IFormFile uploadedFile)
@@ -81,6 +81,8 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// <param name="sortCol"> name of column which we want to sort</param>
 		/// <param name="search"> word that we want to search in user table </param>
 		/// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
+		/// <param name="countryName"> word takes country name </param>
+		/// <param name="countryCode"> word takes country name </param>
 		/// <returns> filtered list of holidays </returns>
 		[HttpGet]
 		public async Task<IActionResult> GetAllHolidays(int displayLength, int displayStart, string? sortCol, string? search, string? countryCode, string? countryName, bool sortAscending = true)
@@ -101,14 +103,14 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// <summary>
 		/// This method takes holiday id and return holiday
 		/// </summary>
-		/// <param name="HolidayId"></param>
+		/// <param name="holidayId"></param>
 		/// <returns></returns>
 		[HttpGet("{HolidayId}")]
-		public async Task<IActionResult> Get(long HolidayId)
+		public async Task<IActionResult> Get(long holidayId)
 		{
 			try
 			{
-				return await _globalConfigurationHolidaysService.GetHolidayById(HolidayId);
+				return await _globalConfigurationHolidaysService.GetHolidayById(holidayId);
 			}
 			catch (Exception ex)
 			{
@@ -119,14 +121,14 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// <summary>
 		/// This method takes roles details and update role
 		/// </summary>
-		/// <param name="holidayId"></param>
+		/// <param name="holidayModel"></param>
 		/// <returns></returns>
 		[HttpPut("Update")]
-		public async Task<IActionResult> Update(Holidays holidaymodel)
+		public async Task<IActionResult> Update(Holidays holidayModel)
 		{
 			try
 			{
-				return await _globalConfigurationHolidaysService.UpdateHoliday(holidaymodel);
+				return await _globalConfigurationHolidaysService.UpdateHoliday(holidayModel);
 			}
 			catch (Exception ex)
 			{
@@ -137,14 +139,14 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// <summary>
 		/// This method takes roles details and update role
 		/// </summary>
-		/// <param name="holidayId"></param>
+		/// <param name="holidayModel"></param>
 		/// <returns></returns>
 		[HttpPost("Create")]
-		public async Task<IActionResult> Create(Holidays holidaymodel)
+		public async Task<IActionResult> Create(Holidays holidayModel)
 		{
 			try
 			{
-				return await _globalConfigurationHolidaysService.CreateOrUpdateGlobalConfigurationHolidays(holidaymodel);
+				return await _globalConfigurationHolidaysService.CreateOrUpdateGlobalConfigurationHolidays(holidayModel);
 			}
 			catch (Exception ex)
 			{

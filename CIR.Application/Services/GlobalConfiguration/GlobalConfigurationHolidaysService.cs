@@ -17,17 +17,17 @@ namespace CIR.Application.Services.GlobalConfiguration
 		{
 			return _globalConfigurationHolidaysService.CreateOrUpdateGlobalConfigurationHolidays(holidays);
 		}
-		public async Task<IActionResult> GetGlobalConfigurationHolidays(int displayLength, int displayStart, string sortCol, string? search, string countrycode, string countryname, bool sortAscending = true)
+		public async Task<IActionResult> GetGlobalConfigurationHolidays(int displayLength, int displayStart, string sortCol, string? search, string countryCode, string countryName, bool sortAscending = true)
 		{
-			return await _globalConfigurationHolidaysService.GetGlobalConfigurationHolidays(displayLength, displayStart, sortCol, search, countrycode, countryname, sortAscending);
+			return await _globalConfigurationHolidaysService.GetGlobalConfigurationHolidays(displayLength, displayStart, sortCol, search, countryCode, countryName, sortAscending);
 		}
 		public async Task<IActionResult> GetHolidayById(long id)
 		{
 			return await _globalConfigurationHolidaysService.GetHolidayById(id);
 		}
-		public async Task<IActionResult> UpdateHoliday(Holidays HolidayModel)
+		public async Task<IActionResult> UpdateHoliday(Holidays holidayModel)
 		{
-			return await _globalConfigurationHolidaysService.UpdateHoliday(HolidayModel);
+			return await _globalConfigurationHolidaysService.UpdateHoliday(holidayModel);
 		}
 		public async Task<IActionResult> DeleteHolidays(long holidayId)
 		{
