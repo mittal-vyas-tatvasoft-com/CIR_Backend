@@ -108,17 +108,17 @@ namespace CIR.Data.Data.GlobalConfiguration
             try
 
             {
-                var weekendList = sortAscending ? (from week in _CIRDbContext.Weekends
-                                                   join country in _CIRDbContext.CountryCodes
-                                                                                on week.CountryId equals country.Id
-                                                   select new WeekendModel()
-                                                   {
-                                                       Id = week.Id,
-                                                       CountryId = country.Id,
-                                                       DayOfWeekId = week.DayOfWeekId,
-                                                       CountryCode = country.Code,
-                                                       CountryName = country.CountryName,
-                                                   }).OrderBy(x => EF.Property<object>(x, sortCol))
+                var sortedWeekendsList = sortAscending ? (from week in _CIRDbContext.Weekends
+                                                          join country in _CIRDbContext.CountryCodes
+                                                                                       on week.CountryId equals country.Id
+                                                          select new WeekendModel()
+                                                          {
+                                                              Id = week.Id,
+                                                              CountryId = country.Id,
+                                                              DayOfWeekId = week.DayOfWeekId,
+                                                              CountryCode = country.Code,
+                                                              CountryName = country.CountryName,
+                                                          }).OrderBy(x => EF.Property<object>(x, sortCol))
                                    : (from week in _CIRDbContext.Weekends
                                       join country in _CIRDbContext.CountryCodes
                                                                    on week.CountryId equals country.Id
@@ -130,11 +130,11 @@ namespace CIR.Data.Data.GlobalConfiguration
                                           CountryCode = country.Code,
                                           CountryName = country.CountryName,
                                       }).OrderByDescending(x => EF.Property<object>(x, sortCol));
-                if (weekendList == null)
+                if (sortedWeekendsList == null)
                 {
                     return new JsonResult(new CustomResponse<List<WeekendModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
                 }
-                foreach (var item in weekendList)
+                foreach (var item in sortedWeekendsList)
                 {
 
                     WeekendModel weekendModel = item;
