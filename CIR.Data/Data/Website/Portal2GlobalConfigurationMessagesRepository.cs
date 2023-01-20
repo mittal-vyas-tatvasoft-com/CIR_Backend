@@ -16,14 +16,14 @@ using System.Threading.Tasks;
 
 namespace CIR.Data.Data.Website
 {
-	public class PortalToGlobalConfigurationMessagesRepository : ControllerBase, IPortalToGlobalConfigurationMessagesRepository
+	public class Portal2GlobalConfigurationMessagesRepository : ControllerBase, IPortal2GlobalConfigurationMessagesRepository
 	{
 		#region PROPERTIES
 		private readonly CIRDbContext _CIRDbContext;
 		#endregion
 
 		#region CONSTRUCTOR
-		public PortalToGlobalConfigurationMessagesRepository(CIRDbContext context)
+		public Portal2GlobalConfigurationMessagesRepository(CIRDbContext context)
 		{
 			_CIRDbContext = context ??
 				throw new ArgumentNullException(nameof(context));
@@ -40,7 +40,7 @@ namespace CIR.Data.Data.Website
 			try
 			{
 				var portalToGlobalConfigurationMessagesList = await (from portal2GlobalConfigurationMessages in _CIRDbContext.Portal2GlobalConfigurationMessages
-																	 select new PortalToGlobalConfigurationMessagesModel()
+																	 select new Portal2GlobalConfigurationMessagesModel()
 																	 {
 																		 Id = portal2GlobalConfigurationMessages.Id,
 																		 PortalId = portal2GlobalConfigurationMessages.PortalId,
@@ -49,9 +49,9 @@ namespace CIR.Data.Data.Website
 																	 }).Where(x => x.PortalId == portalId).ToListAsync();
 
 				if (portalToGlobalConfigurationMessagesList != null)
-					return new JsonResult(new CustomResponse<List<PortalToGlobalConfigurationMessagesModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = portalToGlobalConfigurationMessagesList });
+					return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationMessagesModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = portalToGlobalConfigurationMessagesList });
 				else
-					return new JsonResult(new CustomResponse<List<PortalToGlobalConfigurationMessagesModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
+					return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationMessagesModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
 			}
 			catch (Exception ex)
 			{

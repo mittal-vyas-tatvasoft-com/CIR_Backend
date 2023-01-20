@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CIR.Core.ViewModel.Website
 {
-	public class PortalToGlobalConfigurationMessagesModel
+	public class Portal2GlobalConfigurationMessagesModel
 	{
 		public long Id { get; set; }
 		public long PortalId { get; set; }

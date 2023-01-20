@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace CIR.Application.Services.Website
 {
-	public class PortalToGlobalConfigurationMessagesService : IPortalToGlobalConfigurationMessagesService
+	public class Portal2GlobalConfigurationMessagesService : IPortal2GlobalConfigurationMessagesService
 	{
-		private readonly IPortalToGlobalConfigurationMessagesRepository _portalToGlobalConfigurationMessagesRepository;
+		private readonly IPortal2GlobalConfigurationMessagesRepository _portalToGlobalConfigurationMessagesRepository;
 
-		public PortalToGlobalConfigurationMessagesService(IPortalToGlobalConfigurationMessagesRepository portalToGlobalConfigurationMessagesRepository)
+		public Portal2GlobalConfigurationMessagesService(IPortal2GlobalConfigurationMessagesRepository portalToGlobalConfigurationMessagesRepository)
 		{
 			_portalToGlobalConfigurationMessagesRepository = portalToGlobalConfigurationMessagesRepository;
 		}

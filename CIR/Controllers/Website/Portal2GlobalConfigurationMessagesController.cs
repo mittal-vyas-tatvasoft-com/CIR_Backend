@@ -12,14 +12,14 @@ namespace CIR.Controllers.Website
 	[Route("api/[controller]")]
 	[ApiController]
 	[Authorize]
-	public class PortalToGlobalConfigurationMessagesController : ControllerBase
+	public class Portal2GlobalConfigurationMessagesController : ControllerBase
 	{
 		#region PROPERTIES
-		private readonly IPortalToGlobalConfigurationMessagesService _portalToGlobalConfigurationMessagesService;
+		private readonly IPortal2GlobalConfigurationMessagesService _portalToGlobalConfigurationMessagesService;
 		#endregion
 
 		#region CONSTRUCTORS
-		public PortalToGlobalConfigurationMessagesController(IPortalToGlobalConfigurationMessagesService portalToGlobalConfigurationMessagesService)
+		public Portal2GlobalConfigurationMessagesController(IPortal2GlobalConfigurationMessagesService portalToGlobalConfigurationMessagesService)
 		{
 			_portalToGlobalConfigurationMessagesService = portalToGlobalConfigurationMessagesService;
 		}
