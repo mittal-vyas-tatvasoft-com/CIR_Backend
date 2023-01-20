@@ -173,8 +173,11 @@ namespace CIR.Data.Data.Users
                                             RoleGroupingId = roleGroupingDetail.Id,
                                             CultureLcid = items.CultureId
                                         };
-                                        await _CIRDbContext.RoleGrouping2Cultures.AddAsync(roleGrouping2Culture);
-                                        await _CIRDbContext.SaveChangesAsync();
+                                        if (!_CIRDbContext.RoleGrouping2Cultures.Any(c => c.RoleGroupingId == roleGrouping2Culture.RoleGroupingId && c.CultureLcid == roleGrouping2Culture.CultureLcid))
+                                        {
+                                            await _CIRDbContext.RoleGrouping2Cultures.AddAsync(roleGrouping2Culture);
+                                            await _CIRDbContext.SaveChangesAsync();
+                                        }
 
                                         foreach (var subitem in items.Privileges)
                                         {
