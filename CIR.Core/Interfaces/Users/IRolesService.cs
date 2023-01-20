@@ -9,7 +9,7 @@ namespace CIR.Core.Interfaces.Users
         Task<IActionResult> GetRoles();
         Task<RolesModel> GetAllRoles(int displayLength, int displayStart, string? sortCol, string search, bool sortAscending = true);
         Task<Boolean> RoleExists(string rolename, long id);
-        Task<IActionResult> GetRoleDetailById(long roleId);
+        Task<IActionResult> GetRoleDetailById(int roleId);
         Task<IActionResult> AddRole(RolePermissionModel roles);
         Task<IActionResult> DeleteRoles(long roleId);
 

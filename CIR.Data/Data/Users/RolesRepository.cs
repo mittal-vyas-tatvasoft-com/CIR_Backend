@@ -404,7 +404,7 @@ namespace CIR.Data.Data.Users
         /// </summary>
         /// <param name="roleId"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetRoleDetailById(long roleId)
+        public async Task<IActionResult> GetRoleDetailById(int roleId)
         {
             try
             {

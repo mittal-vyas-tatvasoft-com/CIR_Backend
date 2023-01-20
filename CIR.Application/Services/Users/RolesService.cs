@@ -29,7 +29,7 @@ namespace CIR.Application.Services.Users
             return await _rolesRepository.RoleExists(rolename, id);
         }
 
-        public async Task<IActionResult> GetRoleDetailById(long roleId)
+        public async Task<IActionResult> GetRoleDetailById(int roleId)
         {
             return await _rolesRepository.GetRoleDetailById(roleId);
         }
