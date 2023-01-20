@@ -29,18 +29,18 @@ namespace CIR.Data.Data.Utilities
         /// <summary>
         /// This method is used by create and update methods of Lookups
         /// </summary>
-        /// <param name="lookupItemsTextmodel></param>
+        /// <param name="lookupItemsTextModel></param>
         /// <returns>Success status if its valid else failure</returns>
-        public async Task<IActionResult> CreateOrUpdateLookupItem(LookupItemsTextModel lookupItemsTextmodel)
+        public async Task<IActionResult> CreateOrUpdateLookupItem(LookupItemsTextModel lookupItemsTextModel)
         {
             try
             {
-                if (lookupItemsTextmodel.Code == null || lookupItemsTextmodel.CultureId == 0)
+                if (lookupItemsTextModel.Code == null || lookupItemsTextModel.CultureId == 0)
                 {
                     return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest });
                 }
 
-                if (lookupItemsTextmodel.Id == 0)
+                if (lookupItemsTextModel.Id == 0)
                 {
                     int displayOrder;
                     var displayOrderId = _CIRDBContext.LookupItemsText.OrderByDescending(x => x.DisplayOrder).FirstOrDefault();
@@ -49,20 +49,20 @@ namespace CIR.Data.Data.Utilities
                     else
                         displayOrder = 1;
 
-                    var lookupItemId = (from sc in _CIRDBContext.SystemCodes
-                                        join lookup in _CIRDBContext.LookupItems on sc.Id equals lookup.SystemCodeId
-                                        select new LookupItem
-                                        {
-                                            LookupItemId = lookup.LookupItemId
-                                        }).FirstOrDefault();
+                    LookupItem lookupItem = new()
+                    {
+                        SystemCodeId = lookupItemsTextModel.SystemCodeId,
+                    };
+                    _CIRDBContext.LookupItems.Add(lookupItem);
+                    _CIRDBContext.SaveChanges();
 
                     LookupItemsText newLookupItem = new()
                     {
-                        LookupItemId = lookupItemsTextmodel.LookupItemId,
-                        CultureId = lookupItemsTextmodel.CultureId,
+                        LookupItemId = lookupItem.LookupItemId,
+                        CultureId = lookupItemsTextModel.CultureId,
                         DisplayOrder = displayOrder,
-                        Text = lookupItemsTextmodel.Text,
-                        Active = lookupItemsTextmodel.Active,
+                        Text = lookupItemsTextModel.Text,
+                        Active = lookupItemsTextModel.Active,
                     };
                     _CIRDBContext.LookupItemsText.Add(newLookupItem);
                     _CIRDBContext.SaveChanges();
@@ -70,14 +70,20 @@ namespace CIR.Data.Data.Utilities
                 }
                 else
                 {
-                    var lookupItemTextData = _CIRDBContext.LookupItemsText.FirstOrDefault(x => x.Id == lookupItemsTextmodel.Id);
+                    var lookupItemTextData = _CIRDBContext.LookupItemsText.FirstOrDefault(x => x.Id == lookupItemsTextModel.Id);
                     if (lookupItemTextData != null)
                     {
-                        LookupItemsText updateItem = lookupItemTextData;
-                        updateItem.Text = lookupItemsTextmodel.Text;
-                        updateItem.Active = lookupItemsTextmodel.Active;
 
-                        _CIRDBContext.LookupItemsText.Update(updateItem);
+                        _CIRDBContext.LookupItemsText.Where(x => x.Id == lookupItemsTextModel.Id).ForEachAsync(item =>
+                        {
+                            item.Id = lookupItemsTextModel.Id;
+                            item.LookupItemId = lookupItemsTextModel.LookupItemId;
+                            item.CultureId = lookupItemsTextModel.CultureId;
+                            item.DisplayOrder = lookupItemTextData.DisplayOrder;
+                            item.Text = lookupItemsTextModel.Text;
+                            item.Active = lookupItemsTextModel.Active;
+                        });
+
                         _CIRDBContext.SaveChanges();
                         return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "Lookup Item Updated Successfully." });
                     }
@@ -227,6 +233,44 @@ namespace CIR.Data.Data.Utilities
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// This method will return look up items of given id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> GetLookupById(int id)
+        {
+            try
+            {
+                var lookupItem = await (from lookUp in _CIRDBContext.LookupItems
+                                        join code in _CIRDBContext.SystemCodes
+                                        on lookUp.SystemCodeId equals code.Id
+                                        join text in _CIRDBContext.LookupItemsText
+                                        on lookUp.LookupItemId equals text.LookupItemId
+                                        select new LookupItemsTextModel()
+                                        {
+                                            Id = text.Id,
+                                            SystemCodeId = code.Id,
+                                            LookupItemId = text.LookupItemId,
+                                            CultureId = text.CultureId,
+                                            DisplayOrderId = text.DisplayOrder,
+                                            Text = text.Text,
+                                            Active = text.Active,
+                                            Code = code.Code
+                                        }).Where(x => x.Id == id).FirstOrDefaultAsync();
+
+                if (lookupItem == null)
+                {
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
+                }
+                return new JsonResult(new CustomResponse<LookupItemsTextModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = lookupItem });
+            }
+            catch
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError });
+            }
         }
         #endregion
     }
