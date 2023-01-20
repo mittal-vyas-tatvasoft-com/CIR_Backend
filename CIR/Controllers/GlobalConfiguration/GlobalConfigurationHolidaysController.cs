@@ -80,19 +80,19 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
 		/// <param name="sortCol"> name of column which we want to sort</param>
 		/// <param name="search"> word that we want to search in user table </param>
-		/// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
+		/// <param name="sortAscending"> 'asc' or 'desc' direction for sort </param>
 		/// <param name="countryName"> word takes country name </param>
 		/// <param name="countryCode"> word takes country name </param>
 		/// <returns> filtered list of holidays </returns>
 		[HttpGet]
-		public async Task<IActionResult> GetAllHolidays(int displayLength, int displayStart, string? sortCol, string? search, int? countryCodeId, int? countryNameId, bool sortAscending = true)
+		public async Task<IActionResult> GetAllHolidays(int displayLength, int displayStart, string? sortCol, string? search, int? countryCode, int? countryName, bool sortAscending = true)
 		{
 			try
 			{
 				search ??= string.Empty;
-				countryCodeId ??= null;
-				countryNameId ??= null;
-				return await _globalConfigurationHolidaysService.GetGlobalConfigurationHolidays(displayLength, displayStart, sortCol, search, countryCodeId, countryNameId, sortAscending);
+				countryCode ??= null;
+				countryName ??= null;
+				return await _globalConfigurationHolidaysService.GetGlobalConfigurationHolidays(displayLength, displayStart, sortCol, search, countryCode, countryName, sortAscending);
 			}
 			catch (Exception ex)
 			{

@@ -34,7 +34,7 @@ namespace CIR.Data.Data.Website
 		{
 			try
 			{
-				Offices newoffice = new()
+				Offices newOffice = new()
 				{
 					AddressLine1 = offices.AddressLine1,
 					AddressLine2 = offices.AddressLine2,
@@ -63,11 +63,11 @@ namespace CIR.Data.Data.Website
 
 				if (offices.Id > 0)
 				{
-					_CIRDbContext.offices.Update(newoffice);
+					_CIRDbContext.offices.Update(newOffice);
 				}
 				else
 				{
-					_CIRDbContext.offices.Add(newoffice);
+					_CIRDbContext.offices.Add(newOffice);
 				}
 				await _CIRDbContext.SaveChangesAsync();
 				return Ok(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "Offices saved successfully." });
@@ -85,11 +85,11 @@ namespace CIR.Data.Data.Website
 		/// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
 		/// <param name="sortCol"> name of column which we want to sort</param>
 		/// <param name="search"> word that we want to search in user table </param>
-		/// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
+		/// <param name="sortAscending"> 'asc' or 'desc' direction for sort </param>
 		/// <returns> filtered list of users </returns>
-		public async Task<IActionResult> GetHolidays(int displayLength, int displayStart, string sortCol, string search, bool sortAscending = true)
+		public async Task<IActionResult> GetOffices(int displayLength, int displayStart, string sortCol, string search, bool sortAscending = true)
 		{
-			OfficeModel Office = new();
+			OfficeModel office = new();
 
 
 			if (string.IsNullOrEmpty(sortCol))
@@ -98,33 +98,38 @@ namespace CIR.Data.Data.Website
 			}
 			try
 			{
-				Office.Count = _CIRDbContext.offices.Where(y => y.Name.Contains(search)).Count();
+				office.Count = _CIRDbContext.offices.Where(y => y.Name.Contains(search)).Count();
 
-				var sortData = await (from officedata in _CIRDbContext.offices
-									  join country in _CIRDbContext.CountryCodes
-									   on officedata.CountryCode equals country.Id
-									  select new officevm()
-									  {
-										  Id = officedata.Id,
-										  Address = officedata.AddressLine1 + officedata.AddressLine2,
-										  country = country.CountryName,
-										  Name = officedata.Name
-									  }).ToListAsync();
+				var officeRecords = await (from officedata in _CIRDbContext.offices
+										   join country in _CIRDbContext.CountryCodes
+											on officedata.CountryCode equals country.Id
+										   select new officevm()
+										   {
+											   Id = officedata.Id,
+											   Address = officedata.AddressLine1 + officedata.AddressLine2,
+											   country = country.CountryName,
+											   Name = officedata.Name
+										   }).ToListAsync();
+
+				if (officeRecords.Count == 0)
+				{
+					return new JsonResult(new CustomResponse<List<OfficeModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+				}
 
 
-				sortData = sortData.Where(y => y.Name.Contains(search) || y.Address.Contains(search) || y.country.Contains(search)).ToList();
-				Office.Count = sortData.Count();
+				officeRecords = officeRecords.Where(y => y.Name.Contains(search) || y.Address.Contains(search) || y.country.Contains(search)).ToList();
+				office.Count = officeRecords.Count();
 
 				if (sortAscending)
 				{
-					sortData = sortData.OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
+					officeRecords = officeRecords.OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
 				}
 				else
 				{
-					sortData = sortData.OrderByDescending(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
+					officeRecords = officeRecords.OrderByDescending(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
 				}
-				Office.OfficeList = sortData;
-				return new JsonResult(new CustomResponse<OfficeModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = Office });
+				office.OfficeList = officeRecords;
+				return new JsonResult(new CustomResponse<OfficeModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = office });
 			}
 			catch (Exception ex)
 			{
@@ -135,13 +140,17 @@ namespace CIR.Data.Data.Website
 		/// <summary>
 		/// fetches offices based on input office id
 		/// </summary>
-		/// <param name="id"></param>
+		/// <param name="officeId"></param>
 		/// <returns> holiday or null holiday if not found </returns>
-		public async Task<IActionResult> GetOfficesById(long id)
+		public async Task<IActionResult> GetOfficesById(long officeId)
 		{
 			try
 			{
-				var officeList = await _CIRDbContext.offices.Where(x => x.Id == id).FirstOrDefaultAsync();
+				var officeList = await _CIRDbContext.offices.Where(x => x.Id == officeId).FirstOrDefaultAsync();
+				if (officeList == null)
+				{
+					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
+				}
 				return new JsonResult(new CustomResponse<Offices>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = officeList });
 			}
 			catch (Exception ex)

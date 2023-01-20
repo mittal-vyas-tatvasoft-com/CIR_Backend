@@ -15,9 +15,9 @@ namespace CIR.Application.Services.Website
 		{
 			return await _officesRepository.CreateOrUpdateOffice(offices);
 		}
-		public async Task<IActionResult> GetHolidays(int displayLength, int displayStart, string sortCol, string search, bool sortAscending = true)
+		public async Task<IActionResult> GetOffices(int displayLength, int displayStart, string sortCol, string search, bool sortAscending = true)
 		{
-			return await _officesRepository.GetHolidays(displayLength, displayStart, sortCol, search, sortAscending);
+			return await _officesRepository.GetOffices(displayLength, displayStart, sortCol, search, sortAscending);
 		}
 		public async Task<IActionResult> GetOfficesById(long id)
 		{

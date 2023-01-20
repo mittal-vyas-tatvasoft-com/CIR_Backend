@@ -74,10 +74,10 @@ namespace CIR.Data.Data.GlobalConfiguration
 		/// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
 		/// <param name="sortCol"> name of column which we want to sort</param>
 		/// <param name="search"> word that we want to search in user table </param>
-		/// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
-		/// <param name="countryName"> word takes country name </param>
-		/// <param name="countryCode"> word takes country name </param>
-		/// <returns> filtered list of holidays </returns>
+		/// <param name="countryCode"> used to filter table based on country code</param>
+		/// <param name="countryName">used to filter table based on country name</param>
+		/// <param name="sortAscending"> 'asc' or 'desc' direction for sort </param>
+		/// <returns></returns>
 		public async Task<IActionResult> GetGlobalConfigurationHolidays(int displayLength, int displayStart, string sortCol, string? search, int? countryCodeId, int? countryNameId, bool sortAscending = true)
 		{
 			HolidayViewModel holiday = new();

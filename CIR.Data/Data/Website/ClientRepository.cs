@@ -52,13 +52,13 @@ namespace CIR.Data.Data.Website
                                          EmailStopped = subsite.EmailStopped
                                      }).ToListAsync();
 
-                if (clients.Count > 0)
+                if (clients.Count == 0)
                 {
-                    return new JsonResult(new CustomResponse<List<ClientModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = clients });
+                    return new JsonResult(new CustomResponse<List<ClientModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
                 }
                 else
                 {
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NoContent, Result = true, Message = HttpStatusCodesMessages.NoContent, Data = "No Data is present" });
+                    return new JsonResult(new CustomResponse<List<ClientModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = clients });
                 }
             }
             catch (Exception ex)

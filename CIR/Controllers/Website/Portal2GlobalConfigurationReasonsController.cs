@@ -45,7 +45,7 @@ namespace CIR.Controllers.Websites
 		/// <summary>
 		/// This method takes reasons details and adds it
 		/// </summary>
-		/// <param name="clientModel"></param>
+		/// <param name="portal2GlobalConfigurationReasonsModels"></param>
 		/// <returns></returns>
 		/// 
 		[HttpPost("Create")]
