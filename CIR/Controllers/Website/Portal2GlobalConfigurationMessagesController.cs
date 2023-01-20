@@ -15,13 +15,13 @@ namespace CIR.Controllers.Website
 	public class Portal2GlobalConfigurationMessagesController : ControllerBase
 	{
 		#region PROPERTIES
-		private readonly IPortal2GlobalConfigurationMessagesService _portalToGlobalConfigurationMessagesService;
+		private readonly IPortal2GlobalConfigurationMessagesService _portal2GlobalConfigurationMessagesService;
 		#endregion
 
 		#region CONSTRUCTORS
-		public Portal2GlobalConfigurationMessagesController(IPortal2GlobalConfigurationMessagesService portalToGlobalConfigurationMessagesService)
+		public Portal2GlobalConfigurationMessagesController(IPortal2GlobalConfigurationMessagesService portal2GlobalConfigurationMessagesService)
 		{
-			_portalToGlobalConfigurationMessagesService = portalToGlobalConfigurationMessagesService;
+			_portal2GlobalConfigurationMessagesService = portal2GlobalConfigurationMessagesService;
 		}
 		#endregion
 
@@ -33,11 +33,11 @@ namespace CIR.Controllers.Website
 		/// <param name="portalId"></param>
 		/// <returns></returns>
 		[HttpGet("{portalId}")]
-		public async Task<IActionResult> GetPortalToGlobalConfigurationMessagesList(int portalId)
+		public async Task<IActionResult> GetPortalToGlobalConfigurationMessagesList(long portalId)
 		{
 			try
 			{
-				return await _portalToGlobalConfigurationMessagesService.GetPortalToGlobalConfigurationMessagesList(portalId);
+				return await _portal2GlobalConfigurationMessagesService.GetPortalToGlobalConfigurationMessagesList(portalId);
 			}
 			catch (Exception ex)
 			{
@@ -57,7 +57,7 @@ namespace CIR.Controllers.Website
 			{
 				try
 				{
-					return await _portalToGlobalConfigurationMessagesService.CreateOrUpdatePortalToGlobalConfigurationMessages(portal2GlobalConfigurationMessages);
+					return await _portal2GlobalConfigurationMessagesService.CreateOrUpdatePortalToGlobalConfigurationMessages(portal2GlobalConfigurationMessages);
 				}
 				catch (Exception ex)
 				{
@@ -79,7 +79,7 @@ namespace CIR.Controllers.Website
 			{
 				try
 				{
-					return await _portalToGlobalConfigurationMessagesService.CreateOrUpdatePortalToGlobalConfigurationMessages(portal2GlobalConfigurationMessages);
+					return await _portal2GlobalConfigurationMessagesService.CreateOrUpdatePortalToGlobalConfigurationMessages(portal2GlobalConfigurationMessages);
 				}
 				catch (Exception ex)
 				{

@@ -10,7 +10,7 @@ namespace CIR.Core.Interfaces.Website
 {
 	public interface IPortal2GlobalConfigurationMessagesService
 	{
-		Task<IActionResult> GetPortalToGlobalConfigurationMessagesList(int portalId);
+		Task<IActionResult> GetPortalToGlobalConfigurationMessagesList(long portalId);
 		Task<IActionResult> CreateOrUpdatePortalToGlobalConfigurationMessages(List<Portal2GlobalConfigurationMessage> portal2GlobalConfigurationMessages);
 	}
 }

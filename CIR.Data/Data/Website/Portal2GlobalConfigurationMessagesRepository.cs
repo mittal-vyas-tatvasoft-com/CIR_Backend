@@ -35,11 +35,11 @@ namespace CIR.Data.Data.Website
 		/// This method used by PortalToGlobalConfigurationMessagesList
 		/// </summary>
 		/// <returns></returns>
-		public async Task<IActionResult> GetPortalToGlobalConfigurationMessagesList(int portalId)
+		public async Task<IActionResult> GetPortalToGlobalConfigurationMessagesList(long portalId)
 		{
 			try
 			{
-				var portalToGlobalConfigurationMessagesList = await (from portal2GlobalConfigurationMessages in _CIRDbContext.Portal2GlobalConfigurationMessages
+				var portal2GlobalConfigurationMessagesList = await (from portal2GlobalConfigurationMessages in _CIRDbContext.Portal2GlobalConfigurationMessages
 																	 select new Portal2GlobalConfigurationMessagesModel()
 																	 {
 																		 Id = portal2GlobalConfigurationMessages.Id,
@@ -48,8 +48,8 @@ namespace CIR.Data.Data.Website
 																		 ValueOverride = portal2GlobalConfigurationMessages.ValueOverride
 																	 }).Where(x => x.PortalId == portalId).ToListAsync();
 
-				if (portalToGlobalConfigurationMessagesList != null)
-					return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationMessagesModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = portalToGlobalConfigurationMessagesList });
+				if (portal2GlobalConfigurationMessagesList != null)
+					return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationMessagesModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = portal2GlobalConfigurationMessagesList });
 				else
 					return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationMessagesModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
 			}
@@ -64,17 +64,17 @@ namespace CIR.Data.Data.Website
 		/// </summary>
 		/// <param name="portalToGlobalConfigurationMessages"></param>
 		/// <returns>Success status if its valid else failure</returns>
-		public async Task<IActionResult> CreateOrUpdatePortalToGlobalConfigurationMessages(List<Portal2GlobalConfigurationMessage> portalToGlobalConfigurationMessage)
+		public async Task<IActionResult> CreateOrUpdatePortalToGlobalConfigurationMessages(List<Portal2GlobalConfigurationMessage> portal2GlobalConfigurationMessage)
 		{
 			try
 			{
-				if (portalToGlobalConfigurationMessage.Any(x => x.PortalId == 0))
+				if (portal2GlobalConfigurationMessage.Any(x => x.PortalId == 0))
 				{
 					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest });
 				}
-				if (portalToGlobalConfigurationMessage != null)
+				if (portal2GlobalConfigurationMessage != null)
 				{
-					foreach (var item in portalToGlobalConfigurationMessage)
+					foreach (var item in portal2GlobalConfigurationMessage)
 					{
 						if (item.Id != 0)
 						{
