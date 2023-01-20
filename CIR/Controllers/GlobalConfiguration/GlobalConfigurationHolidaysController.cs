@@ -85,14 +85,14 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// <param name="countryCode"> word takes country name </param>
 		/// <returns> filtered list of holidays </returns>
 		[HttpGet]
-		public async Task<IActionResult> GetAllHolidays(int displayLength, int displayStart, string? sortCol, string? search, string? countryCode, string? countryName, bool sortAscending = true)
+		public async Task<IActionResult> GetAllHolidays(int displayLength, int displayStart, string? sortCol, string? search, int? countryCodeId, int? countryNameId, bool sortAscending = true)
 		{
 			try
 			{
 				search ??= string.Empty;
-				countryCode ??= string.Empty;
-				countryName ??= string.Empty;
-				return await _globalConfigurationHolidaysService.GetGlobalConfigurationHolidays(displayLength, displayStart, sortCol, search, countryCode, countryName, sortAscending);
+				countryCodeId ??= null;
+				countryNameId ??= null;
+				return await _globalConfigurationHolidaysService.GetGlobalConfigurationHolidays(displayLength, displayStart, sortCol, search, countryCodeId, countryNameId, sortAscending);
 			}
 			catch (Exception ex)
 			{

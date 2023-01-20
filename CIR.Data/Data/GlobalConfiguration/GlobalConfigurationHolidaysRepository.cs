@@ -5,6 +5,7 @@ using CIR.Core.Interfaces.GlobalConfiguration;
 using CIR.Core.ViewModel.GlobalConfiguration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CIR.Data.Data.GlobalConfiguration
 {
@@ -77,7 +78,7 @@ namespace CIR.Data.Data.GlobalConfiguration
 		/// <param name="countryName"> word takes country name </param>
 		/// <param name="countryCode"> word takes country name </param>
 		/// <returns> filtered list of holidays </returns>
-		public async Task<IActionResult> GetGlobalConfigurationHolidays(int displayLength, int displayStart, string sortCol, string? search, string? countryCode, string? countryName, bool sortAscending = true)
+		public async Task<IActionResult> GetGlobalConfigurationHolidays(int displayLength, int displayStart, string sortCol, string? search, int? countryCodeId, int? countryNameId, bool sortAscending = true)
 		{
 			HolidayViewModel holiday = new();
 			if (string.IsNullOrEmpty(sortCol))
@@ -101,15 +102,26 @@ namespace CIR.Data.Data.GlobalConfiguration
 												   Date = holidaydata.Date,
 												   Description = holidaydata.Description,
 											   }).ToListAsync();
-				if (countryCode != "")
+				if (countryCodeId != null && countryNameId == null && search.IsNullOrEmpty())
 				{
-					sortedHolidayData = sortedHolidayData.Where(y => y.Code == countryCode).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
+					sortedHolidayData = sortedHolidayData.Where(y => y.CountryId == countryCodeId).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
 				}
-				if (countryName != "")
+				if (countryNameId != null && countryCodeId == null && search.IsNullOrEmpty())
 				{
-					sortedHolidayData = sortedHolidayData.Where(y => y.CountryName == countryName).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
+					sortedHolidayData = sortedHolidayData.Where(y => y.CountryId == countryNameId).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
 				}
-
+				if (countryNameId != null && countryCodeId == null && !search.IsNullOrEmpty())
+				{
+					sortedHolidayData = sortedHolidayData.Where(x => x.CountryId == countryNameId).ToList();
+				}
+				if (countryNameId == null && countryCodeId != null && !search.IsNullOrEmpty())
+				{
+					sortedHolidayData = sortedHolidayData.Where(x => x.CountryId == countryCodeId).ToList();
+				}
+				if (countryNameId != null && countryCodeId != null && !search.IsNullOrEmpty())
+				{
+					sortedHolidayData = sortedHolidayData.Where(x => x.CountryId == countryNameId && x.CountryId == countryCodeId && (x.CountryName.ToLower().Contains(search))).ToList();
+				}
 				sortedHolidayData = sortedHolidayData.Where(y => y.Description.Contains(search) || y.CountryName.Contains(search) || y.Code.Contains(search)).ToList();
 				holiday.Count = sortedHolidayData.Count();
 
