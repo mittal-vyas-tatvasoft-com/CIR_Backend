@@ -127,19 +127,19 @@ namespace CIR.Data.Data.GlobalConfiguration
                     Weekends.WeekendsList.Add(weekend);
                 }
                 
-                IEnumerable<WeekendModel> WeekendLists = Weekends.WeekendsList;
-                WeekendLists = Weekends.WeekendsList.Where(x => x.CountryName.ToLower().Contains(SearchText) || x.CountryCode.ToLower().Contains(SearchText) || x.DayOfWeek.ToLower().Contains(SearchText));
+                IEnumerable<WeekendModel> weekendLists = Weekends.WeekendsList;
+                weekendLists = Weekends.WeekendsList.Where(x => x.CountryName.ToLower().Contains(SearchText) || x.CountryCode.ToLower().Contains(SearchText) || x.DayOfWeek.ToLower().Contains(SearchText));
 
                 if (filterCountryCodeId != null)
                 {
-                    WeekendLists = WeekendLists.Where(x => x.CountryId == filterCountryCodeId).ToList();
+                    weekendLists = weekendLists.Where(x => x.CountryId == filterCountryCodeId).ToList();
                 }
                 if (filterCountryNameId != null)
                 {
-                    WeekendLists = WeekendLists.Where(x => x.CountryId == filterCountryNameId).ToList();
+                    weekendLists = weekendLists.Where(x => x.CountryId == filterCountryNameId).ToList();
                 }
-                WeekendLists = sortAscending ? WeekendLists.OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)) : WeekendLists.OrderByDescending(x => x.GetType().GetProperty(sortCol).GetValue(x, null));
-                Weekends.Count = WeekendLists.Count();
+                weekendLists = sortAscending ? weekendLists.OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)) : weekendLists.OrderByDescending(x => x.GetType().GetProperty(sortCol).GetValue(x, null));
+                weekendLists.Count = weekendLists.Count();
 
                 var sortedWeekends = weekendLists.Skip(displayStart).Take(displayLength);
                 weekends.WeekendsList = sortedWeekends.ToList();
