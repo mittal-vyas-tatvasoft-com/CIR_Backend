@@ -1,4 +1,17 @@
-﻿namespace CIR.Data.Data.Common
+﻿using CIR.Common.CustomResponse;
+using CIR.Common.Data;
+using CIR.Common.Helper;
+using CIR.Core.Entities;
+using CIR.Core.Entities.GlobalConfiguration;
+using CIR.Core.Entities.Users;
+using CIR.Core.Entities.Utilities;
+using CIR.Core.Interfaces.Common;
+using CIR.Core.ViewModel.Utilities;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Data;
+
+namespace CIR.Data.Data.Common
 {
     public class CommonRepository : ICommonRepository
     {
@@ -134,10 +147,8 @@
         /// <param name="code">
         /// </summary>
         /// <returns></returns>
-        public async Task<IActionResult> GetSalutationtypeList(string code)
+        public async Task<IActionResult> GetSalutationTypeList(string code)
         {
-            List<LookupItemsText> lookupItemList = new List<LookupItemsText>();
-
             try
             {
                 return await GetSalutationList(code);
@@ -147,27 +158,37 @@
                 return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
             }
         }
+
+        /// <summary>
+        /// This method will be used by GetSalutationTypeList method
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
         public async Task<IActionResult> GetSalutationList(string code)
         {
-            List<LookupItemsText> SalutationList = new List<LookupItemsText>();
+            List<LookupItemsText> salutationList = new List<LookupItemsText>();
             var dictionaryobj = new Dictionary<string, object>
             {
                 { "Code", code}
             };
 
-            var dt = SQLHelper.ExecuteSqlQueryWithParams("spGetSalutationTypeList", dictionaryobj);
-            if (dt != null)
+            var salutationListDatatable = SQLHelper.ExecuteSqlQueryWithParams("spGetSalutationTypeList", dictionaryobj);
+            if (salutationListDatatable != null)
             {
-                foreach (DataRow row in dt.Rows)
+                foreach (DataRow row in salutationListDatatable.Rows)
                 {
                     LookupItemsText lookupItemsText = new LookupItemsText();
 
                     lookupItemsText.Id = Convert.ToInt64(row["Id"]);
                     lookupItemsText.Text = Convert.ToString(row["Text"]);
-                    SalutationList.Add(lookupItemsText);
+                    salutationList.Add(lookupItemsText);
                 }
             }
-            return new JsonResult(new CustomResponse<List<LookupItemsText>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = SalutationList });
+            if (salutationList.Count == 0)
+            {
+                return new JsonResult(new CustomResponse<List<LookupItemsText>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+            }
+            return new JsonResult(new CustomResponse<List<LookupItemsText>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = salutationList });
         }
 
         /// <summary>
@@ -184,6 +205,11 @@
                                           Id = sc.Id,
                                           Code = sc.Code
                                       }).ToList();
+
+                if (systemCodeList.Count == 0)
+                {
+                    return new JsonResult(new CustomResponse<List<SystemCodeModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+                }
 
                 return new JsonResult(new CustomResponse<List<SystemCodeModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = systemCodeList });
             }

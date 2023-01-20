@@ -175,12 +175,12 @@ namespace CIR.Data.Data.Users
                 { "Search", search }
             };
 
-            DataTable dt = SQLHelper.ExecuteSqlQueryWithParams("spGetFilteredUsers", dictionaryobj);
+            DataTable filteredUsersDatatable = SQLHelper.ExecuteSqlQueryWithParams("spGetFilteredUsers", dictionaryobj);
 
             UsersModel usersData = new();
 
-            usersData.Count = Convert.ToInt32(dt.Rows[0]["TotalCount"].ToString());
-            usersData.UsersList = SQLHelper.ConvertToGenericModelList<User>(dt);
+            usersData.Count = Convert.ToInt32(filteredUsersDatatable.Rows[0]["TotalCount"].ToString());
+            usersData.UsersList = SQLHelper.ConvertToGenericModelList<User>(filteredUsersDatatable);
 
             return usersData;
         }
@@ -192,7 +192,9 @@ namespace CIR.Data.Data.Users
         /// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
         /// <param name="sortCol"> name of column which we want to sort</param>
         /// <param name="search"> word that we want to search in user table </param>
-        /// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
+        /// <param name="sortAscending"> 'asc' or 'desc' direction for sort </param>
+        /// <param name="enabled"></param>
+        /// <param name="roleId"></param>
         /// <returns> filtered list of users </returns>
 
 
@@ -208,34 +210,34 @@ namespace CIR.Data.Data.Users
             try
             {
                 users.Count = _CIRDBContext.Users.Where(y => y.UserName.Contains(search) || y.Email.Contains(search) || y.FirstName.Contains(search)).Count();
-                List<UserModel> sortData;
+                List<UserModel> sortedUsers;
                 using (DbConnection dbConnection = new DbConnection())
                 {
 
                     using (var connection = dbConnection.Connection)
                     {
-                        sortData = connection.Query<UserModel>("spGetUserDetailList", null, commandType: CommandType.StoredProcedure).ToList();
+                        sortedUsers = connection.Query<UserModel>("spGetUserDetailList", null, commandType: CommandType.StoredProcedure).ToList();
                     }
                 }
                 if (roleId != 0)
                 {
-                    sortData = sortData.Where(y => y.RoleId == roleId).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
+                    sortedUsers = sortedUsers.Where(y => y.RoleId == roleId).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
                 }
                 if (enabled != null)
                 {
-                    sortData = sortData.Where(y => y.Enabled == enabled).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
+                    sortedUsers = sortedUsers.Where(y => y.Enabled == enabled).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
                 }
-                sortData = sortData.Where(y => y.UserName.Contains(search) || y.Email.Contains(search) || y.FirstName.Contains(search)).ToList();
-                users.Count = sortData.Count();
+                sortedUsers = sortedUsers.Where(y => y.UserName.Contains(search) || y.Email.Contains(search) || y.FirstName.Contains(search)).ToList();
+                users.Count = sortedUsers.Count();
                 if (sortAscending)
                 {
-                    sortData = sortData.OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
+                    sortedUsers = sortedUsers.OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
                 }
                 else
                 {
-                    sortData = sortData.OrderByDescending(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
+                    sortedUsers = sortedUsers.OrderByDescending(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
                 }
-                users.UsersList = sortData;
+                users.UsersList = sortedUsers;
                 if (users.Count == 0)
                 {
                     return new JsonResult(new CustomResponse<List<UsersViewModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });

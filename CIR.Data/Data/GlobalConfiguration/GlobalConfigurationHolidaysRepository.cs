@@ -70,11 +70,11 @@ namespace CIR.Data.Data.GlobalConfiguration
 		/// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
 		/// <param name="sortCol"> name of column which we want to sort</param>
 		/// <param name="search"> word that we want to search in user table </param>
-		/// <param name="countrycode"> used to filter table based on country code</param>
-		/// <param name="countryname">used to filter table based on country name</param>
+		/// <param name="countryCode"> used to filter table based on country code</param>
+		/// <param name="countryName">used to filter table based on country name</param>
 		/// <param name="sortAscending"> 'asc' or 'desc' direction for sort </param>
 		/// <returns></returns>
-		public async Task<IActionResult> GetGlobalConfigurationHolidays(int displayLength, int displayStart, string sortCol, string? search, string? countrycode, string? countryname, bool sortAscending = true)
+		public async Task<IActionResult> GetGlobalConfigurationHolidays(int displayLength, int displayStart, string sortCol, string? search, string? countryCode, string? countryName, bool sortAscending = true)
 		{
 			HolidayViewModel holiday = new();
 			if (string.IsNullOrEmpty(sortCol))
@@ -85,44 +85,44 @@ namespace CIR.Data.Data.GlobalConfiguration
 			{
 				holiday.Count = _CIRDbContext.Holidays.Where(x => x.Description.Contains(search)).Count();
 
-				var sortData = await (from holidaydata in _CIRDbContext.Holidays
-									  join countrydata in _CIRDbContext.CountryCodes
-									  on holidaydata.CountryId equals countrydata.Id
+				var holidayRecords = await (from holidaydata in _CIRDbContext.Holidays
+											join countrydata in _CIRDbContext.CountryCodes
+											on holidaydata.CountryId equals countrydata.Id
 
-									  select new HolidayModel()
-									  {
-										  Id = holidaydata.Id,
-										  CountryId = holidaydata.CountryId,
-										  Code = countrydata.Code,
-										  CountryName = countrydata.CountryName,
-										  Date = holidaydata.Date,
-										  Description = holidaydata.Description,
-									  }).ToListAsync();
-				if (sortData.Count == 0)
+											select new HolidayModel()
+											{
+												Id = holidaydata.Id,
+												CountryId = holidaydata.CountryId,
+												Code = countrydata.Code,
+												CountryName = countrydata.CountryName,
+												Date = holidaydata.Date,
+												Description = holidaydata.Description,
+											}).ToListAsync();
+				if (holidayRecords.Count == 0)
 				{
 					return new JsonResult(new CustomResponse<List<HolidayModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
 				}
-				if (countrycode != "")
+				if (countryCode != "")
 				{
-					sortData = sortData.Where(y => y.Code == countrycode).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
+					holidayRecords = holidayRecords.Where(y => y.Code == countryCode).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
 				}
-				if (countryname != "")
+				if (countryName != "")
 				{
-					sortData = sortData.Where(y => y.CountryName == countryname).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
+					holidayRecords = holidayRecords.Where(y => y.CountryName == countryName).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
 				}
 
-				sortData = sortData.Where(y => y.Description.Contains(search) || y.CountryName.Contains(search) || y.Code.Contains(search)).ToList();
-				holiday.Count = sortData.Count();
+				holidayRecords = holidayRecords.Where(y => y.Description.Contains(search) || y.CountryName.Contains(search) || y.Code.Contains(search)).ToList();
+				holiday.Count = holidayRecords.Count();
 
 				if (sortAscending)
 				{
-					sortData = sortData.OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
+					holidayRecords = holidayRecords.OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
 				}
 				else
 				{
-					sortData = sortData.OrderByDescending(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
+					holidayRecords = holidayRecords.OrderByDescending(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
 				}
-				holiday.HolidayList = sortData;
+				holiday.HolidayList = holidayRecords;
 				return new JsonResult(new CustomResponse<HolidayViewModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = holiday });
 			}
 			catch (Exception ex)
@@ -156,22 +156,22 @@ namespace CIR.Data.Data.GlobalConfiguration
 		/// <summary>
 		/// This method takes a holiday data and update it
 		/// </summary>
-		/// <param name="HolidayId"></param>
+		/// <param name="holidayModel"></param>
 		/// <returns></returns>
-		public async Task<IActionResult> UpdateHoliday(Holidays HolidayModel)
+		public async Task<IActionResult> UpdateHoliday(Holidays holidayModel)
 		{
 			try
 			{
-				if (HolidayModel.Id != 0)
+				if (holidayModel.Id != 0)
 				{
-					Holidays newholiday = new Holidays()
+					Holidays newHoliday = new Holidays()
 					{
-						Id = HolidayModel.Id,
-						CountryId = HolidayModel.CountryId,
-						Date = HolidayModel.Date,
-						Description = HolidayModel.Description
+						Id = holidayModel.Id,
+						CountryId = holidayModel.CountryId,
+						Date = holidayModel.Date,
+						Description = holidayModel.Description
 					};
-					_CIRDbContext.Holidays.Update(newholiday);
+					_CIRDbContext.Holidays.Update(newHoliday);
 					await _CIRDbContext.SaveChangesAsync();
 					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "holiday saved successfully" });
 				}

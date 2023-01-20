@@ -29,31 +29,31 @@ namespace CIR.Data.Data.GlobalConfiguration
         /// <summary>
 		/// This method used by GlobalConfigEmail list
 		/// </summary>
-        /// <param name="emailId"></param>
+        /// <param name="id"></param>
 		/// <returns></returns>
         public async Task<IActionResult> GetGlobalConfigurationEmailsDataList(int id)
         {
             try
             {
-                var result = (from globalMessages in _CIRDBContext.GlobalConfigurationEmails
-                              select new GlobalConfigurationEmailsGetModel()
-                              {
-                                  Id = globalMessages.Id,
-                                  CultureId = globalMessages.CultureId,
-                                  FieldTypeId = globalMessages.FieldTypeId,
-                                  Content = globalMessages.Content,
-                                  Subject = globalMessages.Subject,
+                var globalConfigEmails = (from globalMessages in _CIRDBContext.GlobalConfigurationEmails
+                                          select new GlobalConfigurationEmailsGetModel()
+                                          {
+                                              Id = globalMessages.Id,
+                                              CultureId = globalMessages.CultureId,
+                                              FieldTypeId = globalMessages.FieldTypeId,
+                                              Content = globalMessages.Content,
+                                              Subject = globalMessages.Subject,
 
-                              }).Where(x => x.Id == id).ToList();
+                                          }).Where(x => x.Id == id).ToList();
 
-                if (result.Count == 0)
+                if (globalConfigEmails.Count == 0)
                 {
                     return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
                 }
 
                 var emailId = await _CIRDBContext.GlobalConfigurationEmails.Where(x => x.Id == id).FirstOrDefaultAsync();
-                var serializedParent = JsonConvert.SerializeObject(emailId);
-                GlobalConfigurationEmailsGetModel email = JsonConvert.DeserializeObject<GlobalConfigurationEmailsGetModel>(serializedParent);
+                var serializedEmailId = JsonConvert.SerializeObject(emailId);
+                GlobalConfigurationEmailsGetModel email = JsonConvert.DeserializeObject<GlobalConfigurationEmailsGetModel>(serializedEmailId);
 
                 if (email.Content.Contains("[Reference])") || email.Subject.Contains("[Reference])"))
                 {
@@ -91,8 +91,8 @@ namespace CIR.Data.Data.GlobalConfiguration
                 {
                     email.BookingURL = true;
                 }
-                if (result != null)
-                    return new JsonResult(new CustomResponse<List<GlobalConfigurationEmailsGetModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = result });
+                if (globalConfigEmails != null)
+                    return new JsonResult(new CustomResponse<List<GlobalConfigurationEmailsGetModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = globalConfigEmails });
                 else
                     return new JsonResult(new CustomResponse<List<GlobalConfigurationEmailsGetModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
 
@@ -105,7 +105,7 @@ namespace CIR.Data.Data.GlobalConfiguration
         /// <summary>
 		/// This method is used by create method and update method of globalMessage controller
 		/// </summary>
-		/// <param name="globalEmailsModel"></param>
+		/// <param name="globalConfigurationEmails"></param>
 		/// <returns>Success status if its valid else failure</returns>
         public async Task<IActionResult> CreateOrUpdateGlobalConfigurationEmails(List<GlobalConfigurationEmails> globalConfigurationEmails)
         {

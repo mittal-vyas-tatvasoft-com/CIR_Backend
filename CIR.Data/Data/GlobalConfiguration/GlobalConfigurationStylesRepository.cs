@@ -70,7 +70,7 @@ namespace CIR.Data.Data.GlobalConfiguration
                 {
                     foreach (var item in globalConfigurationStyles)
                     {
-                        GlobalConfigurationStyle newStyle = new GlobalConfigurationStyle()
+                        GlobalConfigurationStyle newGlobalConfigStyle = new GlobalConfigurationStyle()
                         {
                             Id = item.Id,
                             Name = item.Name,
@@ -81,7 +81,7 @@ namespace CIR.Data.Data.GlobalConfiguration
                             Value = item.Value,
                             SortOrder = item.SortOrder
                         };
-                        _CIRDBContext.GlobalConfigurationStyles.Update(newStyle);
+                        _CIRDBContext.GlobalConfigurationStyles.Update(newGlobalConfigStyle);
 
                     }
                     await _CIRDBContext.SaveChangesAsync();

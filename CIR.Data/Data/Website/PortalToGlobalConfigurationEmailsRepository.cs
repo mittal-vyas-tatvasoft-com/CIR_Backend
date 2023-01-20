@@ -33,24 +33,24 @@ namespace CIR.Data.Data.Website
         {
             try
             {
-                var result = (from portal2GlobalConfigurationEmails in _CIRDBContext.Portal2GlobalConfigurationEmails
-                              select new PortalToGlobalConfigurationEmailsGetModel()
-                              {
-                                  Id = portal2GlobalConfigurationEmails.Id,
-                                  PortalId = portal2GlobalConfigurationEmails.PortalId,
-                                  GlobalConfigurationEmailId = portal2GlobalConfigurationEmails.GlobalConfigurationEmailId,
-                                  ContentOverride = portal2GlobalConfigurationEmails.ContentOverride,
-                                  SubjectOverride = portal2GlobalConfigurationEmails.SubjectOverride,
+                var emailRecords = (from portal2GlobalConfigurationEmails in _CIRDBContext.Portal2GlobalConfigurationEmails
+                                    select new PortalToGlobalConfigurationEmailsGetModel()
+                                    {
+                                        Id = portal2GlobalConfigurationEmails.Id,
+                                        PortalId = portal2GlobalConfigurationEmails.PortalId,
+                                        GlobalConfigurationEmailId = portal2GlobalConfigurationEmails.GlobalConfigurationEmailId,
+                                        ContentOverride = portal2GlobalConfigurationEmails.ContentOverride,
+                                        SubjectOverride = portal2GlobalConfigurationEmails.SubjectOverride,
 
-                              }).Where(x => x.Id == id).ToList();
-                if (result.Count == 0)
+                                    }).Where(x => x.Id == id).ToList();
+                if (emailRecords.Count == 0)
                 {
                     return new JsonResult(new CustomResponse<List<PortalToGlobalConfigurationEmailsGetModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
                 }
 
                 var emailId = await _CIRDBContext.Portal2GlobalConfigurationEmails.Where(x => x.Id == id).FirstOrDefaultAsync();
-                var serializedParent = JsonConvert.SerializeObject(emailId);
-                PortalToGlobalConfigurationEmailsGetModel email = JsonConvert.DeserializeObject<PortalToGlobalConfigurationEmailsGetModel>(serializedParent);
+                var serializedEmail = JsonConvert.SerializeObject(emailId);
+                PortalToGlobalConfigurationEmailsGetModel email = JsonConvert.DeserializeObject<PortalToGlobalConfigurationEmailsGetModel>(serializedEmail);
 
                 if (email.ContentOverride.Contains("[Reference]") || email.SubjectOverride.Contains("[Reference]"))
                 {
@@ -92,8 +92,8 @@ namespace CIR.Data.Data.Website
                 {
                     email.BookingURL = true;
                 }
-                if (result != null)
-                    return new JsonResult(new CustomResponse<List<PortalToGlobalConfigurationEmailsGetModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = result });
+                if (emailRecords != null)
+                    return new JsonResult(new CustomResponse<List<PortalToGlobalConfigurationEmailsGetModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = emailRecords });
                 else
                     return new JsonResult(new CustomResponse<List<PortalToGlobalConfigurationEmailsGetModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
 

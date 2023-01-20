@@ -80,6 +80,8 @@ namespace CIR.Controllers.GlobalConfiguration
         /// <param name="sortCol"> name of column which we want to sort</param>
         /// <param name="search"> word that we want to search in user table </param>
         /// <param name="sortAscending"> 'asc' or 'desc' direction for sort </param>
+        /// <param name="filterCountryCodeId">this will filter weekends with given country code id</param>
+        /// <param name="filterCountryNameId">this will filter weekends with given country name id</param>
         /// <returns> filtered list of Weekends </returns>
         [HttpGet]
         public async Task<IActionResult> Get(int displayLength, int displayStart, string? sortCol, int? filterCountryNameId, int? filterCountryCodeId, string? search, bool sortAscending = true)
