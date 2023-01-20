@@ -31,6 +31,7 @@ namespace CIR.Common.Helper
 						new Claim("UserName", user.UserName),
 						new Claim("FirstName", user.FirstName),
 						new Claim("LastName", user.LastName),
+						new Claim("RoleId", user.RoleId.ToString())
 					}),
 					Expires = DateTime.UtcNow.AddMinutes(20),
 					SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
