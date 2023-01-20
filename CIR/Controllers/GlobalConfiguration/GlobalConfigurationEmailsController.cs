@@ -21,12 +21,13 @@ namespace CIR.Controllers.GlobalConfiguration
             _globalConfigurationEmailsService = globalConfigurationEmailsService;
         }
         #endregion
+
         #region METHODS
 
         /// <summary>
 		/// This method takes a update globalconfiguration Emails
 		/// </summary>
-		/// <param name="globalEmailsModel"></param>
+		/// <param name="globalConfigurationEmails"></param>
 		/// <returns></returns>
         [HttpPost("[action]")]
         public async Task<IActionResult> Post(List<GlobalConfigurationEmails> globalConfigurationEmails)
@@ -49,6 +50,7 @@ namespace CIR.Controllers.GlobalConfiguration
         /// <summary>
 		/// This method takes a get globalconfiguration email list
 		/// </summary>
+        /// <param name="id"></param>
 		/// <returns></returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)

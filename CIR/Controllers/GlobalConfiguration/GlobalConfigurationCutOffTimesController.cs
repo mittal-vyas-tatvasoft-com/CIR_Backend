@@ -26,7 +26,7 @@ namespace CIR.Controllers.GlobalConfiguration
         /// <summary>
         /// This method fetches single user data using user's Id
         /// </summary>
-        /// <param name="id">user will be fetched according to this 'id'</param>
+        /// <param name="countryId">user will be fetched according to this 'countryId'</param>
         /// <returns> user </returns> 
 
         [HttpGet("{countryId}")]
@@ -47,7 +47,7 @@ namespace CIR.Controllers.GlobalConfiguration
         /// <summary>
         /// This method takes Cut Off Times details as request and save data.
         /// </summary>
-        /// <param name="CutOffTime"> this object contains different parameters as details of a CutOffTime </param>
+        /// <param name="globalConfigurationCutOffTimeModel"> this object contains different parameters as details of a CutOffTime </param>
         /// <returns > success </returns>
         [HttpPost("[action]")]
         public async Task<IActionResult> Create([FromBody] GlobalConfigurationCutOffTimeModel globalConfigurationCutOffTimeModel)
@@ -68,6 +68,11 @@ namespace CIR.Controllers.GlobalConfiguration
             return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
         }
 
+        /// <summary>
+        /// This method takes Cut Off Times details as request and updates data.
+        /// </summary>
+        /// <param name="globalConfigurationCutOffTimeModel"></param>
+        /// <returns></returns>
         [HttpPut("[action]")]
         public async Task<IActionResult> Update([FromBody] GlobalConfigurationCutOffTimeModel globalConfigurationCutOffTimeModel)
         {
