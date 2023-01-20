@@ -39,6 +39,11 @@ namespace CIR.Data.Data.GlobalConfiguration
                     FontFamily = x.FontFamily,
                     IsDefault = x.IsDefault
                 }).ToListAsync();
+
+                if (fonts.Count == 0)
+                {
+                    return new JsonResult(new CustomResponse<List<GlobalConfigurationFonts>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+                }
                 return new JsonResult(new CustomResponse<List<GlobalConfigurationFonts>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = fonts });
             }
             catch (Exception ex)

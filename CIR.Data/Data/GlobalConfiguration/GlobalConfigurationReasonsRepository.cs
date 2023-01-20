@@ -35,14 +35,19 @@ namespace CIR.Data.Data.GlobalConfiguration
         {
             try
             {
-                var globalConfigReasonsList = await (from globalCongigReason in _CIRDbContext.GlobalConfigurationReasons
+                var globalConfigReasonsList = await (from globalConfigReason in _CIRDbContext.GlobalConfigurationReasons
                                                      select new GlobalConfigurationReasons()
                                                      {
-                                                         Id = globalCongigReason.Id,
-                                                         Type = globalCongigReason.Type,
-                                                         Enabled = globalCongigReason.Enabled,
-                                                         Content = globalCongigReason.Content,
+                                                         Id = globalConfigReason.Id,
+                                                         Type = globalConfigReason.Type,
+                                                         Enabled = globalConfigReason.Enabled,
+                                                         Content = globalConfigReason.Content,
                                                      }).OrderBy(x => x.Type).ThenBy(x => x.Content).ToListAsync();
+
+                if (globalConfigReasonsList.Count == 0)
+                {
+                    return new JsonResult(new CustomResponse<List<GlobalConfigurationReasons>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+                }
 
                 return new JsonResult(new CustomResponse<List<GlobalConfigurationReasons>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = globalConfigReasonsList });
             }
