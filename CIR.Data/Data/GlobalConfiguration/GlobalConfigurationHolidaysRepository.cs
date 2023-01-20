@@ -34,7 +34,7 @@ namespace CIR.Data.Data.GlobalConfiguration
 			try
 			{
 
-				Holidays newholiday = new()
+				Holidays newHoliday = new()
 				{
 					Id = holiday.Id,
 					CountryId = holiday.CountryId,
@@ -44,11 +44,11 @@ namespace CIR.Data.Data.GlobalConfiguration
 
 				if (holiday.Id > 0)
 				{
-					_CIRDbContext.Holidays.Update(newholiday);
+					_CIRDbContext.Holidays.Update(newHoliday);
 				}
 				else
 				{
-					_CIRDbContext.Holidays.Add(newholiday);
+					_CIRDbContext.Holidays.Add(newHoliday);
 				}
 
 				await _CIRDbContext.SaveChangesAsync();
