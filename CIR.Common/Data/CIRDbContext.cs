@@ -101,6 +101,7 @@ namespace CIR.Common.Data
         public DbSet<Offices> offices { get; set; }
         public DbSet<Portals> portals { get; set; }
         public DbSet<PortalToGlobalConfigurationEmails> Portal2GlobalConfigurationEmails { get; set; }
+        public DbSet<Portal2GlobalConfigurationCurrency> Portal2GlobalConfigurationCurrencies { get; set; }
         public DbSet<PortalServiceTypes> PortalServiceTypes { get; set; }
         public DbSet<LookupItemsText> LookupItemsText { get; set; }
         public DbSet<SystemCode> SystemCodes { get; set; }
