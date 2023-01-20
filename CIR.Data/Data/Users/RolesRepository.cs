@@ -41,6 +41,11 @@ namespace CIR.Data.Data.Users
                     Description = x.Description,
                     Name = x.Name
                 }).ToListAsync();
+
+                if (roles.Count == 0)
+                {
+                    return new JsonResult(new CustomResponse<List<RoleViewModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+                }
                 return new JsonResult(new CustomResponse<List<RoleViewModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = roles });
             }
             catch (Exception ex)
@@ -56,12 +61,12 @@ namespace CIR.Data.Data.Users
         /// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
         /// <param name="sortCol"> name of column which we want to sort</param>
         /// <param name="search"> word that we want to search in user table </param>
-        /// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
+        /// <param name="sortAscending"> 'asc' or 'desc' direction for sort </param>
         /// <returns> filtered list of roles </returns>
         public async Task<RolesModel> GetAllRoles(int displayLength, int displayStart, string sortCol, string? search, bool sortAscending = true)
         {
             RolesModel roles = new();
-            IQueryable<Core.Entities.Users.Roles> temp = roles.RolesList.AsQueryable();
+            IQueryable<Core.Entities.Users.Roles> roleList = roles.RolesList.AsQueryable();
 
             if (string.IsNullOrEmpty(sortCol))
             {
@@ -72,11 +77,11 @@ namespace CIR.Data.Data.Users
             {
                 roles.Count = _CIRDbContext.Roles.Where(y => y.Name.Contains(search) || y.Description.Contains(search)).Count();
 
-                temp = sortAscending ? _CIRDbContext.Roles.Where(y => y.Name.Contains(search) || y.Description.Contains(search)).OrderBy(x => EF.Property<object>(x, sortCol)).AsQueryable()
+                roleList = sortAscending ? _CIRDbContext.Roles.Where(y => y.Name.Contains(search) || y.Description.Contains(search)).OrderBy(x => EF.Property<object>(x, sortCol)).AsQueryable()
                                      : _CIRDbContext.Roles.Where(y => y.Name.Contains(search) || y.Description.Contains(search)).OrderByDescending(x => EF.Property<object>(x, sortCol)).AsQueryable();
 
-                var sortedData = await temp.Skip(displayStart).Take(displayLength).ToListAsync();
-                roles.RolesList = sortedData;
+                var sortedRoles = await roleList.Skip(displayStart).Take(displayLength).ToListAsync();
+                roles.RolesList = sortedRoles;
 
                 return roles;
             }
@@ -90,18 +95,19 @@ namespace CIR.Data.Data.Users
         /// <summary>
         /// this meethod checks if role exists or not based on input role name
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="roleName"></param>
+        /// <param name="id"></param>
         /// <returns> if user exists true else false </returns>
-        public async Task<Boolean> RoleExists(string rolename, long id)
+        public async Task<Boolean> RoleExists(string roleName, long id)
         {
             Roles checkroleExist;
             if (id == 0)
             {
-                checkroleExist = await _CIRDbContext.Roles.Where(x => x.Name == rolename).FirstOrDefaultAsync();
+                checkroleExist = await _CIRDbContext.Roles.Where(x => x.Name == roleName).FirstOrDefaultAsync();
             }
             else
             {
-                checkroleExist = await _CIRDbContext.Roles.Where(x => x.Name == rolename && x.Id != id).FirstOrDefaultAsync();
+                checkroleExist = await _CIRDbContext.Roles.Where(x => x.Name == roleName && x.Id != id).FirstOrDefaultAsync();
             }
             if (checkroleExist != null)
             {
@@ -125,7 +131,7 @@ namespace CIR.Data.Data.Users
                 }
                 if (roles.Id == 0)
                 {
-                    Roles newrole = new()
+                    Roles newRole = new()
                     {
                         Name = roles.Name,
                         AllPermissions = roles.AllPermissions,
@@ -133,7 +139,7 @@ namespace CIR.Data.Data.Users
                         Description = roles.Description
                     };
 
-                    _CIRDbContext.Roles.Add(newrole);
+                    _CIRDbContext.Roles.Add(newRole);
                     await _CIRDbContext.SaveChangesAsync();
 
                     var roleDetails = _CIRDbContext.Roles.Where(c => c.Name == roles.Name).FirstOrDefault();
@@ -167,8 +173,11 @@ namespace CIR.Data.Data.Users
                                             RoleGroupingId = roleGroupingDetail.Id,
                                             CultureLcid = items.CultureId
                                         };
-                                        await _CIRDbContext.RoleGrouping2Cultures.AddAsync(roleGrouping2Culture);
-                                        await _CIRDbContext.SaveChangesAsync();
+                                        if (!_CIRDbContext.RoleGrouping2Cultures.Any(c => c.RoleGroupingId == roleGrouping2Culture.RoleGroupingId && c.CultureLcid == roleGrouping2Culture.CultureLcid))
+                                        {
+                                            await _CIRDbContext.RoleGrouping2Cultures.AddAsync(roleGrouping2Culture);
+                                            await _CIRDbContext.SaveChangesAsync();
+                                        }
 
                                         foreach (var subitem in items.Privileges)
                                         {
@@ -376,14 +385,14 @@ namespace CIR.Data.Data.Users
         /// <summary>
         /// This method takes a remove section role id wise
         /// </summary>
-        /// <param name="roleId"></param>
+        /// <param name="groupId"></param>
         /// <returns></returns>
         public async Task<IActionResult> RemoveSection(long groupId)
         {
             try
             {
-                var data = _CIRDbContext.RolesGroupings.Where(x => x.Id == groupId).ToList();
-                foreach (var item in data)
+                var roleGroupingsData = _CIRDbContext.RolesGroupings.Where(x => x.Id == groupId).ToList();
+                foreach (var item in roleGroupingsData)
                 {
                     _CIRDbContext.RolesGroupings.Remove(item);
                     await _CIRDbContext.SaveChangesAsync();
@@ -411,28 +420,32 @@ namespace CIR.Data.Data.Users
                     { "roleId", roleId }
                 };
 
-                DataTable dt = SQLHelper.ExecuteSqlQueryWithParams("spGetRoleDetailByRoleId", dictionaryobj);
-                if (dt.Rows.Count > 0)
+                DataTable roleDetailDatatable = SQLHelper.ExecuteSqlQueryWithParams("spGetRoleDetailByRoleId", dictionaryobj);
+                if (roleDetailDatatable.Rows.Count > 0)
                 {
                     rolePermissionModel = new();
-                    var listData = SQLHelper.ConvertToGenericModelList<RolePermissionModel>(dt);
+                    var listData = SQLHelper.ConvertToGenericModelList<RolePermissionModel>(roleDetailDatatable);
                     rolePermissionModel.Id = listData[0].Id;
                     rolePermissionModel.Name = listData[0].Name;
                     rolePermissionModel.Description = listData[0].Description;
                     rolePermissionModel.AllPermissions = listData[0].AllPermissions;
                     if (rolePermissionModel.AllPermissions == false)
                     {
-                        rolePermissionModel.Roles = GetRolesListData(dt);
+                        rolePermissionModel.Roles = GetRolesListData(roleDetailDatatable);
                     }
                     else
                     {
                         rolePermissionModel.Roles = null;
                     }
+                    if (rolePermissionModel == null)
+                    {
+                        return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = true, Message = HttpStatusCodesMessages.NotFound });
+                    }
                     return new JsonResult(new CustomResponse<RolePermissionModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = rolePermissionModel });
                 }
                 else
                 {
-                    return new JsonResult(new CustomResponse<RolePermissionModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = rolePermissionModel });
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = true, Message = HttpStatusCodesMessages.NotFound });
                 }
             }
             catch (Exception ex)
@@ -444,13 +457,13 @@ namespace CIR.Data.Data.Users
         /// <summary>
         /// This method takes a get role list data 
         /// </summary>
-        /// <param name="dt"></param>
+        /// <param name="roleListDatatable"></param>
         /// <returns></returns>
-        public List<SubRolesModel> GetRolesListData(DataTable dt)
+        public List<SubRolesModel> GetRolesListData(DataTable roleListDatatable)
         {
             List<SubRolesModel> subRoleList = new List<SubRolesModel>();
 
-            var listMain = SQLHelper.ConvertToGenericModelList<SubModel>(dt);
+            var listMain = SQLHelper.ConvertToGenericModelList<SubModel>(roleListDatatable);
             var groupData = listMain.GroupBy(x => x.GroupId);
             foreach (var item in groupData)
             {

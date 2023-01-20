@@ -30,7 +30,7 @@ namespace CIR.Controllers.Website
 		/// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
 		/// <param name="sortCol"> name of column which we want to sort</param>
 		/// <param name="search"> word that we want to search in user table </param>
-		/// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
+		/// <param name="sortAscending"> 'asc' or 'desc' direction for sort </param>
 		/// <returns> filtered list of holidays </returns>
 		[HttpGet]
 		public async Task<IActionResult> GetAllOffices(int displayLength, int displayStart, string? sortCol, string? search, bool sortAscending = true)
@@ -38,7 +38,7 @@ namespace CIR.Controllers.Website
 			try
 			{
 				search ??= string.Empty;
-				return await _officeService.GetHolidays(displayLength, displayStart, sortCol, search, sortAscending);
+				return await _officeService.GetOffices(displayLength, displayStart, sortCol, search, sortAscending);
 			}
 			catch (Exception ex)
 			{
