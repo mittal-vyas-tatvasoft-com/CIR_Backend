@@ -34,10 +34,6 @@ namespace CIR.Data.Data.GlobalConfiguration
         {
             try
             {
-                if (globalConfigurationWeekends.CountryId == 0 || globalConfigurationWeekends.DayOfWeekId == 0)
-                {
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Please enter valid Data" });
-                }
                 GlobalConfigurationWeekends globalConfigWeeknds = new()
                 {
 
