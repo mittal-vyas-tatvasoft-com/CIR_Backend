@@ -124,11 +124,11 @@ namespace CIR.Data.Data.GlobalConfiguration
                 {
                     WeekendModel weekend = item;
                     weekend.DayOfWeek = GetDayOfWeek(item.DayOfWeekId);
-                    Weekends.WeekendsList.Add(weekend);
+                    weekends.WeekendsList.Add(weekend);
                 }
                 
                 IEnumerable<WeekendModel> weekendLists = weekends.WeekendsList;
-                weekendLists = weekends.WeekendsList.Where(x => x.CountryName.ToLower().Contains(SearchText) || x.CountryCode.ToLower().Contains(SearchText) || x.DayOfWeek.ToLower().Contains(SearchText));
+                weekendLists = weekends.WeekendsList.Where(x => x.CountryName.ToLower().Contains(searchText) || x.CountryCode.ToLower().Contains(searchText) || x.DayOfWeek.ToLower().Contains(searchText));
 
                 if (filterCountryCodeId != null)
                 {
@@ -139,7 +139,7 @@ namespace CIR.Data.Data.GlobalConfiguration
                     weekendLists = weekendLists.Where(x => x.CountryId == filterCountryNameId).ToList();
                 }
                 weekendLists = sortAscending ? weekendLists.OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)) : weekendLists.OrderByDescending(x => x.GetType().GetProperty(sortCol).GetValue(x, null));
-                weekendLists.Count = weekendLists.Count();
+                weekends.Count = weekendLists.Count();
 
                 var sortedWeekends = weekendLists.Skip(displayStart).Take(displayLength);
                 weekends.WeekendsList = sortedWeekends.ToList();
