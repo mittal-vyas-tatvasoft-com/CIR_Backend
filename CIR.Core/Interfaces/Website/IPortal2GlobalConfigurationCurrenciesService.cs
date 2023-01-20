@@ -10,7 +10,7 @@ namespace CIR.Core.Interfaces.Website
 {
     public interface IPortal2GlobalConfigurationCurrenciesService
     {
-        Task<IActionResult> GetPortalToGlobalConfigurationCurrenciesList(int id);
-        Task<IActionResult> UpdatePortalToGlobalConfigurationCurrencies(List<Portal2GlobalConfigurationCurrency> portalToGlobalConfigurationCurrencies);
+        Task<IActionResult> GetPortalToGlobalConfigurationCurrenciesList(long PortalId);
+        Task<IActionResult> UpdatePortalToGlobalConfigurationCurrencies(List<Portal2GlobalConfigurationCurrency> portal2GlobalConfigurationCurrencies);
     }
 }

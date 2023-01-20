@@ -31,11 +31,11 @@ namespace CIR.Data.Data.Website
         #endregion
         #region METHODS
         /// <summary>
-        /// This method used by PortalToGlobalConfigurationCurrencies list
+        /// This method used by Portal2GlobalConfigurationCurrencies list
         /// </summary>
-        /// <param name="Id"></param>
+        /// <param name="PortalId"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetPortalToGlobalConfigurationCurrenciesList(int id)
+        public async Task<IActionResult> GetPortalToGlobalConfigurationCurrenciesList(long PortalId)
         {
             try
             {
@@ -50,7 +50,7 @@ namespace CIR.Data.Data.Website
 
                               }).Where(x =>
                               
-                              x.PortalId == id).ToList();
+                              x.PortalId == PortalId).ToList();
 
                 
                 var CurrencyId = (from PGCC in _CIRDBContext.Portal2GlobalConfigurationCurrencies
@@ -60,7 +60,7 @@ namespace CIR.Data.Data.Website
                                       PortalId = PGCC.PortalId,
                                       GlobalConfigurationCurrencyId = PGCC.GlobalConfigurationCurrencyId,
                                       EnabledOverride = PGCC.EnabledOverride
-                                  }).FirstOrDefault(x => x.PortalId == id);
+                                  }).FirstOrDefault(x => x.PortalId == PortalId);
                 var serializedParent = JsonConvert.SerializeObject(CurrencyId);
                 Portal2GlobalConfigurationCurrency Currency = JsonConvert.DeserializeObject<Portal2GlobalConfigurationCurrency>(serializedParent);
 
@@ -81,18 +81,18 @@ namespace CIR.Data.Data.Website
             }
         }
         /// <summary>
-		/// This method is used by create method and update method of portalToGlobalConfigurationCurrencies controller
+		/// This method is used by create method and update method of portal2GlobalConfigurationCurrencies controller
 		/// </summary>
-		/// <param name="portalToGlobalConfigurationCurrencies"></param>
+		/// <param name="portal2GlobalConfigurationCurrencies"></param>
 		/// <returns>Success status if its valid else failure</returns>
-        public async Task<IActionResult> UpdatePortalToGlobalConfigurationCurrencies(List<Portal2GlobalConfigurationCurrency> portalToGlobalConfigurationCurrencies)
+        public async Task<IActionResult> UpdatePortalToGlobalConfigurationCurrencies(List<Portal2GlobalConfigurationCurrency> portal2GlobalConfigurationCurrencies)
         {
             try
             {
                 
-                if (portalToGlobalConfigurationCurrencies != null)
+                if (portal2GlobalConfigurationCurrencies != null)
                 {
-                    foreach (var item in portalToGlobalConfigurationCurrencies)
+                    foreach (var item in portal2GlobalConfigurationCurrencies)
                     {
                             var Currency = _CIRDBContext.Portal2GlobalConfigurationCurrencies.FirstOrDefault(x => x.Id == item.Id);
                             if (Currency != null)

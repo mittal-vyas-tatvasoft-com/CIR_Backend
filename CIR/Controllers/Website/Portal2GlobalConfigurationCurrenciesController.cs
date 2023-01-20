@@ -14,31 +14,31 @@ namespace CIR.Controllers.Website
     public class Portal2GlobalConfigurationCurrenciesController : Controller
     {
         #region PROPERTIES
-        private readonly IPortal2GlobalConfigurationCurrenciesService _portalToGlobalConfigurationCurrenciesService;
+        private readonly IPortal2GlobalConfigurationCurrenciesService _portal2GlobalConfigurationCurrenciesService;
         #endregion
 
         #region CONSTRUCTORS
-        public Portal2GlobalConfigurationCurrenciesController(IPortal2GlobalConfigurationCurrenciesService portalToGlobalConfigurationCurrenciesService)
+        public Portal2GlobalConfigurationCurrenciesController(IPortal2GlobalConfigurationCurrenciesService portal2GlobalConfigurationCurrenciesService)
         {
-            _portalToGlobalConfigurationCurrenciesService = portalToGlobalConfigurationCurrenciesService;
+            _portal2GlobalConfigurationCurrenciesService = portal2GlobalConfigurationCurrenciesService;
         }
         #endregion
 
         #region METHODS
 
         /// <summary>
-		/// This method takes a update website portalToGlobalConfigurationCurrencies
+		/// This method takes a update website portal2GlobalConfigurationCurrencies
 		/// </summary>
-		/// <param name="portalToGlobalConfigurationEmails"></param>
+		/// <param name="portalToGlobalConfigurationCurrency"></param>
 		/// <returns></returns>
         [HttpPost("[action]")]
-        public async Task<IActionResult> Post(List<Portal2GlobalConfigurationCurrency> portalToGlobalConfigurationCurrency)
+        public async Task<IActionResult> Post(List<Portal2GlobalConfigurationCurrency> portal2GlobalConfigurationCurrency)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    return await _portalToGlobalConfigurationCurrenciesService.UpdatePortalToGlobalConfigurationCurrencies(portalToGlobalConfigurationCurrency);
+                    return await _portal2GlobalConfigurationCurrenciesService.UpdatePortalToGlobalConfigurationCurrencies(portal2GlobalConfigurationCurrency);
 
                 }
                 catch (Exception ex)
@@ -50,15 +50,15 @@ namespace CIR.Controllers.Website
 
         }
         /// <summary>
-		/// This method takes a get website portalToGlobalConfigurationEmails list
+		/// This method takes a get website portalToGlobalConfigurationCurrencies list
 		/// </summary>
 		/// <returns></returns>
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        [HttpGet("{PortalId}")]
+        public async Task<IActionResult> Get(long PortalId)
         {
             try
             {
-                return await _portalToGlobalConfigurationCurrenciesService.GetPortalToGlobalConfigurationCurrenciesList(id);
+                return await _portal2GlobalConfigurationCurrenciesService.GetPortalToGlobalConfigurationCurrenciesList(PortalId);
             }
             catch (Exception ex)
             {
