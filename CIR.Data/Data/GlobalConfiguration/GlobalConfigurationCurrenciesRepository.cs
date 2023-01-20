@@ -80,8 +80,7 @@ namespace CIR.Data.Data.GlobalConfiguration
 
                         if (!globalConfigurationCurrenciesDuplicate)
                         {
-                            bool globalConfigurationCurrenciesUpdate = item.Id > 0;
-                            if (globalConfigurationCurrenciesUpdate)
+                            if (item.Id > 0)
                             {
                                 GlobalConfigurationCurrency globalConfigurationCurrency = new GlobalConfigurationCurrency()
                                 {
