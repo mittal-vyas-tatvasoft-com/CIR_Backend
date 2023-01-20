@@ -5,6 +5,7 @@ using CIR.Core.Interfaces.GlobalConfiguration;
 using CIR.Core.ViewModel.GlobalConfiguration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CIR.Data.Data.GlobalConfiguration
 {
@@ -169,14 +170,31 @@ namespace CIR.Data.Data.GlobalConfiguration
 
                 WeekendLists = Weekends.WeekendsList.Where(x => x.CountryName.ToLower().Contains(SearchText) || x.CountryCode.ToLower().Contains(SearchText) || x.DayOfWeek.ToLower().Contains(SearchText));
 
-                if (filterCountryCodeId != null)
+                if (filterCountryCodeId != null && filterCountryNameId == null && SearchText.IsNullOrEmpty())
                 {
                     WeekendLists = Weekends.WeekendsList.Where(x => x.CountryId == filterCountryCodeId).ToList();
                 }
-                if (filterCountryNameId != null)
+                if (filterCountryNameId != null && filterCountryCodeId == null && SearchText.IsNullOrEmpty())
                 {
                     WeekendLists = Weekends.WeekendsList.Where(x => x.CountryId == filterCountryNameId).ToList();
                 }
+                if (filterCountryNameId != null && filterCountryCodeId != null && SearchText.IsNullOrEmpty())
+                {
+                    WeekendLists = Weekends.WeekendsList.Where(x => x.CountryId == filterCountryNameId && x.CountryId == filterCountryCodeId).ToList();
+                }
+                if (filterCountryCodeId != null && filterCountryNameId == null && !SearchText.IsNullOrEmpty())
+                {
+                    WeekendLists = Weekends.WeekendsList.Where(x => x.CountryId == filterCountryCodeId && (x.CountryName.ToLower().Contains(SearchText) || x.CountryCode.ToLower().Contains(SearchText) || x.DayOfWeek.ToLower().Contains(SearchText))).ToList();
+                }
+                if (filterCountryNameId != null && filterCountryCodeId == null && !SearchText.IsNullOrEmpty())
+                {
+                    WeekendLists = Weekends.WeekendsList.Where(x => x.CountryId == filterCountryNameId && (x.CountryName.ToLower().Contains(SearchText) || x.CountryCode.ToLower().Contains(SearchText) || x.DayOfWeek.ToLower().Contains(SearchText))).ToList();
+                }
+                if (filterCountryNameId != null && filterCountryCodeId != null && !SearchText.IsNullOrEmpty())
+                {
+                    WeekendLists = Weekends.WeekendsList.Where(x => x.CountryId == filterCountryNameId && x.CountryId == filterCountryCodeId && (x.CountryName.ToLower().Contains(SearchText) || x.CountryCode.ToLower().Contains(SearchText) || x.DayOfWeek.ToLower().Contains(SearchText))).ToList();
+                }
+
 
 
                 Weekends.Count = WeekendLists.Count();
