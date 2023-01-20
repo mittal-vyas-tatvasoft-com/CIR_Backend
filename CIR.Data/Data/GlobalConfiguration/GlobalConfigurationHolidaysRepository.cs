@@ -1,4 +1,11 @@
-﻿namespace CIR.Data.Data.GlobalConfiguration
+﻿using CIR.Common.CustomResponse;
+using CIR.Common.Data;
+using CIR.Core.Entities.GlobalConfiguration;
+using CIR.Core.Interfaces.GlobalConfiguration;
+using CIR.Core.ViewModel.GlobalConfiguration;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+namespace CIR.Data.Data.GlobalConfiguration
 {
     public class GlobalConfigurationHolidaysRepository : ControllerBase, IGlobalConfigurationHolidaysRepository
     {
@@ -103,7 +110,7 @@
                 }
                 if (countryName != "")
                 {
-                    holidayRecords = holidayRecords.Where(y => y.CountryName == countryName).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
+                    sortedHolidayData = sortedHolidayData.Where(y => y.CountryName == countryName).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
                 }
 
                 sortedHolidayData = sortedHolidayData.Where(y => y.Description.Contains(search) || y.CountryName.Contains(search) || y.Code.Contains(search)).ToList();
@@ -140,7 +147,7 @@
                 {
                     return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
                 }
-                return new JsonResult(new CustomResponse<Holidays>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = holiday });
+                return new JsonResult(new CustomResponse<Holidays>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = holidayList });
             }
             catch (Exception ex)
             {
