@@ -128,7 +128,7 @@ namespace CIR.Data.Data.Common
 		/// <param name="code">
 		/// </summary>
 		/// <returns></returns>
-		public async Task<IActionResult> GetSalutationtypeList(string code)
+		public async Task<IActionResult> GetSalutationTypeList(string code)
 		{
 			List<LookupItemsText> lookupItemList = new List<LookupItemsText>();
 
@@ -143,7 +143,7 @@ namespace CIR.Data.Data.Common
 		}
 		public async Task<IActionResult> GetSalutationList(string code)
 		{
-			List<LookupItemsText> SalutationList = new List<LookupItemsText>();
+			List<LookupItemsText> salutationList = new List<LookupItemsText>();
 			var dictionaryobj = new Dictionary<string, object>
 			{
 				{ "Code", code}
@@ -158,10 +158,10 @@ namespace CIR.Data.Data.Common
 
 					lookupItemsText.Id = Convert.ToInt64(row["Id"]);
 					lookupItemsText.Text = Convert.ToString(row["Text"]);
-					SalutationList.Add(lookupItemsText);
+					salutationList.Add(lookupItemsText);
 				}
 			}
-			return new JsonResult(new CustomResponse<List<LookupItemsText>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = SalutationList });
+			return new JsonResult(new CustomResponse<List<LookupItemsText>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = salutationList });
 		}
 
 		/// <summary>

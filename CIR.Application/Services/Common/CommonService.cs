@@ -34,9 +34,9 @@ namespace CIR.Application.Services.Common
 		{
 			return await _commonRepository.GetRolePrivileges();
 		}
-		public async Task<IActionResult> GetSalutationtypeList(string code)
+		public async Task<IActionResult> GetSalutationTypeList(string code)
 		{
-			return await _commonRepository.GetSalutationtypeList(code);
+			return await _commonRepository.GetSalutationTypeList(code);
 		}
 		public async Task<IActionResult> GetSystemCodes()
 		{
