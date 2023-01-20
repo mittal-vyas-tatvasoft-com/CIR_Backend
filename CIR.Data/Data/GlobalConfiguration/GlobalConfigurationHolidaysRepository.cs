@@ -97,42 +97,43 @@ namespace CIR.Data.Data.GlobalConfiguration
 											   {
 												   Id = holidaydata.Id,
 												   CountryId = holidaydata.CountryId,
-												   Code = countrydata.Code,
+												   CountryCode = countrydata.Code,
 												   CountryName = countrydata.CountryName,
 												   Date = holidaydata.Date,
 												   Description = holidaydata.Description,
-											   }).ToListAsync();
+											   }).OrderBy(x => EF.Property<object>(x, sortCol)).ToListAsync();
+
 				if (countryCodeId != null && countryNameId == null && search.IsNullOrEmpty())
 				{
-					sortedHolidayData = sortedHolidayData.Where(y => y.CountryId == countryCodeId).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
+					sortedHolidayData = sortedHolidayData.Where(y => y.CountryId == countryCodeId).ToList();
 				}
 				if (countryNameId != null && countryCodeId == null && search.IsNullOrEmpty())
 				{
-					sortedHolidayData = sortedHolidayData.Where(y => y.CountryId == countryNameId).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
+					sortedHolidayData = sortedHolidayData.Where(y => y.CountryId == countryNameId).ToList();
 				}
 				if (countryNameId != null && countryCodeId == null && !search.IsNullOrEmpty())
 				{
-					sortedHolidayData = sortedHolidayData.Where(x => x.CountryId == countryNameId).ToList();
+					sortedHolidayData = sortedHolidayData.Where(x => x.CountryId == countryNameId && x.CountryName.ToLower() == search.ToLower()).ToList();
 				}
 				if (countryNameId == null && countryCodeId != null && !search.IsNullOrEmpty())
 				{
-					sortedHolidayData = sortedHolidayData.Where(x => x.CountryId == countryCodeId).ToList();
+					sortedHolidayData = sortedHolidayData.Where(x => x.CountryId == countryCodeId && x.CountryName.ToLower() == search.ToLower()).ToList();
 				}
 				if (countryNameId != null && countryCodeId != null && !search.IsNullOrEmpty())
 				{
-					sortedHolidayData = sortedHolidayData.Where(x => x.CountryId == countryNameId && x.CountryId == countryCodeId && (x.CountryName.ToLower().Contains(search))).ToList();
+					sortedHolidayData = sortedHolidayData.Where(x => x.CountryId == countryNameId && x.CountryId == countryCodeId && x.CountryName.ToLower() == search.ToLower()).ToList();
 				}
-				sortedHolidayData = sortedHolidayData.Where(y => y.Description.Contains(search) || y.CountryName.Contains(search) || y.Code.Contains(search)).ToList();
-				holiday.Count = sortedHolidayData.Count();
+				if (countryNameId == null && countryCodeId == null && !search.IsNullOrEmpty())
+				{
+					sortedHolidayData = sortedHolidayData.Where(x => x.CountryName.ToLower() == search.ToLower() || x.Description.ToLower() == search.ToLower() || x.CountryName.ToLower() == search.ToLower() || x.CountryCode.ToLower() == search.ToLower()).ToList();
+				}
+				if (countryNameId != null && countryCodeId != null && search.IsNullOrEmpty())
+				{
+					sortedHolidayData = sortedHolidayData.Where(x => x.CountryId == countryNameId && x.CountryId == countryCodeId).ToList();
+				}
 
-				if (sortAscending)
-				{
-					sortedHolidayData = sortedHolidayData.OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
-				}
-				else
-				{
-					sortedHolidayData = sortedHolidayData.OrderByDescending(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
-				}
+				sortedHolidayData = sortedHolidayData.Where(y => y.Description.ToLower().Contains(search.ToLower()) || y.CountryName.ToLower().Contains(search.ToLower()) || y.CountryCode.ToLower().Contains(search.ToLower())).ToList();
+				holiday.Count = sortedHolidayData.Count();
 				holiday.HolidayList = sortedHolidayData;
 				return new JsonResult(new CustomResponse<HolidayViewModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = holiday });
 			}
