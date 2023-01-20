@@ -127,8 +127,8 @@ namespace CIR.Data.Data.GlobalConfiguration
                     Weekends.WeekendsList.Add(weekend);
                 }
                 
-                IEnumerable<WeekendModel> weekendLists = Weekends.WeekendsList;
-                weekendLists = Weekends.WeekendsList.Where(x => x.CountryName.ToLower().Contains(SearchText) || x.CountryCode.ToLower().Contains(SearchText) || x.DayOfWeek.ToLower().Contains(SearchText));
+                IEnumerable<WeekendModel> weekendLists = weekends.WeekendsList;
+                weekendLists = weekends.WeekendsList.Where(x => x.CountryName.ToLower().Contains(SearchText) || x.CountryCode.ToLower().Contains(SearchText) || x.DayOfWeek.ToLower().Contains(SearchText));
 
                 if (filterCountryCodeId != null)
                 {
