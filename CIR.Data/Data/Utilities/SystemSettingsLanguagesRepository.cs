@@ -38,11 +38,11 @@ namespace CIR.Data.Data.Utilities
         {
             try
             {
-                var CultureData = GetListForUpdatedLanguages(cultureList);
-                if(CultureData != null)
+                var cultureData = GetListForUpdatedLanguages(cultureList);
+                if(cultureData != null)
                 {
                     
-                    foreach (Culture item in CultureData)
+                    foreach (Culture item in cultureData)
                     {
                         _CIRDbContext.Cultures.Update(item);
                        await _CIRDbContext.SaveChangesAsync();
