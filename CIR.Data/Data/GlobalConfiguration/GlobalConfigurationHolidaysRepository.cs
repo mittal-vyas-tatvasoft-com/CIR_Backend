@@ -135,7 +135,7 @@ namespace CIR.Data.Data.GlobalConfiguration
 				var holidayList = await _CIRDbContext.Holidays.Where(x => x.Id == Holidayid).FirstOrDefaultAsync();
 				if (holidayList == null)
 				{
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NoContent, Result = true, Message = HttpStatusCodesMessages.NoContent, Data = "No data available" });
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NoContent, Result = false, Message = HttpStatusCodesMessages.NoContent, Data = "No data available" });
 				}
 				return new JsonResult(new CustomResponse<Holidays>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = holidayList });
 			}
