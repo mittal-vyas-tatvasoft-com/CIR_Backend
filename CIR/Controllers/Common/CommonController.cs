@@ -2,7 +2,6 @@
 using CIR.Core.Interfaces.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 namespace CIR.Controllers.Common
 {
     [Route("api/[controller]")]

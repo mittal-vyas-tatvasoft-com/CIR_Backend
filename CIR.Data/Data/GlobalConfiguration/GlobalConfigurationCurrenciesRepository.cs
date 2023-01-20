@@ -5,7 +5,6 @@ using CIR.Core.Interfaces.GlobalConfiguration;
 using CIR.Core.ViewModel.GlobalConfiguration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
 namespace CIR.Data.Data.GlobalConfiguration
 {
     public class GlobalConfigurationCurrenciesRepository : IGlobalConfigurationCurrenciesRepository
@@ -81,7 +80,9 @@ namespace CIR.Data.Data.GlobalConfiguration
                 {
                     foreach (var item in globalCurrencyModel)
                     {
-                        if (item.Id != 0)
+                        bool globalConfigurationCurrenciesDuplicate = _CIRDBContext.GlobalConfigurationCurrencies.Any(x => x.CountryId == item.CountryId && x.CurrencyId == item.CurrencyId && x.Id != item.Id);
+
+                        if (!globalConfigurationCurrenciesDuplicate)
                         {
                             GlobalConfigurationCurrency currency = new GlobalConfigurationCurrency()
                             {
