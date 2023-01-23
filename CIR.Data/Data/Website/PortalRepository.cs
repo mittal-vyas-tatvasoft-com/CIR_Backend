@@ -1,6 +1,6 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
-using CIR.Common.Website;
+using CIR.Common.Enums;
 using CIR.Core.Entities;
 using CIR.Core.Entities.Website;
 using CIR.Core.Entities.Websites;
