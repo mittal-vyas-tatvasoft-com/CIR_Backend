@@ -44,14 +44,14 @@ namespace CIR.Data.Data.GlobalConfiguration
                                               Content = globalMessages.Content,
                                               Subject = globalMessages.Subject,
 
-                                          }).Where(x => x.Id == id).ToList();
+                                          }).Where(x => x.CultureId == id).ToList();
 
                 if (globalConfigEmails.Count == 0)
                 {
                     return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
                 }
 
-                var emailId = await _CIRDBContext.GlobalConfigurationEmails.Where(x => x.Id == id).FirstOrDefaultAsync();
+                var emailId = await _CIRDBContext.GlobalConfigurationEmails.Where(x => x.CultureId == id).FirstOrDefaultAsync();
                 var serializedEmailId = JsonConvert.SerializeObject(emailId);
                 GlobalConfigurationEmailsGetModel email = JsonConvert.DeserializeObject<GlobalConfigurationEmailsGetModel>(serializedEmailId);
 
