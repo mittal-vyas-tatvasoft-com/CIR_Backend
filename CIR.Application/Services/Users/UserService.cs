@@ -1,4 +1,8 @@
-﻿namespace CIR.Application.Services.Users
+﻿using CIR.Core.Entities.Users;
+using CIR.Core.Interfaces.Users;
+using Microsoft.AspNetCore.Mvc;
+
+namespace CIR.Application.Services.Users
 {
     public class UserService : IUserService
     {

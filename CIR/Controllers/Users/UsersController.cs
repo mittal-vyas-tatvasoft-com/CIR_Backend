@@ -1,4 +1,10 @@
-﻿namespace CIR.Controllers.Users
+﻿using CIR.Common.CustomResponse;
+using CIR.Core.Entities.Users;
+using CIR.Core.Interfaces.Users;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace CIR.Controllers.Users
 {
     [Route("api/Users")]
     [ApiController]
