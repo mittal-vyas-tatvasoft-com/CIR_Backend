@@ -1,4 +1,4 @@
-﻿namespace CIR.Common.GlobalConfiguration
+﻿namespace CIR.Common.Enums
 {
     public enum Type
     {

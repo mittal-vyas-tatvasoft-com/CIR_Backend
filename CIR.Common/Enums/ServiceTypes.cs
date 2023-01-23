@@ -1,4 +1,4 @@
-﻿namespace CIR.Common.Website
+﻿namespace CIR.Common.Enums
 {
     public enum ServiceTypes
     {
