@@ -492,9 +492,9 @@ namespace CIR.Data.Data.Users
                         }
                         roleGrouping2SubSiteModel.Languages.Add(roleGrouping2CultureModel);
                     }
-                    subRole.groupId = listMain.Where(x => x.SiteId == itemSite.Key).FirstOrDefault().GroupId;
                     subRole.site.Add(roleGrouping2SubSiteModel);
                 }
+                subRole.groupId = listMain.Where(x => x.GroupId == item.Key).FirstOrDefault().GroupId;
                 subRoleList.Add(subRole);
             }
             return subRoleList;

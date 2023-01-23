@@ -1,7 +1,6 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Core.Entities.Users;
 using CIR.Core.Interfaces.Users;
-using CIR.Core.ViewModel.Usersvm;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -137,47 +136,40 @@ namespace CIR.Controllers.Users
         }
 
         /// <summary>
-        /// This method retuns filtered user list using SP
+        /// This method retuns filtered user list using Store Procedure
         /// </summary>
-        /// <param name="displayLength"> how many row/data we want to fetch(for pagination) </param>
-        /// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
+        /// <param name="displayLength">how many row/data we want to fetch(for pagination)</param>
+        /// <param name="displayStart">from which row we want to fetch(for pagination)</param>
         /// <param name="sortCol"> name of column which we want to sort</param>
-        /// <param name="search"> word that we want to search in user table </param>
-        /// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
-        /// <returns> filtered list of users </returns>
-
+        /// <param name="search">word that we want to search in user table</param>
+        /// <param name="sortDir">'asc' or 'desc' direction for sort </param>
+        /// <param name="roleId">sorting roleid wise</param>
+        /// <param name="enabled">sorting enable wise</param>
+        /// <returns></returns>
         [HttpGet("[action]")]
-        public IActionResult UsersSP(int displayLength, int displayStart, int sortCol, string? search, string sortDir = "asc")
+        public async Task<IActionResult> GetAllUsersDetailBySP(int displayLength, int displayStart, string? sortCol, string? search, string? sortDir, int roleId, bool? enabled = null)
         {
             try
             {
                 search ??= string.Empty;
-
-                var usersData = _userService.GetFilteredUsers(displayLength, displayStart, sortCol, sortDir, search);
-                if (usersData.UsersList.Count > 0)
-                {
-                    return new JsonResult(new CustomResponse<UsersModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = usersData });
-                }
-
-                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Requested users were not found" });
-
+                return await _userService.GetAllUsersDetailBySP(displayLength, displayStart, sortCol, search, sortDir, roleId, enabled);
             }
             catch (Exception ex)
             {
-                _logger.LogError("database was unable to find appropriate users");
                 return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
             }
         }
-
         /// <summary>
-        /// This method retuns filtered user list using LINQ
+        /// This method retuns filtered user list using Linq
         /// </summary>
-        /// <param name="displayLength"> how many row/data we want to fetch(for pagination) </param>
-        /// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
-        /// <param name="sortCol"> name of column which we want to sort</param>
-        /// <param name="search"> word that we want to search in user table </param>
-        /// <param name="sortAscending"> 'asc' or 'desc' direction for sort </param>
-        /// <returns> filtered list of users </returns>
+        /// <param name="displayLength">how many row/data we want to fetch(for pagination)</param>
+        /// <param name="displayStart">from which row we want to fetch(for pagination)</param>
+        /// <param name="sortCol">name of column which we want to sort</param>
+        /// <param name="search">word that we want to search in user table</param>
+        /// <param name="roleId">sorting role id wise</param>
+        /// <param name="enabled">sorting enable wise</param>
+        /// <param name="sortAscending">'asc' or 'desc' direction for sort</param>
+        /// <returns></returns>
 
         [HttpGet]
         public async Task<IActionResult> UsersLinq(int displayLength, int displayStart, string? sortCol, string? search, int roleId, bool? enabled = null, bool sortAscending = true)

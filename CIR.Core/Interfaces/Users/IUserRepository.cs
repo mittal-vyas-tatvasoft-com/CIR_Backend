@@ -1,22 +1,21 @@
 ﻿using CIR.Core.Entities.Users;
-using CIR.Core.ViewModel.Usersvm;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Core.Interfaces.Users
 {
-	public interface IUserRepository
-	{
-		Task<IActionResult> GetUserById(int id);
+    public interface IUserRepository
+    {
+        Task<IActionResult> GetUserById(int id);
 
-		Task<Boolean> UserExists(string email, long id);
+        Task<Boolean> UserExists(string email, long id);
 
-		Task<IActionResult> CreateOrUpdateUser(User user);
+        Task<IActionResult> CreateOrUpdateUser(User user);
 
-		Task<IActionResult> DeleteUser(int id);
+        Task<IActionResult> DeleteUser(int id);
 
-		UsersModel GetFilteredUsers(int displayLength, int displayStart, int sortCol, string sortDir, string search);
+        Task<IActionResult> GetAllUsersDetailBySP(int displayLength, int displayStart, string? sortCol, string? search, string? sortDir, int roleId, bool? enabled = null);
 
-		Task<IActionResult> GetAllUsers(int displayLength, int displayStart, string? sortCol, string search, int roleId, bool? enabled = null, bool sortAscending = true);
+        Task<IActionResult> GetAllUsers(int displayLength, int displayStart, string? sortCol, string search, int roleId, bool? enabled = null, bool sortAscending = true);
 
-	}
+    }
 }
