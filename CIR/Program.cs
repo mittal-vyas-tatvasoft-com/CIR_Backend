@@ -132,6 +132,8 @@ builder.Services.AddScoped<IPortalRepository, PortalRepository>();
 builder.Services.AddScoped<IPortal2GlobalConfigurationCurrenciesRepository, Portal2GlobalConfigurationCurrenciesRepository>();
 builder.Services.AddScoped<IPortal2GlobalConfigurationCurrenciesService, Portal2GlobalConfigurationCurrenciesService>();
 
+builder.Services.AddScoped<IPortal2GlobalConfigurationMessagesService, Portal2GlobalConfigurationMessagesService>();
+builder.Services.AddScoped<IPortal2GlobalConfigurationMessagesRepository, Portal2GlobalConfigurationMessagesRepository>();
 
 
 
