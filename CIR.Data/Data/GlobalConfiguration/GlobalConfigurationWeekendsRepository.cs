@@ -4,7 +4,6 @@ using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.GlobalConfiguration;
 using CIR.Core.ViewModel.GlobalConfiguration;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CIR.Data.Data.GlobalConfiguration
@@ -127,7 +126,7 @@ namespace CIR.Data.Data.GlobalConfiguration
                     weekend.DayOfWeek = GetDayOfWeek(item.DayOfWeekId);
                     weekends.WeekendsList.Add(weekend);
                 }
-                
+
                 IEnumerable<WeekendModel> weekendLists = weekends.WeekendsList;
                 weekendLists = weekends.WeekendsList.Where(x => x.CountryName.ToLower().Contains(searchText) || x.CountryCode.ToLower().Contains(searchText) || x.DayOfWeek.ToLower().Contains(searchText));
 
@@ -149,11 +148,11 @@ namespace CIR.Data.Data.GlobalConfiguration
                 }
                 if (filterCountryNameId != null && filterCountryCodeId == null && !searchText.IsNullOrEmpty())
                 {
-                    weekendLists = weekends.WeekendsList.Where(x => x.CountryId == filterCountryCodeId).ToList();
+                    weekendLists = weekends.WeekendsList.Where(x => x.CountryId == filterCountryNameId && (x.CountryName.ToLower().Contains(searchText) || x.CountryCode.ToLower().Contains(searchText) || x.DayOfWeek.ToLower().Contains(searchText))).ToList();
                 }
                 if (filterCountryNameId != null && filterCountryCodeId != null && !searchText.IsNullOrEmpty())
                 {
-                    weekendLists = weekendLists.Where(x => x.CountryId == filterCountryNameId).ToList();
+                    weekendLists = weekendLists.Where(x => x.CountryId == filterCountryNameId && x.CountryId == filterCountryCodeId && (x.CountryName.ToLower().Contains(searchText) || x.CountryCode.ToLower().Contains(searchText) || x.DayOfWeek.ToLower().Contains(searchText))).ToList();
                 }
                 weekendLists = sortAscending ? weekendLists.OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)) : weekendLists.OrderByDescending(x => x.GetType().GetProperty(sortCol).GetValue(x, null));
                 weekends.Count = weekendLists.Count();
@@ -179,11 +178,11 @@ namespace CIR.Data.Data.GlobalConfiguration
             else if ((DayOfWeek)dayOfWeekId == System.DayOfWeek.Monday)
             {
 
-                return Enum.GetName(System.DayOfWeek.Monday.GetType(), System.DayOfWeek.Monday); 
+                return Enum.GetName(System.DayOfWeek.Monday.GetType(), System.DayOfWeek.Monday);
             }
             else if ((DayOfWeek)dayOfWeekId == System.DayOfWeek.Tuesday)
             {
-                    return Enum.GetName(System.DayOfWeek.Tuesday.GetType(), System.DayOfWeek.Tuesday);
+                return Enum.GetName(System.DayOfWeek.Tuesday.GetType(), System.DayOfWeek.Tuesday);
             }
             else if ((DayOfWeek)dayOfWeekId == System.DayOfWeek.Wednesday)
             {
