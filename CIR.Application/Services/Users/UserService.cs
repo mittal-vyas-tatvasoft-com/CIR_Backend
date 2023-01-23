@@ -1,8 +1,4 @@
-﻿using CIR.Core.Entities.Users;
-using CIR.Core.Interfaces.Users;
-using Microsoft.AspNetCore.Mvc;
-
-namespace CIR.Application.Services.Users
+﻿namespace CIR.Application.Services.Users
 {
     public class UserService : IUserService
     {
@@ -34,14 +30,14 @@ namespace CIR.Application.Services.Users
             return await _userRepository.DeleteUser(id);
         }
 
-        public async Task<IActionResult> GetAllUsers(int displayLength, int displayStart, string? sortCol, string search, int roleId, bool? enabled = null, bool sortAscending = true)
-        {
-            return await _userRepository.GetAllUsers(displayLength, displayStart, sortCol, search, roleId, enabled, sortAscending);
-        }
-
         public Task<IActionResult> GetAllUsersDetailBySP(int displayLength, int displayStart, string sortCol, string sortDir, string search, int roleId, bool? enabled = null)
         {
             return _userRepository.GetAllUsersDetailBySP(displayLength, displayStart, sortCol, sortDir, search, roleId, enabled);
+        }
+
+        public async Task<IActionResult> GetAllUsers(int displayLength, int displayStart, string? sortCol, string search, int roleId, bool? enabled = null, bool sortAscending = true)
+        {
+            return await _userRepository.GetAllUsers(displayLength, displayStart, sortCol, search, roleId, enabled, sortAscending);
         }
     }
 }
