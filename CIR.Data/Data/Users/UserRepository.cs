@@ -1,6 +1,5 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
-using CIR.Common.Helper;
 using CIR.Core.Entities.Users;
 using CIR.Core.Interfaces.Users;
 using CIR.Core.ViewModel.Usersvm;
@@ -8,7 +7,6 @@ using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
-
 
 namespace CIR.Data.Data.Users
 {
@@ -150,46 +148,64 @@ namespace CIR.Data.Data.Users
         }
 
         /// <summary>
-        /// This method retuns filtered user list using SP
+        /// This method retuns filtered user list using Store Procedure
         /// </summary>
-        /// <param name="displayLength"> how many row/data we want to fetch(for pagination) </param>
-        /// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
+        /// <param name="displayLength">how many row/data we want to fetch(for pagination)</param>
+        /// <param name="displayStart">from which row we want to fetch(for pagination)</param>
         /// <param name="sortCol"> name of column which we want to sort</param>
-        /// <param name="search"> word that we want to search in user table </param>
-        /// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
-        /// <returns> filtered list of users </returns>
-
-        public UsersModel GetFilteredUsers(int displayLength, int displayStart, int sortCol, string sortDir, string? search)
+        /// <param name="search">word that we want to search in user table</param>
+        /// <param name="sortDir">'asc' or 'desc' direction for sort </param>
+        /// <param name="roleId">sorting roleid wise</param>
+        /// <param name="enabled">sorting enable wise</param>
+        /// <returns></returns>
+        public async Task<IActionResult> GetAllUsersDetailBySP(int displayLength, int displayStart, string? sortCol, string? search, string? sortDir, int roleId, bool? enabled = null)
         {
-            var dictionaryobj = new Dictionary<string, object>
+            UsersViewModel users = new();
+
+            if (string.IsNullOrEmpty(sortCol))
             {
-                { "DisplayLength", displayLength },
-                { "DisplayStart", displayStart },
-                { "SortCol", sortCol },
-                { "SortDir", sortDir },
-                { "Search", search }
-            };
-
-            DataTable dt = SQLHelper.ExecuteSqlQueryWithParams("spGetFilteredUsers", dictionaryobj);
-
-            UsersModel usersData = new();
-
-            usersData.Count = Convert.ToInt32(dt.Rows[0]["TotalCount"].ToString());
-            usersData.UsersList = SQLHelper.ConvertToGenericModelList<User>(dt);
-
-            return usersData;
+                sortCol = "Id";
+            }
+            try
+            {
+                List<UserModel> sortData;
+                using (DbConnection dbConnection = new DbConnection())
+                {
+                    using (var connection = dbConnection.Connection)
+                    {
+                        DynamicParameters parameters = new DynamicParameters();
+                        parameters.Add("DisplayLength", displayLength);
+                        parameters.Add("DisplayStart", displayStart);
+                        parameters.Add("SortCol", sortCol);
+                        parameters.Add("Search", search);
+                        parameters.Add("SortDir", sortDir);
+                        parameters.Add("RoleId", roleId);
+                        parameters.Add("Enabled", enabled);
+                        sortData = connection.Query<UserModel>("spGetFilteredUsersList", parameters, commandType: CommandType.StoredProcedure).ToList();
+                    }
+                }
+                sortData = sortData.ToList();
+                users.Count = sortData[0].TotalCount;
+                users.UsersList = sortData;
+                return new JsonResult(new CustomResponse<UsersViewModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = users });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = true, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = ex });
+            }
         }
 
         /// <summary>
-        /// This method retuns filtered user list using LINQ
+        /// This method retuns filtered user list using Linq
         /// </summary>
-        /// <param name="displayLength"> how many row/data we want to fetch(for pagination) </param>
-        /// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
-        /// <param name="sortCol"> name of column which we want to sort</param>
-        /// <param name="search"> word that we want to search in user table </param>
-        /// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
-        /// <returns> filtered list of users </returns>
-
+        /// <param name="displayLength">how many row/data we want to fetch(for pagination)</param>
+        /// <param name="displayStart">from which row we want to fetch(for pagination)</param>
+        /// <param name="sortCol">name of column which we want to sort</param>
+        /// <param name="search">word that we want to search in user table</param>
+        /// <param name="roleId">sorting role id wise</param>
+        /// <param name="enabled">sorting enable wise</param>
+        /// <param name="sortAscending">'asc' or 'desc' direction for sort</param>
+        /// <returns></returns>
 
         public async Task<IActionResult> GetAllUsers(int displayLength, int displayStart, string? sortCol, string search, int roleId, bool? enabled = null, bool sortAscending = true)
         {
@@ -202,14 +218,14 @@ namespace CIR.Data.Data.Users
 
             try
             {
-                users.Count = _CIRDBContext.Users.Where(y => y.UserName.Contains(search) || y.Email.Contains(search) || y.FirstName.Contains(search)).Count();
                 List<UserModel> sortData;
                 using (DbConnection dbConnection = new DbConnection())
                 {
-
                     using (var connection = dbConnection.Connection)
                     {
-                        sortData = connection.Query<UserModel>("spGetUserDetailList", null, commandType: CommandType.StoredProcedure).ToList();
+                        DynamicParameters parameters = new DynamicParameters();
+                        parameters.Add("Search", search);
+                        sortData = connection.Query<UserModel>("spGetUserDetailLists", parameters, commandType: CommandType.StoredProcedure).ToList();
                     }
                 }
                 if (roleId != 0)
@@ -220,7 +236,7 @@ namespace CIR.Data.Data.Users
                 {
                     sortData = sortData.Where(y => y.Enabled == enabled).OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).ToList();
                 }
-                sortData = sortData.Where(y => y.UserName.Contains(search) || y.Email.Contains(search) || y.FirstName.Contains(search)).ToList();
+                sortData = sortData.ToList();
                 users.Count = sortData.Count();
                 if (sortAscending)
                 {

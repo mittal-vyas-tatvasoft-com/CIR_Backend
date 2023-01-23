@@ -50,6 +50,7 @@ namespace CIR.Controllers.Website
         /// <summary>
 		/// This method takes a get website portalToGlobalConfigurationEmails list
 		/// </summary>
+        /// <param name="id">this method returns details of given id</param>
 		/// <returns></returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)

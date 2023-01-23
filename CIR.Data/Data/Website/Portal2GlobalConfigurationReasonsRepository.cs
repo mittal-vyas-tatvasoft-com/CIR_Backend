@@ -29,31 +29,31 @@ namespace CIR.Data.Data.Websites
 		/// <summary>
 		/// This method will be used by create method of Reasons controller
 		/// </summary>
-		/// <param name="ReasonsModel"></param>
+		/// <param name="reasonsModel"></param>
 		/// <returns>return Ok if successful else returns bad request</returns>
 
-		public async Task<IActionResult> CreateReason(List<Portal2GlobalConfigurationReasonsModel> ReasonsModel)
+		public async Task<IActionResult> CreateReason(List<Portal2GlobalConfigurationReasonsModel> reasonsModel)
 		{
 			try
 			{
-				if (ReasonsModel.Any(x => x.Id < 0 || x.OficeIdPK < 0 || x.PortalIdPK < 0))
+				if (reasonsModel.Any(x => x.Id < 0 || x.OficeIdPK < 0 || x.PortalIdPK < 0))
 				{
 					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Error occurred while adding new Reasons" });
 				}
-				if (ReasonsModel != null)
+				if (reasonsModel != null)
 				{
-					foreach (var item in ReasonsModel)
+					foreach (var item in reasonsModel)
 					{
 						var newOffice = new Offices()
 						{
-							AddressLine1 = "TestData",
-							TownCity = "TestData",
-							CountryCode = 3,
-							CreatedOn = DateTime.Now,
-							Enabled = false,
-							Latitude = 1,
-							Longitude = 1,
-							AddressType = 1
+							AddressLine1 = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).AddressLine1,
+							TownCity = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).TownCity,
+							CountryCode = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).CountryCode,
+							CreatedOn = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).CreatedOn,
+							Enabled = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).Enabled,
+							Latitude = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).Latitude,
+							Longitude = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).Longitude,
+							AddressType = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).AddressType
 						};
 						_CIRDbContext.offices.Add(newOffice);
 						_CIRDbContext.SaveChanges();
@@ -117,25 +117,30 @@ namespace CIR.Data.Data.Websites
 		{
 			try
 			{
-				var reason = await (from Portal2GlobalConfigurationReason in _CIRDbContext.portal2GlobalConfigurationReasons
-									join Office in _CIRDbContext.offices
-									on Portal2GlobalConfigurationReason.DestinationId equals Office.Id
-									join Portal in _CIRDbContext.portals
-									on Portal2GlobalConfigurationReason.PortalId equals Portal.Id
-									join GlobalConfigurationReasons in _CIRDbContext.GlobalConfigurationReasons
-									on Portal2GlobalConfigurationReason.GlobalConfigurationReasonId equals GlobalConfigurationReasons.Id
+				var portaltoGLobalReasons = await (from Portal2GlobalConfigurationReason in _CIRDbContext.portal2GlobalConfigurationReasons
+												   join Office in _CIRDbContext.offices
+												   on Portal2GlobalConfigurationReason.DestinationId equals Office.Id
+												   join Portal in _CIRDbContext.portals
+												   on Portal2GlobalConfigurationReason.PortalId equals Portal.Id
+												   join GlobalConfigurationReasons in _CIRDbContext.GlobalConfigurationReasons
+												   on Portal2GlobalConfigurationReason.GlobalConfigurationReasonId equals GlobalConfigurationReasons.Id
 
-									select new Portal2GlobalConfigurationReasonsModel()
-									{
-										Id = Portal2GlobalConfigurationReason.Id,
-										ContentOverride = Portal2GlobalConfigurationReason.ContentOverride,
-										DestinationId = Portal2GlobalConfigurationReason.DestinationId,
-										Enabled = Portal2GlobalConfigurationReason.Enabled,
-										GlobalConfigurationReasonId = Portal2GlobalConfigurationReason.GlobalConfigurationReasonId,
-										PortalId = Portal2GlobalConfigurationReason.PortalId
-									}).ToListAsync();
+												   select new Portal2GlobalConfigurationReasonsModel()
+												   {
+													   Id = Portal2GlobalConfigurationReason.Id,
+													   ContentOverride = Portal2GlobalConfigurationReason.ContentOverride,
+													   DestinationId = Portal2GlobalConfigurationReason.DestinationId,
+													   Enabled = Portal2GlobalConfigurationReason.Enabled,
+													   GlobalConfigurationReasonId = Portal2GlobalConfigurationReason.GlobalConfigurationReasonId,
+													   PortalId = Portal2GlobalConfigurationReason.PortalId
+												   }).ToListAsync();
 
-				return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationReasonsModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = reason });
+				if (portaltoGLobalReasons.Count == 0)
+				{
+					return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationReasonsModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+				}
+
+				return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationReasonsModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = portaltoGLobalReasons });
 			}
 			catch (Exception ex)
 			{

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CIR.Common.CustomResponse
+﻿namespace CIR.Common.Enums
 {
     public enum DynamicDataFields
     {
@@ -16,8 +10,7 @@ namespace CIR.Common.CustomResponse
         CollectionDate = 5,
         CollectionAddress = 6,
         TrackingURL = 7,
-        LabelURL= 8,
+        LabelURL = 8,
         BookingURL = 9
-
     }
 }

@@ -52,7 +52,7 @@ namespace CIR.Controllers.Users
         /// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
         /// <param name="sortCol"> name of column which we want to sort</param>
         /// <param name="search"> word that we want to search in user table </param>
-        /// <param name="sortDir"> 'asc' or 'desc' direction for sort </param>
+        /// <param name="sortAscending"> 'asc' or 'desc' direction for sort </param>
         /// <returns> filtered list of roles </returns>
         [HttpGet]
         public async Task<IActionResult> GetAllRoles(int displayLength, int displayStart, string? sortCol, string? search, bool sortAscending = true)
@@ -75,6 +75,11 @@ namespace CIR.Controllers.Users
             }
         }
 
+        /// <summary>
+        /// This method return role detail of given id
+        /// </summary>
+        /// <param name="roleId"></param>
+        /// <returns></returns>
         [HttpGet("{roleId}")]
         public async Task<IActionResult> Get(int roleId)
         {
@@ -173,7 +178,7 @@ namespace CIR.Controllers.Users
         /// <summary>
         /// This method takes remove role id wise section
         /// </summary>
-        /// <param name="roleId"></param>
+        /// <param name="groupId"></param>
         /// <returns></returns>
         [HttpDelete("RemoveSection/{groupId}")]
         public async Task<IActionResult> RemoveSection(long groupId)

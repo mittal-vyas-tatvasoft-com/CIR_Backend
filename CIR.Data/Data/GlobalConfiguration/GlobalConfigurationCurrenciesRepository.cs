@@ -5,7 +5,6 @@ using CIR.Core.Interfaces.GlobalConfiguration;
 using CIR.Core.ViewModel.GlobalConfiguration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
 namespace CIR.Data.Data.GlobalConfiguration
 {
     public class GlobalConfigurationCurrenciesRepository : IGlobalConfigurationCurrenciesRepository
@@ -50,6 +49,11 @@ namespace CIR.Data.Data.GlobalConfiguration
                                                                    CountryName = country.CountryName,
                                                                    CodeName = currency.CodeName
                                                                }).Where(x => x.CountryId == countryId).ToListAsync();
+
+                if (globalConfigurationCurrenciesList.Count == 0)
+                {
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
+                }
                 return new JsonResult(new CustomResponse<List<GlobalConfigurationCurrencyModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = globalConfigurationCurrenciesList });
             }
             catch (Exception ex)
@@ -76,26 +80,28 @@ namespace CIR.Data.Data.GlobalConfiguration
                 {
                     foreach (var item in globalCurrencyModel)
                     {
-                        if (item.Id != 0)
+                        bool globalConfigurationCurrenciesDuplicate = _CIRDBContext.GlobalConfigurationCurrencies.Any(x => x.CountryId == item.CountryId && x.CurrencyId == item.CurrencyId && x.Id != item.Id);
+
+                        if (!globalConfigurationCurrenciesDuplicate)
                         {
-                            GlobalConfigurationCurrency curr = new GlobalConfigurationCurrency()
+                            GlobalConfigurationCurrency currency = new GlobalConfigurationCurrency()
                             {
                                 Id = item.Id,
                                 CountryId = item.CountryId,
                                 CurrencyId = item.CurrencyId,
                                 Enabled = item.Enabled
                             };
-                            _CIRDBContext.GlobalConfigurationCurrencies.Update(curr);
+                            _CIRDBContext.GlobalConfigurationCurrencies.Update(currency);
                         }
                         else
                         {
-                            GlobalConfigurationCurrency curr = new GlobalConfigurationCurrency()
+                            GlobalConfigurationCurrency currency = new GlobalConfigurationCurrency()
                             {
                                 CountryId = item.CountryId,
                                 CurrencyId = item.CurrencyId,
                                 Enabled = item.Enabled
                             };
-                            _CIRDBContext.GlobalConfigurationCurrencies.Add(curr);
+                            _CIRDBContext.GlobalConfigurationCurrencies.Add(currency);
                         }
                     }
                     await _CIRDBContext.SaveChangesAsync();

@@ -6,7 +6,7 @@
 		public long CountryId { get; set; }
 		public DateTime Date { get; set; }
 		public string Description { get; set; }
-		public string Code { get; set; }
+		public string CountryCode { get; set; }
 		public string CountryName { get; set; }
 	}
 }

@@ -48,5 +48,6 @@
         public string? CompanyName { get; set; }
 
         public long? PortalThemeId { get; set; }
+        public int TotalCount { get; set; }
     }
 }

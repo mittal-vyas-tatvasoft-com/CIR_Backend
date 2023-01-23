@@ -43,6 +43,11 @@ namespace CIR.Data.Data.GlobalConfiguration
                     SortOrder = x.SortOrder
 
                 }).ToListAsync();
+
+                if (globalConfigurationStyleList.Count == 0)
+                {
+                    return new JsonResult(new CustomResponse<List<GlobalConfigurationStyle>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+                }
                 return new JsonResult(new CustomResponse<List<GlobalConfigurationStyle>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = globalConfigurationStyleList });
             }
             catch (Exception ex)
@@ -65,7 +70,7 @@ namespace CIR.Data.Data.GlobalConfiguration
                 {
                     foreach (var item in globalConfigurationStyles)
                     {
-                        GlobalConfigurationStyle newStyle = new GlobalConfigurationStyle()
+                        GlobalConfigurationStyle newGlobalConfigStyle = new GlobalConfigurationStyle()
                         {
                             Id = item.Id,
                             Name = item.Name,
@@ -76,7 +81,7 @@ namespace CIR.Data.Data.GlobalConfiguration
                             Value = item.Value,
                             SortOrder = item.SortOrder
                         };
-                        _CIRDBContext.GlobalConfigurationStyles.Update(newStyle);
+                        _CIRDBContext.GlobalConfigurationStyles.Update(newGlobalConfigStyle);
 
                     }
                     await _CIRDBContext.SaveChangesAsync();
