@@ -38,7 +38,7 @@ namespace CIR.Common.Helper
 
                 for (int i = 0; i < data2.Count; i++)
                 {
-                    string[] u = (string[])data2[i].ToArray();
+                    string[] u = data2[i].ToArray();
                     for (int j = 0; j < u.Length; j++)
                     {
                         sb.Append(u[j] + ',');

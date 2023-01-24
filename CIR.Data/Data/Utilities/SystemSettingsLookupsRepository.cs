@@ -171,13 +171,14 @@ namespace CIR.Data.Data.Utilities
                 {
                     foreach (DataRow row in lookupItemsDatatable.Rows)
                     {
-                        LookupItemsText lookupModel = new LookupItemsText();
-
-                        lookupModel.Id = Convert.ToInt64(row["Id"]);
-                        lookupModel.Text = Convert.ToString(row["Text"]);
-                        lookupModel.LookupItemId = Convert.ToInt64(row["LookupItemId"]);
-                        lookupModel.Active = Convert.ToBoolean(row["Active"]);
-                        lookupModel.CultureId = Convert.ToInt64(row["CultureId"]);
+                        LookupItemsText lookupModel = new LookupItemsText
+                        {
+                            Id = Convert.ToInt64(row["Id"]),
+                            Text = Convert.ToString(row["Text"]),
+                            LookupItemId = Convert.ToInt64(row["LookupItemId"]),
+                            Active = Convert.ToBoolean(row["Active"]),
+                            CultureId = Convert.ToInt64(row["CultureId"])
+                        };
                         lookupsItemList.Add(lookupModel);
                     }
                 }
@@ -217,11 +218,13 @@ namespace CIR.Data.Data.Utilities
             {
                 foreach (DataRow row in cultureCodeDatatable.Rows)
                 {
-                    CulturalCodesModel culturalCodesModel = new CulturalCodesModel();
-                    culturalCodesModel.CultureId = Convert.ToInt64(row["CultureId"]);
-                    culturalCodesModel.SystemCodeId = Convert.ToInt64(row["SystemCodeId"]);
-                    culturalCodesModel.Code = Convert.ToString(row["Code"]);
-                    culturalCodesModel.CultureDisplayText = Convert.ToString(row["DisplayName"].ToString());
+                    CulturalCodesModel culturalCodesModel = new CulturalCodesModel
+                    {
+                        CultureId = Convert.ToInt64(row["CultureId"]),
+                        SystemCodeId = Convert.ToInt64(row["SystemCodeId"]),
+                        Code = Convert.ToString(row["Code"]),
+                        CultureDisplayText = Convert.ToString(row["DisplayName"].ToString())
+                    };
                     codeList.Add(culturalCodesModel);
                 }
             }

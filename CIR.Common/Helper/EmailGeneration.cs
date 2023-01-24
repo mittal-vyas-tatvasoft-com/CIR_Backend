@@ -19,8 +19,10 @@ namespace CIR.Common.Helper
             try
             {
                 string fromEmail = _emailModel.FromEmail;
-                MailMessage mailMessage = new MailMessage();
-                mailMessage.From = new MailAddress(fromEmail);
+                MailMessage mailMessage = new MailMessage
+                {
+                    From = new MailAddress(fromEmail)
+                };
                 mailMessage.To.Add(email);
 
                 mailMessage.Subject = mailSubject;
@@ -28,8 +30,10 @@ namespace CIR.Common.Helper
                 mailMessage.IsBodyHtml = true;
                 mailMessage.Priority = MailPriority.High;
 
-                SmtpClient smtpClient = new SmtpClient();
-                smtpClient.UseDefaultCredentials = false;
+                SmtpClient smtpClient = new SmtpClient
+                {
+                    UseDefaultCredentials = false
+                };
 
                 NetworkCredential networkCredential = new NetworkCredential(fromEmail, _emailModel.Password);
                 smtpClient.Credentials = networkCredential;
