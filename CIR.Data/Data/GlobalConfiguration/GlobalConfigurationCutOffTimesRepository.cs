@@ -79,7 +79,7 @@ namespace CIR.Data.Data.GlobalConfiguration
             {
                 if (globalConfigurationCutOffTimeModel.CutOffTime == null || globalConfigurationCutOffTimeModel.CutOffTime == "string" || globalConfigurationCutOffTimeModel.CountryId == 0)
                 {
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Please enter valid data" });
+                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = SystemMessages.msgEnterValidData});
                 }
                 GlobalConfigurationCutOffTime newCutOffTime = new()
                 {
@@ -103,7 +103,7 @@ namespace CIR.Data.Data.GlobalConfiguration
 
                 await _cIRDbContext.SaveChangesAsync();
 
-                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "GlobalConfiguration CutOfTime saved successfully." });
+                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "GlobalConfiguration CutOfTime")});
             }
             catch (Exception ex)
             {

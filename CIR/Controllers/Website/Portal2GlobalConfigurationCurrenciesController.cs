@@ -22,16 +22,16 @@ namespace CIR.Controllers.Website
         {
             _portal2GlobalConfigurationCurrenciesService = portal2GlobalConfigurationCurrenciesService;
         }
-        #endregion
+		#endregion
 
-        #region METHODS
+		#region METHODS
 
-        /// <summary>
+		/// <summary>
 		/// This method takes a update website portal2GlobalConfigurationCurrencies
 		/// </summary>
-		/// <param name="portalToGlobalConfigurationCurrency"></param>
+		/// <param name="portal2GlobalConfigurationCurrency"></param>
 		/// <returns></returns>
-        [HttpPost("[action]")]
+		[HttpPost("[action]")]
         public async Task<IActionResult> Post(List<Portal2GlobalConfigurationCurrency> portal2GlobalConfigurationCurrency)
         {
             if (ModelState.IsValid)
@@ -46,19 +46,20 @@ namespace CIR.Controllers.Website
                     return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
                 }
             }
-            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
+            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = SystemMessages.msgBadRequest });
 
         }
-        /// <summary>
+		/// <summary>
 		/// This method takes a get website portalToGlobalConfigurationCurrencies list
 		/// </summary>
+		/// <param name="portalId"></param>
 		/// <returns></returns>
-        [HttpGet("{PortalId}")]
-        public async Task<IActionResult> Get(long PortalId)
+		[HttpGet("{portalId}")]
+        public async Task<IActionResult> Get(long portalId)
         {
             try
             {
-                return await _portal2GlobalConfigurationCurrenciesService.GetPortalToGlobalConfigurationCurrenciesList(PortalId);
+                return await _portal2GlobalConfigurationCurrenciesService.GetPortalToGlobalConfigurationCurrenciesList(portalId);
             }
             catch (Exception ex)
             {

@@ -1,4 +1,5 @@
 ﻿using CIR.Common.CustomResponse;
+using CIR.Core.Entities.Websites;
 using CIR.Core.Interfaces.Websites;
 using CIR.Core.ViewModel.Websites;
 using Microsoft.AspNetCore.Authorization;
@@ -6,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Controllers.Websites
 {
-	[Route("api/[controller]")]
+    [Route("api/[controller]")]
 	[ApiController]
 	[Authorize]
 	public class Portal2GlobalConfigurationReasonsController : ControllerBase
@@ -62,7 +63,7 @@ namespace CIR.Controllers.Websites
 					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
 				}
 			}
-			return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
+			return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = SystemMessages.msgBadRequest });
 		}
 		#endregion
 	}

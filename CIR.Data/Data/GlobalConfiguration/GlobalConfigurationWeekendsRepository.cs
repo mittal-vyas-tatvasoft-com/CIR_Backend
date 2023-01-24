@@ -43,7 +43,7 @@ namespace CIR.Data.Data.GlobalConfiguration
                 _CIRDbContext.Weekends.Add(globalConfigWeeknds);
 
                 await _CIRDbContext.SaveChangesAsync();
-                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "Globalconfiguration weekends saved successfully" });
+                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Globalconfiguration Weekends")});
             }
             catch (Exception ex)
             {
@@ -66,11 +66,11 @@ namespace CIR.Data.Data.GlobalConfiguration
                 {
                     _CIRDbContext.Weekends.Remove(weekend);
                     await _CIRDbContext.SaveChangesAsync();
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Deleted, Data = "Weekends Deleted Successfully." });
+                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Deleted, Data = string.Format(SystemMessages.msgDataDeletedSuccessfully, "Weekends")});
                 }
                 else
                 {
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = true, Message = HttpStatusCodesMessages.NotFound, Data = "Weekends id not found." });
+                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = true, Message = HttpStatusCodesMessages.NotFound, Data = string.Format(SystemMessages.msgIdNotFound, "Weekend")});
                 }
 
             }

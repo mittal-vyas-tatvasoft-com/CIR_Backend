@@ -9,7 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace CIR.Data.Data.GlobalConfiguration
 {
-	public class GlobalConfigurationHolidaysRepository : ControllerBase, IGlobalConfigurationHolidaysRepository
+    public class GlobalConfigurationHolidaysRepository : ControllerBase, IGlobalConfigurationHolidaysRepository
 	{
 		#region PROPERTIES
 		private readonly CIRDbContext _CIRDbContext;
@@ -54,11 +54,11 @@ namespace CIR.Data.Data.GlobalConfiguration
 				await _CIRDbContext.SaveChangesAsync();
 				if (holiday.Id != 0)
 				{
-					return Ok(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "GlobalConfiguration holiday saved successfully." });
+					return Ok(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "GlobalConfiguration Holiday") });
 				}
 				if (holiday.Id == 0)
 				{
-					return Ok(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "GlobalConfiguration holiday created successfully." });
+					return Ok(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "GlobalConfiguration Holiday") });
 				}
 				return UnprocessableEntity(new CustomResponse<Holidays>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = false, Message = HttpStatusCodesMessages.UnprocessableEntity });
 			}
@@ -74,8 +74,8 @@ namespace CIR.Data.Data.GlobalConfiguration
 		/// <param name="displayStart"> from which row we want to fetch(for pagination) </param>
 		/// <param name="sortCol"> name of column which we want to sort</param>
 		/// <param name="search"> word that we want to search in user table </param>
-		/// <param name="countryCode"> used to filter table based on country code</param>
-		/// <param name="countryName">used to filter table based on country name</param>
+		/// <param name="countryCodeId"> used to filter table based on country code</param>
+		/// <param name="countryNameId">used to filter table based on country name</param>
 		/// <param name="sortAscending"> 'asc' or 'desc' direction for sort </param>
 		/// <returns></returns>
 		public async Task<IActionResult> GetGlobalConfigurationHolidays(int displayLength, int displayStart, string sortCol, string? search, int? countryCodeId, int? countryNameId, bool sortAscending = true)
@@ -146,7 +146,7 @@ namespace CIR.Data.Data.GlobalConfiguration
 		/// <summary>
 		/// fetches holidays based on input holiday id
 		/// </summary>
-		/// <param name="holidayid"></param>
+		/// <param name="holidayId"></param>
 		/// <returns> holiday or null holiday if not found </returns>
 		public async Task<IActionResult> GetHolidayById(long holidayId)
 		{
@@ -185,9 +185,9 @@ namespace CIR.Data.Data.GlobalConfiguration
 					};
 					_CIRDbContext.Holidays.Update(newHoliday);
 					await _CIRDbContext.SaveChangesAsync();
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "holiday saved successfully" });
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Holiday") });
 				}
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Error occurred while updating holidays" });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = string.Format(SystemMessages.msgUpdatingDataError, "Holiday") });
 			}
 			catch (Exception ex)
 			{
@@ -207,7 +207,7 @@ namespace CIR.Data.Data.GlobalConfiguration
 			{
 				_CIRDbContext.Holidays.Remove(holiday);
 				await _CIRDbContext.SaveChangesAsync();
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Deleted, Data = "Holiday Deleted Successfully" });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Deleted, Data = string.Format(SystemMessages.msgDataDeletedSuccessfully, "Holiday") });
 			}
 			catch (Exception ex)
 			{

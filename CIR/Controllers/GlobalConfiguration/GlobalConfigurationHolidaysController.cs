@@ -9,7 +9,7 @@ using System.Globalization;
 
 namespace CIR.Controllers.GlobalConfiguration
 {
-	[Route("api/[controller]")]
+    [Route("api/[controller]")]
 	[ApiController]
 	[Authorize]
 	public class GlobalConfigurationHolidaysController : ControllerBase
@@ -64,7 +64,7 @@ namespace CIR.Controllers.GlobalConfiguration
 				}
 				else
 				{
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "select only .xlsx or .csv file" });
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = SystemMessages.msgSelectXlsxOrCSVFile });
 				}
 			}
 			catch (Exception ex)
@@ -168,7 +168,7 @@ namespace CIR.Controllers.GlobalConfiguration
 				{
 					return await _globalConfigurationHolidaysService.DeleteHolidays(holidayId);
 				}
-				return new JsonResult(new CustomResponse<String>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Invalid input id" });
+				return new JsonResult(new CustomResponse<String>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = SystemMessages.msgInvalidId });
 			}
 			catch (Exception ex)
 			{

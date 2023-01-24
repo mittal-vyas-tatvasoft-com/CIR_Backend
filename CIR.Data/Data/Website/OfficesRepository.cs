@@ -10,7 +10,7 @@ using static CIR.Core.ViewModel.Website.OfficeModel;
 
 namespace CIR.Data.Data.Website
 {
-	public class OfficesRepository : ControllerBase, IOfficesRepository
+    public class OfficesRepository : ControllerBase, IOfficesRepository
 	{
 		#region PROPERTIES
 		private readonly CIRDbContext _CIRDbContext;
@@ -70,7 +70,7 @@ namespace CIR.Data.Data.Website
 					_CIRDbContext.offices.Add(newOffice);
 				}
 				await _CIRDbContext.SaveChangesAsync();
-				return Ok(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "Offices saved successfully." });
+				return Ok(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Offices") });
 			}
 			catch (Exception ex)
 			{
@@ -172,7 +172,7 @@ namespace CIR.Data.Data.Website
 			{
 				_CIRDbContext.offices.RemoveRange(_CIRDbContext.offices.Where(x => x.Id == officeId));
 				await _CIRDbContext.SaveChangesAsync();
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Deleted, Data = "office Deleted Successfully" });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Deleted, Data = string.Format(SystemMessages.msgDataDeletedSuccessfully, "Office") });
 			}
 			catch (Exception ex)
 			{

@@ -33,9 +33,9 @@ namespace CIR.Data.Data.Website
         /// <summary>
         /// This method used by Portal2GlobalConfigurationCurrencies list
         /// </summary>
-        /// <param name="PortalId"></param>
+        /// <param name="portalId"></param>
         /// <returns></returns>
-        public async Task<IActionResult> GetPortalToGlobalConfigurationCurrenciesList(long PortalId)
+        public async Task<IActionResult> GetPortalToGlobalConfigurationCurrenciesList(long portalId)
         {
             try
             {
@@ -50,7 +50,7 @@ namespace CIR.Data.Data.Website
 
                               }).Where(x =>
                               
-                              x.PortalId == PortalId).ToList();
+                              x.PortalId == portalId).ToList();
 
                 
                 var CurrencyId = (from PGCC in _CIRDBContext.Portal2GlobalConfigurationCurrencies
@@ -60,7 +60,7 @@ namespace CIR.Data.Data.Website
                                       PortalId = PGCC.PortalId,
                                       GlobalConfigurationCurrencyId = PGCC.GlobalConfigurationCurrencyId,
                                       EnabledOverride = PGCC.EnabledOverride
-                                  }).FirstOrDefault(x => x.PortalId == PortalId);
+                                  }).FirstOrDefault(x => x.PortalId == portalId);
                 var serializedParent = JsonConvert.SerializeObject(CurrencyId);
                 Portal2GlobalConfigurationCurrency Currency = JsonConvert.DeserializeObject<Portal2GlobalConfigurationCurrency>(serializedParent);
 

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CIR.Data.Data.Websites
 {
-	public class Portal2GlobalConfigurationReasonsRepository : IPortal2GlobalConfigurationReasonsRepository
+    public class Portal2GlobalConfigurationReasonsRepository : IPortal2GlobalConfigurationReasonsRepository
 	{
 
 		#region PROPERTIES
@@ -38,7 +38,7 @@ namespace CIR.Data.Data.Websites
 			{
 				if (reasonsModel.Any(x => x.Id < 0 || x.OficeIdPK < 0 || x.PortalIdPK < 0))
 				{
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Error occurred while adding new Reasons" });
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = string.Format(SystemMessages.msgAddingDataError, "Reasons") });
 				}
 				if (reasonsModel != null)
 				{
@@ -98,10 +98,10 @@ namespace CIR.Data.Data.Websites
 						_CIRDbContext.portal2GlobalConfigurationReasons.Add(globalConfigurationReasons);
 						_CIRDbContext.SaveChanges();
 
-						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Reason Added Successfully" });
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Reason") });
 					}
 				}
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Error occurred while adding new Reason" });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = string.Format(SystemMessages.msgAddingDataError, "Reason") });
 			}
 			catch (Exception ex)
 			{
