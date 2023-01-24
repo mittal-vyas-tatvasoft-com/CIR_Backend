@@ -1,5 +1,8 @@
 ﻿using CIR.Core.Interfaces;
+using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Text;
 
 namespace CIR.Core.Specifications
 {
