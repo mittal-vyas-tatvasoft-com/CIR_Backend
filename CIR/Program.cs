@@ -29,8 +29,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using CIR.Core.Interfaces.Utilities;
-using CIR.Application.Services.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 

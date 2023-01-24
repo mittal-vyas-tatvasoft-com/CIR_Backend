@@ -1,17 +1,10 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
-using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Entities.Website;
 using CIR.Core.Entities.Websites;
 using CIR.Core.Interfaces.Website;
-using CIR.Core.ViewModel.Website;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CIR.Data.Data.Website
 {

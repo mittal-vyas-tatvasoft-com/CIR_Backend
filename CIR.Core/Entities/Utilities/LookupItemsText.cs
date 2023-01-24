@@ -1,12 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CIR.Core.Entities.Utilities
+﻿namespace CIR.Core.Entities.Utilities
 {
     public partial class LookupItemsText
     {

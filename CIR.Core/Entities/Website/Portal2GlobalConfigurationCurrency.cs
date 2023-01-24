@@ -1,8 +1,4 @@
-﻿using CIR.Core.Entities.GlobalConfiguration;
-using System;
-using System.Collections.Generic;
-
-namespace CIR.Core.Entities.Websites;
+﻿namespace CIR.Core.Entities.Websites;
 
 public partial class Portal2GlobalConfigurationCurrency
 {

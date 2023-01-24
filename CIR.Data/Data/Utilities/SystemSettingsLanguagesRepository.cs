@@ -3,13 +3,7 @@ using CIR.Common.Data;
 using CIR.Core.Entities;
 using CIR.Core.Interfaces.Utilities;
 using CIR.Core.ViewModel.Utilities;
-using Microsoft.AspNetCore.JsonPatch.Internal;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CIR.Data.Data.Utilities
 {

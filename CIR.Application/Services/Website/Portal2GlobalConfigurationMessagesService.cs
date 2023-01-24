@@ -1,13 +1,6 @@
-﻿using CIR.Core.Entities.GlobalConfiguration;
-using CIR.Core.Entities.Website;
-using CIR.Core.Interfaces.GlobalConfiguration;
+﻿using CIR.Core.Entities.Website;
 using CIR.Core.Interfaces.Website;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CIR.Application.Services.Website
 {

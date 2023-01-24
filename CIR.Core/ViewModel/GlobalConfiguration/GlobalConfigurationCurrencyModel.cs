@@ -1,12 +1,4 @@
-﻿using CIR.Core.Entities.GlobalConfiguration;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CIR.Core.ViewModel.GlobalConfiguration
+﻿namespace CIR.Core.ViewModel.GlobalConfiguration
 {
     public class GlobalConfigurationCurrencyModel
     {

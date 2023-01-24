@@ -1,10 +1,7 @@
 ﻿using CIR.Common.CustomResponse;
-using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Entities.Website;
 using CIR.Core.Interfaces.Website;
-using CIR.Core.Interfaces.Websites;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Controllers.Website
