@@ -107,7 +107,7 @@ namespace CIR.Data.Data.Website
                 {
                     Enabled = portalModel.PostalServiceTypeEnabled,
                     Cost = portalModel.PostalServiceTypeCost,
-                    Type = Convert.ToInt16(ServiceTypes.Postal),
+                    Type = Convert.ToInt16(WebsiteEnums.ServiceTypes.Postal),
                     PortalId = portal.Id
                 };
                 serviceTypes.Add(postalServiceType);
@@ -116,7 +116,7 @@ namespace CIR.Data.Data.Website
                 {
                     Enabled = portalModel.DropOffServiceTypeEnabled,
                     Cost = portalModel.DropOffServiceTypeCost,
-                    Type = Convert.ToInt16(ServiceTypes.DropOff),
+                    Type = Convert.ToInt16(WebsiteEnums.ServiceTypes.DropOff),
                     PortalId = portal.Id
                 };
                 serviceTypes.Add(dropoffServiceType);
@@ -125,7 +125,7 @@ namespace CIR.Data.Data.Website
                 {
                     Enabled = portalModel.CollectionServiceTypeEnabled,
                     Cost = portalModel.CollectionServiceTypeCost,
-                    Type = Convert.ToInt16(ServiceTypes.Collection),
+                    Type = Convert.ToInt16(WebsiteEnums.ServiceTypes.Collection),
                     PortalId = portal.Id
                 };
                 serviceTypes.Add(collectionServiceType);
