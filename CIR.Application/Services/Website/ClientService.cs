@@ -22,5 +22,10 @@ namespace CIR.Application.Services.Website
         {
             return await _clientRepository.GetAllClients();
         }
+
+        public async Task<IActionResult> GetClientDetailById(int clientId)
+        {
+            return await _clientRepository.GetClientDetailById(clientId);
+        }
     }
 }

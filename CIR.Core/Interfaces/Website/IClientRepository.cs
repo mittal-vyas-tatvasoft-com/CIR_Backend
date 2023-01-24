@@ -7,5 +7,6 @@ namespace CIR.Core.Interfaces.Website
     {
         Task<IActionResult> GetAllClients();
         Task<IActionResult> CreateOrUpdateClient(ClientModel clientModel);
+        Task<IActionResult> GetClientDetailById(int clientId);
     }
 }

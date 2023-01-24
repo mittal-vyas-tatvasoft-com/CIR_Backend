@@ -112,6 +112,24 @@ namespace CIR.Controllers.Website
             }
         }
 
+        /// <summary>
+        /// This method will return portal details of given portal id
+        /// </summary>
+        /// <param name="portalId"></param>
+        /// <returns></returns>
+        [HttpGet("Id/{portalId}")]
+        public async Task<IActionResult> GetDetailByid(int portalId)
+        {
+            try
+            {
+                return await _portalService.GetPortalDetailsById(portalId);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+            }
+        }
+
         #endregion
     }
 }
