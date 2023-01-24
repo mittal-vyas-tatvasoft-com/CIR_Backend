@@ -37,7 +37,15 @@ namespace CIR.Controllers.GlobalConfiguration
             {
                 try
                 {
-                    return await _globalConfigurationWeekendsService.CreateGlobalConfigurationWeekendsWeekends(weekend);
+                    var weekendExists = await _globalConfigurationWeekendsService.CountryWiseWeekendsExists(weekend.CountryId, weekend.DayOfWeekId);
+                    if (weekendExists)
+                    {
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Weekend already exist!" });
+                    }
+                    else
+                    {
+                        return await _globalConfigurationWeekendsService.CreateGlobalConfigurationWeekends(weekend);
+                    }
                 }
                 catch (Exception ex)
                 {

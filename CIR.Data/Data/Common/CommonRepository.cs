@@ -7,7 +7,6 @@ using CIR.Core.Interfaces.Common;
 using CIR.Core.ViewModel.Utilities;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace CIR.Data.Data.Common
@@ -38,12 +37,14 @@ namespace CIR.Data.Data.Common
         {
             try
             {
-                var currenciesList = await _CIRDBContext.Currencies.Select(x => new Currency()
+                List<Currency> currenciesList;
+                using (DbConnection dbConnection = new DbConnection())
                 {
-                    Id = x.Id,
-                    CodeName = x.CodeName,
-                    Symbol = x.Symbol
-                }).ToListAsync();
+                    using (var connection = dbConnection.Connection)
+                    {
+                        currenciesList = connection.Query<Currency>("spGetCurrencies", null, commandType: CommandType.StoredProcedure).ToList();
+                    }
+                }
 
                 if (currenciesList.Count == 0)
                 {
@@ -65,7 +66,15 @@ namespace CIR.Data.Data.Common
         {
             try
             {
-                var countriesList = await _CIRDBContext.CountryCodes.ToListAsync();
+                List<CountryCode> countriesList;
+                using (DbConnection dbConnection = new DbConnection())
+                {
+                    using (var connection = dbConnection.Connection)
+                    {
+                        countriesList = connection.Query<CountryCode>("spGetCountries", null, commandType: CommandType.StoredProcedure).ToList();
+                    }
+                }
+
                 if (countriesList.Count == 0)
                 {
                     return new JsonResult(new CustomResponse<List<CountryCode>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
@@ -86,7 +95,14 @@ namespace CIR.Data.Data.Common
         {
             try
             {
-                var culturesList = await _CIRDBContext.Cultures.ToListAsync();
+                List<Culture> culturesList;
+                using (DbConnection dbConnection = new DbConnection())
+                {
+                    using (var connection = dbConnection.Connection)
+                    {
+                        culturesList = connection.Query<Culture>("spGetCultures", null, commandType: CommandType.StoredProcedure).ToList();
+                    }
+                }
                 if (culturesList.Count == 0)
                 {
                     return new JsonResult(new CustomResponse<List<Culture>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
@@ -107,7 +123,14 @@ namespace CIR.Data.Data.Common
         {
             try
             {
-                var subsitesList = await _CIRDBContext.SubSites.ToListAsync();
+                List<SubSite> subsitesList;
+                using (DbConnection dbConnection = new DbConnection())
+                {
+                    using (var connection = dbConnection.Connection)
+                    {
+                        subsitesList = connection.Query<SubSite>("spGetSubSites", null, commandType: CommandType.StoredProcedure).ToList();
+                    }
+                }
                 if (subsitesList.Count == 0)
                 {
                     return new JsonResult(new CustomResponse<List<SubSite>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
@@ -128,7 +151,14 @@ namespace CIR.Data.Data.Common
         {
             try
             {
-                var rolePrivilegesList = await _CIRDBContext.RolePrivileges.ToListAsync();
+                List<RolePrivileges> rolePrivilegesList;
+                using (DbConnection dbConnection = new DbConnection())
+                {
+                    using (var connection = dbConnection.Connection)
+                    {
+                        rolePrivilegesList = connection.Query<RolePrivileges>("spGetRolePrivileges", null, commandType: CommandType.StoredProcedure).ToList();
+                    }
+                }
                 if (rolePrivilegesList.Count == 0)
                 {
                     return new JsonResult(new CustomResponse<List<RolePrivileges>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
@@ -150,36 +180,26 @@ namespace CIR.Data.Data.Common
         {
             try
             {
-                return await GetSalutationList(code);
+                List<UserLookupItemModel> salutationList;
+                using (DbConnection dbConnection = new DbConnection())
+                {
+                    using (var connection = dbConnection.Connection)
+                    {
+                        DynamicParameters parameters = new DynamicParameters();
+                        parameters.Add("Code", code);
+                        salutationList = connection.Query<UserLookupItemModel>("GetSalutationtypeList", parameters, commandType: CommandType.StoredProcedure).ToList();
+                    }
+                }
+                if (salutationList.Count == 0)
+                {
+                    return new JsonResult(new CustomResponse<List<UserLookupItemModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+                }
+                return new JsonResult(new CustomResponse<List<UserLookupItemModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = salutationList });
             }
             catch (Exception ex)
             {
                 return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
             }
-        }
-
-        /// <summary>
-        /// This method will be used by GetSalutationTypeList method
-        /// </summary>
-        /// <param name="code"></param>
-        /// <returns></returns>
-        public async Task<IActionResult> GetSalutationList(string code)
-        {
-            List<UserLookupItemModel> salutationList;
-            using (DbConnection dbConnection = new DbConnection())
-            {
-                using (var connection = dbConnection.Connection)
-                {
-                    DynamicParameters parameters = new DynamicParameters();
-                    parameters.Add("Code", code);
-                    salutationList = connection.Query<UserLookupItemModel>("GetSalutationtypeList", parameters, commandType: CommandType.StoredProcedure).ToList();
-                }
-            }
-            if (salutationList.Count == 0)
-            {
-                return new JsonResult(new CustomResponse<List<UserLookupItemModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
-            }
-            return new JsonResult(new CustomResponse<List<UserLookupItemModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = salutationList });
         }
 
         /// <summary>
@@ -190,12 +210,14 @@ namespace CIR.Data.Data.Common
         {
             try
             {
-                var systemCodeList = (from sc in _CIRDBContext.SystemCodes
-                                      select new SystemCodeModel()
-                                      {
-                                          Id = sc.Id,
-                                          Code = sc.Code
-                                      }).ToList();
+                List<SystemCodeModel> systemCodeList;
+                using (DbConnection dbConnection = new DbConnection())
+                {
+                    using (var connection = dbConnection.Connection)
+                    {
+                        systemCodeList = connection.Query<SystemCodeModel>("spGetSystemCodes", null, commandType: CommandType.StoredProcedure).ToList();
+                    }
+                }
 
                 if (systemCodeList.Count == 0)
                 {

@@ -13,9 +13,14 @@ namespace CIR.Application.Services.GlobalConfiguration
             _globalConfigurationWeekendsRepository = globalConfigurationWeekendsRepository;
         }
 
-        public Task<IActionResult> CreateGlobalConfigurationWeekendsWeekends(GlobalConfigurationWeekends globalConfigurationWeekends)
+        public async Task<bool> CountryWiseWeekendsExists(long countryId, long dayOfWeekId)
         {
-            return _globalConfigurationWeekendsRepository.CreateGlobalConfigurationWeekendsWeekends(globalConfigurationWeekends);
+            return await _globalConfigurationWeekendsRepository.CountryWiseWeekendsExists(countryId, dayOfWeekId);
+        }
+
+        public Task<IActionResult> CreateGlobalConfigurationWeekends(GlobalConfigurationWeekends globalConfigurationWeekends)
+        {
+            return _globalConfigurationWeekendsRepository.CreateGlobalConfigurationWeekends(globalConfigurationWeekends);
         }
 
         public async Task<IActionResult> DeleteGlobalConfigurationWeekend(int id)

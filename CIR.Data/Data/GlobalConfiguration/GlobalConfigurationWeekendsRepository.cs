@@ -3,8 +3,10 @@ using CIR.Common.Data;
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.GlobalConfiguration;
 using CIR.Core.ViewModel.GlobalConfiguration;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace CIR.Data.Data.GlobalConfiguration
 {
@@ -25,25 +27,53 @@ namespace CIR.Data.Data.GlobalConfiguration
         #region METHODS
 
         /// <summary>
+        /// This method is used by check countrywise weekend already exist or not
+        /// </summary>
+        /// <param name="countryId"></param>
+        /// <param name="dayOfWeekId"></param>
+        /// <returns></returns>
+        public async Task<bool> CountryWiseWeekendsExists(long countryId, long dayOfWeekId)
+        {
+
+            var weekendModel = await _CIRDbContext.Weekends.Where(x => x.CountryId == countryId && x.DayOfWeekId == dayOfWeekId).FirstOrDefaultAsync();
+
+            if (weekendModel != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// This method is used by create method of globalconfiguration weekend
         /// </summary>
         /// <param name="globalConfigurationWeekends"> new weekends data for weekend </param>
         /// <returns> Ok status if its valid else unprocessable </returns>
-        public async Task<IActionResult> CreateGlobalConfigurationWeekendsWeekends(GlobalConfigurationWeekends globalConfigurationWeekends)
+        public async Task<IActionResult> CreateGlobalConfigurationWeekends(GlobalConfigurationWeekends globalConfigurationWeekends)
         {
             try
             {
-                GlobalConfigurationWeekends globalConfigWeeknds = new()
+                if (globalConfigurationWeekends.CountryId == 0)
+                {
+                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Please enter valid Data" });
+                }
+                var result = 0;
+                using (DbConnection dbConnection = new DbConnection())
                 {
 
-                    CountryId = globalConfigurationWeekends.CountryId,
-                    DayOfWeekId = globalConfigurationWeekends.DayOfWeekId,
-                };
-
-                _CIRDbContext.Weekends.Add(globalConfigWeeknds);
-
-                await _CIRDbContext.SaveChangesAsync();
-                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "Globalconfiguration weekends saved successfully" });
+                    using (var connection = dbConnection.Connection)
+                    {
+                        DynamicParameters parameters = new DynamicParameters();
+                        parameters.Add("@CountryId", globalConfigurationWeekends.CountryId);
+                        parameters.Add("@DayOfWeekId", globalConfigurationWeekends.DayOfWeekId);
+                        result = connection.Execute("spAddGlobalConfigurationWeekends", parameters, commandType: CommandType.StoredProcedure);
+                    }
+                }
+                if (result != 0)
+                {
+                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "Globalconfiguration weekends saved successfully" });
+                }
+                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = false, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = "Something went wrong!" });
             }
             catch (Exception ex)
             {
@@ -64,13 +94,21 @@ namespace CIR.Data.Data.GlobalConfiguration
                 var weekend = _CIRDbContext.Weekends.FirstOrDefault(x => x.Id == id);
                 if (weekend != null)
                 {
-                    _CIRDbContext.Weekends.Remove(weekend);
-                    await _CIRDbContext.SaveChangesAsync();
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Deleted, Data = "Weekends Deleted Successfully." });
+                    using (DbConnection dbConnection = new DbConnection())
+                    {
+
+                        using (var connection = dbConnection.Connection)
+                        {
+                            DynamicParameters parameters = new DynamicParameters();
+                            parameters.Add("@Id", weekend.Id);
+                            Convert.ToString(connection.ExecuteScalar("spDeleteGlobalConfigurationWeekend", parameters, commandType: CommandType.StoredProcedure));
+                            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Deleted, Data = "Weekends Deleted Successfully." });
+                        }
+                    }
                 }
                 else
                 {
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = true, Message = HttpStatusCodesMessages.NotFound, Data = "Weekends id not found." });
+                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Weekends id not found." });
                 }
 
             }
@@ -94,112 +132,38 @@ namespace CIR.Data.Data.GlobalConfiguration
         /// <returns> filtered list of Weekends </returns>
         public async Task<ActionResult> GetGlobalConfigurationWeekends(int displayLength, int displayStart, string? sortCol, int? filterCountryNameId, int? filterCountryCodeId, string? search, bool sortAscending = true)
         {
-            string searchText = string.Empty;
-            GlobalConfigurationWeekendsModel weekends = new();
-            if (search != null && search != string.Empty)
-            {
-                searchText = search.ToLower();
-            }
+            GlobalConfigurationWeekendsModel weekendList = new();
 
             if (string.IsNullOrEmpty(sortCol))
             {
                 sortCol = "Id";
             }
-
             try
-
             {
-                var weekendList = (from week in _CIRDbContext.Weekends
-                                   join country in _CIRDbContext.CountryCodes
-                                   on week.CountryId equals country.Id
-                                   select new WeekendModel()
-                                   {
-                                       Id = week.Id,
-                                       CountryId = country.Id,
-                                       DayOfWeekId = week.DayOfWeekId,
-                                       CountryCode = country.Code,
-                                       CountryName = country.CountryName
-                                   });
-
-                foreach (var item in weekendList)
+                List<WeekendModel> sortData;
+                using (DbConnection dbConnection = new DbConnection())
                 {
-                    WeekendModel weekend = item;
-                    weekend.DayOfWeek = GetDayOfWeek(item.DayOfWeekId);
-                    weekends.WeekendsList.Add(weekend);
+                    using (var connection = dbConnection.Connection)
+                    {
+                        DynamicParameters parameters = new DynamicParameters();
+                        parameters.Add("DisplayLength", displayLength);
+                        parameters.Add("DisplayStart", displayStart);
+                        parameters.Add("SortCol", sortCol);
+                        parameters.Add("Search", search);
+                        parameters.Add("SortDir", sortAscending);
+                        parameters.Add("FilterCountryNameId", filterCountryNameId);
+                        parameters.Add("FilterCountryCodeId", filterCountryCodeId);
+                        sortData = connection.Query<WeekendModel>("spGetGlobalConfigurationWeekends", parameters, commandType: CommandType.StoredProcedure).ToList();
+                    }
                 }
-
-                IEnumerable<WeekendModel> weekendLists = weekends.WeekendsList;
-                weekendLists = weekends.WeekendsList.Where(x => x.CountryName.ToLower().Contains(searchText) || x.CountryCode.ToLower().Contains(searchText) || x.DayOfWeek.ToLower().Contains(searchText));
-
-                if (filterCountryCodeId != null && filterCountryNameId == null && searchText.IsNullOrEmpty())
-                {
-                    weekendLists = weekendLists.Where(x => x.CountryId == filterCountryCodeId).ToList();
-                }
-                if (filterCountryNameId != null && filterCountryCodeId == null && searchText.IsNullOrEmpty())
-                {
-                    weekendLists = weekends.WeekendsList.Where(x => x.CountryId == filterCountryNameId).ToList();
-                }
-                if (filterCountryNameId != null && filterCountryCodeId != null && searchText.IsNullOrEmpty())
-                {
-                    weekendLists = weekends.WeekendsList.Where(x => x.CountryId == filterCountryNameId && x.CountryId == filterCountryCodeId).ToList();
-                }
-                if (filterCountryCodeId != null && filterCountryNameId == null && !searchText.IsNullOrEmpty())
-                {
-                    weekendLists = weekends.WeekendsList.Where(x => x.CountryId == filterCountryCodeId && (x.CountryName.ToLower().Contains(searchText) || x.CountryCode.ToLower().Contains(searchText) || x.DayOfWeek.ToLower().Contains(searchText))).ToList();
-                }
-                if (filterCountryNameId != null && filterCountryCodeId == null && !searchText.IsNullOrEmpty())
-                {
-                    weekendLists = weekends.WeekendsList.Where(x => x.CountryId == filterCountryNameId && (x.CountryName.ToLower().Contains(searchText) || x.CountryCode.ToLower().Contains(searchText) || x.DayOfWeek.ToLower().Contains(searchText))).ToList();
-                }
-                if (filterCountryNameId != null && filterCountryCodeId != null && !searchText.IsNullOrEmpty())
-                {
-                    weekendLists = weekendLists.Where(x => x.CountryId == filterCountryNameId && x.CountryId == filterCountryCodeId && (x.CountryName.ToLower().Contains(searchText) || x.CountryCode.ToLower().Contains(searchText) || x.DayOfWeek.ToLower().Contains(searchText))).ToList();
-                }
-                weekendLists = sortAscending ? weekendLists.OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)) : weekendLists.OrderByDescending(x => x.GetType().GetProperty(sortCol).GetValue(x, null));
-                weekends.Count = weekendLists.Count();
-
-                var sortedWeekends = weekendLists.Skip(displayStart).Take(displayLength);
-                weekends.WeekendsList = sortedWeekends.ToList();
-
-                return new JsonResult(new CustomResponse<GlobalConfigurationWeekendsModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = weekends });
-
+                sortData = sortData.ToList();
+                weekendList.Count = sortData[0].TotalCount;
+                weekendList.WeekendsList = sortData;
+                return new JsonResult(new CustomResponse<GlobalConfigurationWeekendsModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = weekendList });
             }
             catch (Exception ex)
             {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
-            }
-        }
-
-        private string GetDayOfWeek(long dayOfWeekId)
-        {
-            if ((DayOfWeek)dayOfWeekId == System.DayOfWeek.Sunday)
-            {
-                return Enum.GetName(System.DayOfWeek.Sunday.GetType(), System.DayOfWeek.Sunday);
-            }
-            else if ((DayOfWeek)dayOfWeekId == System.DayOfWeek.Monday)
-            {
-
-                return Enum.GetName(System.DayOfWeek.Monday.GetType(), System.DayOfWeek.Monday);
-            }
-            else if ((DayOfWeek)dayOfWeekId == System.DayOfWeek.Tuesday)
-            {
-                return Enum.GetName(System.DayOfWeek.Tuesday.GetType(), System.DayOfWeek.Tuesday);
-            }
-            else if ((DayOfWeek)dayOfWeekId == System.DayOfWeek.Wednesday)
-            {
-                return Enum.GetName(System.DayOfWeek.Wednesday.GetType(), System.DayOfWeek.Wednesday);
-            }
-            else if ((DayOfWeek)dayOfWeekId == System.DayOfWeek.Thursday)
-            {
-                return Enum.GetName(System.DayOfWeek.Thursday.GetType(), System.DayOfWeek.Thursday);
-            }
-            else if ((DayOfWeek)dayOfWeekId == System.DayOfWeek.Friday)
-            {
-                return Enum.GetName(System.DayOfWeek.Friday.GetType(), System.DayOfWeek.Friday);
-            }
-            else
-            {
-                return Enum.GetName(System.DayOfWeek.Saturday.GetType(), System.DayOfWeek.Saturday);
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = true, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = ex });
             }
         }
         #endregion
