@@ -1,12 +1,11 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
-using CIR.Common.Helper;
 using CIR.Core.Entities;
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Entities.Users;
-using CIR.Core.Entities.Utilities;
 using CIR.Core.Interfaces.Common;
 using CIR.Core.ViewModel.Utilities;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -166,29 +165,21 @@ namespace CIR.Data.Data.Common
         /// <returns></returns>
         public async Task<IActionResult> GetSalutationList(string code)
         {
-            List<LookupItemsText> salutationList = new List<LookupItemsText>();
-            var dictionaryobj = new Dictionary<string, object>
+            List<UserLookupItemModel> salutationList;
+            using (DbConnection dbConnection = new DbConnection())
             {
-                { "Code", code}
-            };
-
-            var salutationListDatatable = SQLHelper.ExecuteSqlQueryWithParams("spGetSalutationTypeList", dictionaryobj);
-            if (salutationListDatatable != null)
-            {
-                foreach (DataRow row in salutationListDatatable.Rows)
+                using (var connection = dbConnection.Connection)
                 {
-                    LookupItemsText lookupItemsText = new LookupItemsText();
-
-                    lookupItemsText.Id = Convert.ToInt64(row["Id"]);
-                    lookupItemsText.Text = Convert.ToString(row["Text"]);
-                    salutationList.Add(lookupItemsText);
+                    DynamicParameters parameters = new DynamicParameters();
+                    parameters.Add("Code", code);
+                    salutationList = connection.Query<UserLookupItemModel>("GetSalutationtypeList", parameters, commandType: CommandType.StoredProcedure).ToList();
                 }
             }
             if (salutationList.Count == 0)
             {
-                return new JsonResult(new CustomResponse<List<LookupItemsText>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+                return new JsonResult(new CustomResponse<List<UserLookupItemModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
             }
-            return new JsonResult(new CustomResponse<List<LookupItemsText>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = salutationList });
+            return new JsonResult(new CustomResponse<List<UserLookupItemModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = salutationList });
         }
 
         /// <summary>
