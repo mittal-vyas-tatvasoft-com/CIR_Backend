@@ -82,23 +82,22 @@ namespace CIR.Data.Data.Website
                 {
                     foreach (var item in portal2GlobalConfigurationCutOffTimes)
                     {
-                       var cutOffTimes = _CIRDBContext.Portal2GlobalConfigurationCutOffTimes.FirstOrDefault(x => x.Id == item.Id);
-                        if (cutOffTimes != null)
-                        {
-                                cutOffTimes.CutOffDayOverride = item.CutOffDayOverride;
-                                cutOffTimes.CutOffTimeOverride = TimeSpan.Parse(item.CutOffTimeOverride);
-                           
 
+                        var cutOffTimesCheckData = _CIRDBContext.Portal2GlobalConfigurationCutOffTimes.FirstOrDefault(x=>x.Id== item.Id);
+                        Portal2GlobalConfigurationCutOffTimes cutOffTimes = new Portal2GlobalConfigurationCutOffTimes();
+                        if (cutOffTimesCheckData != null)
+                        {
+                            cutOffTimes.CutOffDayOverride = item.CutOffDayOverride;
+                            cutOffTimes.CutOffTimeOverride = TimeSpan.Parse(item.CutOffTimeOverride);
                             _CIRDBContext.Portal2GlobalConfigurationCutOffTimes.Update(cutOffTimes);
                         }
                         else
                         {
-                            Portal2GlobalConfigurationCutOffTimes cutOffTimes1 = new Portal2GlobalConfigurationCutOffTimes();
-                            cutOffTimes1.PortalId = item.PortalId;
-                            cutOffTimes1.GlobalConfigurationCutOffTimeId = item.GlobalConfigurationCutOffTimeId;
-                            cutOffTimes1.CutOffDayOverride = item.CutOffDayOverride;
-                            cutOffTimes1.CutOffTimeOverride = TimeSpan.Parse(item.CutOffTimeOverride);
-                            _CIRDBContext.Portal2GlobalConfigurationCutOffTimes.Add(cutOffTimes1);
+                            cutOffTimes.PortalId = item.PortalId;
+                            cutOffTimes.GlobalConfigurationCutOffTimeId = item.GlobalConfigurationCutOffTimeId;
+                            cutOffTimes.CutOffDayOverride = item.CutOffDayOverride;
+                            cutOffTimes.CutOffTimeOverride = TimeSpan.Parse(item.CutOffTimeOverride);
+                            _CIRDBContext.Portal2GlobalConfigurationCutOffTimes.Add(cutOffTimes);
                         }
                     }
                     await _CIRDBContext.SaveChangesAsync();
