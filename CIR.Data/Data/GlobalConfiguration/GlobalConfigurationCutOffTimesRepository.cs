@@ -57,7 +57,7 @@ namespace CIR.Data.Data.GlobalConfiguration
                     {
                         CountryId = countryId,
                         CutOffTime = _configuration.GetSection("StaticCutOffTime").GetSection("CutOffTime").Value,
-                        CutOffDay = (int)CutOffDays.PreviousDay
+                        CutOffDay = (int)GlobalConfigurationEnums.CutOffDays.PreviousDay
                     };
                     return new JsonResult(new CustomResponse<GlobalConfigurationCutOffTimeModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = cutOffTimeModel });
                 }

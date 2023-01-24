@@ -85,13 +85,11 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// <param name="countryCode"> word takes country name </param>
 		/// <returns> filtered list of holidays </returns>
 		[HttpGet]
-		public async Task<IActionResult> GetAllHolidays(int displayLength, int displayStart, string? sortCol, string? search, int? countryCode, int? countryName, bool sortAscending = true)
+		public async Task<IActionResult> GetAllHolidays(int displayLength, int displayStart, string? sortCol, string? search, int countryCode, int countryName, bool sortAscending = true)
 		{
 			try
 			{
 				search ??= string.Empty;
-				countryCode ??= null;
-				countryName ??= null;
 				return await _globalConfigurationHolidaysService.GetGlobalConfigurationHolidays(displayLength, displayStart, sortCol, search, countryCode, countryName, sortAscending);
 			}
 			catch (Exception ex)
@@ -105,7 +103,7 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// </summary>
 		/// <param name="holidayId"></param>
 		/// <returns></returns>
-		[HttpGet("{HolidayId}")]
+		[HttpGet("{holidayId}")]
 		public async Task<IActionResult> Get(long holidayId)
 		{
 			try
@@ -123,7 +121,7 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// </summary>
 		/// <param name="holidayModel"></param>
 		/// <returns></returns>
-		[HttpPut("Update")]
+		[HttpPut("[action]")]
 		public async Task<IActionResult> Update(Holidays holidayModel)
 		{
 			try
@@ -141,7 +139,7 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// </summary>
 		/// <param name="holidayModel"></param>
 		/// <returns></returns>
-		[HttpPost("Create")]
+		[HttpPost("[action]")]
 		public async Task<IActionResult> Create(Holidays holidayModel)
 		{
 			try
@@ -159,7 +157,7 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// </summary>
 		/// <param name="holidayId"></param>
 		/// <returns></returns>
-		[HttpDelete("Delete")]
+		[HttpDelete("[action]")]
 		public async Task<IActionResult> Delete(long holidayId)
 		{
 			try

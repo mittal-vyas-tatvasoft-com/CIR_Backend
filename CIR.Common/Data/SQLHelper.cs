@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using System.Data;
 using System.Reflection;
 
-namespace CIR.Common.Helper
+namespace CIR.Common.Data
 {
     public static class SQLHelper
     {
@@ -199,6 +199,5 @@ namespace CIR.Common.Helper
 
             return targetList;
         }
-
     }
 }
