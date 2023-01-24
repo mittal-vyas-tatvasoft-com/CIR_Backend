@@ -47,10 +47,13 @@ namespace CIR.Data.Data.Website
 
 
                 if (result != null)
+                {
                     return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationCutOffTimesModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = result });
+                }
                 else
+                {
                     return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationCutOffTimesModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
-
+                }
             }
             catch (Exception ex)
             {

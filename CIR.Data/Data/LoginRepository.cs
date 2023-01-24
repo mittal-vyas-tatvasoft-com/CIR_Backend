@@ -69,9 +69,13 @@ namespace CIR.Data.Data
                 {
                     var generatedToken = await _jwtGenerateToken.GenerateJwtToken(userData);
                     if (generatedToken != null)
+                    {
                         return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = generatedToken });
+                    }
                     else
+                    {
                         return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Token not generated" });
+                    }
                 }
                 return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Invalid username or password" });
             }

@@ -93,10 +93,13 @@ namespace CIR.Data.Data.Website
                     email.BookingURL = true;
                 }
                 if (emailRecords != null)
+                {
                     return new JsonResult(new CustomResponse<List<PortalToGlobalConfigurationEmailsGetModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = emailRecords });
+                }
                 else
+                {
                     return new JsonResult(new CustomResponse<List<PortalToGlobalConfigurationEmailsGetModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
-
+                }
             }
             catch (Exception ex)
             {

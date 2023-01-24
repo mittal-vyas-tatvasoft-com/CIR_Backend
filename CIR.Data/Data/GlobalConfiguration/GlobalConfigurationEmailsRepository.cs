@@ -92,10 +92,13 @@ namespace CIR.Data.Data.GlobalConfiguration
                     email.BookingURL = true;
                 }
                 if (globalConfigEmails != null)
+                {
                     return new JsonResult(new CustomResponse<List<GlobalConfigurationEmailsGetModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = globalConfigEmails });
+                }
                 else
+                {
                     return new JsonResult(new CustomResponse<List<GlobalConfigurationEmailsGetModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
-
+                }
             }
             catch (Exception ex)
             {

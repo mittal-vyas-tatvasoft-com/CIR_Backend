@@ -41,9 +41,13 @@ namespace CIR.Data.Data.Website
                                                                     }).Where(x => x.PortalId == portalId).ToListAsync();
 
                 if (portal2GlobalConfigurationMessagesList != null)
+                {
                     return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationMessagesModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = portal2GlobalConfigurationMessagesList });
+                }
                 else
+                {
                     return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationMessagesModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
+                }
             }
             catch (Exception ex)
             {

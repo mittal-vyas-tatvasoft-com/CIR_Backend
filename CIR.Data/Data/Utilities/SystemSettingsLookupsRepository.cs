@@ -44,9 +44,13 @@ namespace CIR.Data.Data.Utilities
                     int displayOrder;
                     var displayOrderId = _CIRDBContext.LookupItemsText.OrderByDescending(x => x.DisplayOrder).FirstOrDefault();
                     if (displayOrderId != null)
+                    {
                         displayOrder = displayOrderId.DisplayOrder + 1;
+                    }
                     else
+                    {
                         displayOrder = 1;
+                    }
 
                     LookupItem lookupItem = new()
                     {
@@ -114,10 +118,18 @@ namespace CIR.Data.Data.Utilities
                 searchCultureCode ??= string.Empty;
 
                 if (cultureId == null)
+                {
                     cultureCodeCultureId = 0;
+                }
                 else
+                {
                     cultureCodeCultureId = cultureId;
-                if (code == string.Empty || code == null) code = string.Empty;
+                }
+
+                if (code == string.Empty || code == null)
+                {
+                    code = string.Empty;
+                }
 
                 lookupModel.CulturalCodesList = GetCulturalCodesList(cultureCodeCultureId, code, searchCultureCode);
 

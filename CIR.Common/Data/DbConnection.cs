@@ -44,7 +44,9 @@ namespace CIR.Common.Data
         public void Dispose()
         {
             if (Connection != null)
+            {
                 Connection.Dispose();
+            }
         }
         #endregion
     }

@@ -129,7 +129,7 @@ namespace CIR.Controllers.Utilities
             {
                 return await _lookupService.GetLookupById(id);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError });
             }
