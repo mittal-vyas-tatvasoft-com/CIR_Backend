@@ -1,4 +1,6 @@
 ﻿using CIR.Common.CustomResponse;
+using CIR.Common.GlobalConfiguration;
+using CIR.Common.Helper;
 using CIR.Core.Entities.Users;
 using CIR.Core.Interfaces.Users;
 using Microsoft.AspNetCore.Authorization;
@@ -51,6 +53,7 @@ namespace CIR.Controllers.Users
         /// <returns > created user </returns>
 
         [HttpPost("[action]")]
+        [CustomPermissionFilter(RolePriviledgesEnum.User_Create)]
         public async Task<IActionResult> Create([FromBody] User user)
         {
             if (ModelState.IsValid)
@@ -84,6 +87,7 @@ namespace CIR.Controllers.Users
         /// <returns> updated user </returns>
 
         [HttpPut("[action]")]
+        [CustomPermissionFilter(RolePriviledgesEnum.User_Update)]
         public async Task<IActionResult> Update([FromBody] User user)
         {
             if (ModelState.IsValid)
@@ -115,6 +119,7 @@ namespace CIR.Controllers.Users
         /// <returns> disabled user </returns>
 
         [HttpDelete("[action]")]
+        [CustomPermissionFilter(RolePriviledgesEnum.User_Delete)]
         public async Task<IActionResult> Delete(int id)
         {
             if (ModelState.IsValid)
@@ -168,6 +173,7 @@ namespace CIR.Controllers.Users
         /// <returns> filtered list of users </returns>
 
         [HttpGet]
+        [CustomPermissionFilter(RolePriviledgesEnum.User_List)]
         public async Task<IActionResult> UsersLinq(int displayLength, int displayStart, string? sortCol, string? search, int roleId, bool? enabled = null, bool sortAscending = true)
         {
             try
