@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace CIR.Core.Interfaces.Common
 {
-	public interface ICsvService
-	{
-		public IEnumerable<T> ReadCSV<T>(Stream file);
-	}
+    public interface ICsvService
+    {
+        public IEnumerable<T> ReadCSV<T>(Stream file);
+    }
 }

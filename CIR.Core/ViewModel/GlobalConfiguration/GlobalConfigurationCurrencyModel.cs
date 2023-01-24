@@ -16,8 +16,8 @@ namespace CIR.Core.ViewModel.GlobalConfiguration
 
         public long CurrencyId { get; set; }
 
-        public bool Enabled { get; set; }        
-        public string CountryName { get; set; }        
+        public bool Enabled { get; set; }
+        public string CountryName { get; set; }
         public string CodeName { get; set; }
     }
 
@@ -29,6 +29,6 @@ namespace CIR.Core.ViewModel.GlobalConfiguration
 
         public long CurrencyId { get; set; }
 
-        public bool Enabled { get; set; }  
+        public bool Enabled { get; set; }
     }
 }

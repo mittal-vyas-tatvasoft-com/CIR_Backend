@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace CIR.Application.Services.Website
 {
-    public class Portal2GlobalConfigurationCurrenciesService: IPortal2GlobalConfigurationCurrenciesService
+    public class Portal2GlobalConfigurationCurrenciesService : IPortal2GlobalConfigurationCurrenciesService
     {
         private readonly IPortal2GlobalConfigurationCurrenciesRepository _portal2GlobalConfigurationCurrenciesRepository;
-        public Portal2GlobalConfigurationCurrenciesService (IPortal2GlobalConfigurationCurrenciesRepository portal2GlobalConfigurationCurrenciesRepository)
+        public Portal2GlobalConfigurationCurrenciesService(IPortal2GlobalConfigurationCurrenciesRepository portal2GlobalConfigurationCurrenciesRepository)
         {
             _portal2GlobalConfigurationCurrenciesRepository = portal2GlobalConfigurationCurrenciesRepository;
         }

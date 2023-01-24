@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace CIR.Data.Data.Utilities
 {
-    public class SystemSettingsLanguagesRepository :ISytemSettingsLanguagesRepository
+    public class SystemSettingsLanguagesRepository : ISytemSettingsLanguagesRepository
     {
         #region PROPERTIES
         private readonly CIRDbContext _CIRDbContext;
@@ -39,22 +39,22 @@ namespace CIR.Data.Data.Utilities
             try
             {
                 var cultureData = GetListForUpdatedLanguages(cultureList);
-                if(cultureData != null)
+                if (cultureData != null)
                 {
-                    
+
                     foreach (Culture item in cultureData)
                     {
                         _CIRDbContext.Cultures.Update(item);
-                       await _CIRDbContext.SaveChangesAsync();
+                        await _CIRDbContext.SaveChangesAsync();
                     }
 
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated,Data= "Language Updated successfully" });
+                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "Language Updated successfully" });
                 }
                 else
                 {
                     return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = true, Message = HttpStatusCodesMessages.NotFound, Data = "Language id not found." });
                 }
-             
+
             }
             catch (Exception ex)
             {
@@ -72,11 +72,11 @@ namespace CIR.Data.Data.Utilities
             List<Culture> list = new List<Culture>();
             foreach (CulturesModel item in culturesModels)
             {
-               var culture= _CIRDbContext.Cultures.FirstOrDefault(x=>x.Id== item.Id);
-                if (culture != null) 
+                var culture = _CIRDbContext.Cultures.FirstOrDefault(x => x.Id == item.Id);
+                if (culture != null)
                 {
                     culture.Enabled = item.Enabled;
-                    list.Add( culture );    
+                    list.Add(culture);
                 }
             }
             return list;

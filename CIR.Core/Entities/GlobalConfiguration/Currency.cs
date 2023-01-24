@@ -12,6 +12,6 @@ namespace CIR.Core.Entities.GlobalConfiguration
 
         public string CodeName { get; set; } = null!;
 
-        public string? Symbol { get; set; }       
+        public string? Symbol { get; set; }
     }
 }

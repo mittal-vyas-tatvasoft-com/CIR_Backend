@@ -48,7 +48,7 @@ namespace CIR.Data.Data.Website
                                   PortalId = PGCCutOffTimes.PortalId,
                                   GlobalConfigurationCutOffTimeId = PGCCutOffTimes.GlobalConfigurationCutOffTimeId,
                                   CutOffDayOverride = PGCCutOffTimes.CutOffDayOverride,
-                                  CutOffTimeOverride=PGCCutOffTimes.CutOffTimeOverride.ToString()
+                                  CutOffTimeOverride = PGCCutOffTimes.CutOffTimeOverride.ToString()
                               }).Where(x =>
 
                               x.PortalId == PortalId).ToList();
@@ -83,7 +83,7 @@ namespace CIR.Data.Data.Website
                     foreach (var item in portal2GlobalConfigurationCutOffTimes)
                     {
 
-                        var cutOffTimesCheckData = _CIRDBContext.Portal2GlobalConfigurationCutOffTimes.FirstOrDefault(x=>x.Id== item.Id);
+                        var cutOffTimesCheckData = _CIRDBContext.Portal2GlobalConfigurationCutOffTimes.FirstOrDefault(x => x.Id == item.Id);
                         Portal2GlobalConfigurationCutOffTimes cutOffTimes = new Portal2GlobalConfigurationCutOffTimes();
                         if (cutOffTimesCheckData != null)
                         {

@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace CIR.Core.Interfaces.Website
 {
-	public interface IPortal2GlobalConfigurationMessagesService
-	{
-		Task<IActionResult> GetPortalToGlobalConfigurationMessagesList(long portalId);
-		Task<IActionResult> CreateOrUpdatePortalToGlobalConfigurationMessages(List<Portal2GlobalConfigurationMessage> portal2GlobalConfigurationMessages);
-	}
+    public interface IPortal2GlobalConfigurationMessagesService
+    {
+        Task<IActionResult> GetPortalToGlobalConfigurationMessagesList(long portalId);
+        Task<IActionResult> CreateOrUpdatePortalToGlobalConfigurationMessages(List<Portal2GlobalConfigurationMessage> portal2GlobalConfigurationMessages);
+    }
 }

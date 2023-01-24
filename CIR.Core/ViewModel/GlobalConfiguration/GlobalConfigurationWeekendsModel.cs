@@ -14,7 +14,7 @@ namespace CIR.Core.ViewModel.GlobalConfiguration
 
         public int Count { get; set; }
 
-     }
+    }
     public class WeekendModel
     {
         public long Id { get; set; }

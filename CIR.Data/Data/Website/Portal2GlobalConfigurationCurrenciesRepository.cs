@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace CIR.Data.Data.Website
 {
-    public class Portal2GlobalConfigurationCurrenciesRepository :IPortal2GlobalConfigurationCurrenciesRepository
+    public class Portal2GlobalConfigurationCurrenciesRepository : IPortal2GlobalConfigurationCurrenciesRepository
     {
         #region PROPERTIES
 
@@ -46,13 +46,13 @@ namespace CIR.Data.Data.Website
                                   PortalId = PGCurrency.PortalId,
                                   GlobalConfigurationCurrencyId = PGCurrency.GlobalConfigurationCurrencyId,
                                   EnabledOverride = PGCurrency.EnabledOverride,
-                                  
+
 
                               }).Where(x =>
-                              
+
                               x.PortalId == PortalId).ToList();
 
-                
+
                 var CurrencyId = (from PGCC in _CIRDBContext.Portal2GlobalConfigurationCurrencies
                                   select new Portal2GlobalConfigurationCurrency()
                                   {
@@ -68,7 +68,7 @@ namespace CIR.Data.Data.Website
                 {
                     Currency.EnabledOverride = true;
                 }
-               
+
                 if (result != null)
                     return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationCurrency>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = result });
                 else
@@ -89,25 +89,25 @@ namespace CIR.Data.Data.Website
         {
             try
             {
-                
+
                 if (portal2GlobalConfigurationCurrencies != null)
                 {
                     foreach (var item in portal2GlobalConfigurationCurrencies)
                     {
-                            var Currency = _CIRDBContext.Portal2GlobalConfigurationCurrencies.FirstOrDefault(x => x.Id == item.Id);
-                            if (Currency != null)
-                            {
-                                Currency.PortalId = item.PortalId;
-                                Currency.GlobalConfigurationCurrencyId = item.GlobalConfigurationCurrencyId;
-                                Currency.EnabledOverride = item.EnabledOverride;
-                                
-                            }
-                            else
-                            {
-                                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest });
-                            }
-                        
-                            _CIRDBContext.Portal2GlobalConfigurationCurrencies.Update(Currency);
+                        var Currency = _CIRDBContext.Portal2GlobalConfigurationCurrencies.FirstOrDefault(x => x.Id == item.Id);
+                        if (Currency != null)
+                        {
+                            Currency.PortalId = item.PortalId;
+                            Currency.GlobalConfigurationCurrencyId = item.GlobalConfigurationCurrencyId;
+                            Currency.EnabledOverride = item.EnabledOverride;
+
+                        }
+                        else
+                        {
+                            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest });
+                        }
+
+                        _CIRDBContext.Portal2GlobalConfigurationCurrencies.Update(Currency);
                     }
                     await _CIRDBContext.SaveChangesAsync();
                     return new JsonResult(new CustomResponse<List<PortalToGlobalConfigurationEmails>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success });
