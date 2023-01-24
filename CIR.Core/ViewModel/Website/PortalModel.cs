@@ -64,4 +64,11 @@ namespace CIR.Core.ViewModel.Website
         [Required]
         public decimal CollectionServiceTypeCost { get; set; }
     }
+
+    public class ClientPortalsModel
+    {
+        public long ClientId { get; set; }
+        public long PortalId { get; set; }
+        public string PortalName { get; set; }
+    }
 }

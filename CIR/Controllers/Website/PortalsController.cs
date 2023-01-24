@@ -94,6 +94,24 @@ namespace CIR.Controllers.Website
             return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
         }
 
+        /// <summary>
+        /// This method will return all the portals under given client
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
+        [HttpGet("clientId")]
+        public async Task<IActionResult> GetById(int clientId)
+        {
+            try
+            {
+                return await _portalService.GetPortalsByClientId(clientId);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+            }
+        }
+
         #endregion
     }
 }

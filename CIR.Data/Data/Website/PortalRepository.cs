@@ -251,6 +251,41 @@ namespace CIR.Data.Data.Website
                 return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
             }
         }
+
+        /// <summary>
+        /// This method will return all the portals under given client
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> GetPortalsByClientId(int clientId)
+        {
+            if (clientId == null)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest });
+            }
+            try
+            {
+                var clientPortals = (from portal in _CIRDbContext.portals
+                                     join subsite in _CIRDbContext.SubSites
+                                     on portal.Id equals subsite.PortalId
+                                     select new ClientPortalsModel()
+                                     {
+                                         ClientId = portal.ClientId,
+                                         PortalId = portal.Id,
+                                         PortalName = subsite.DisplayName
+                                     }).Where(x => x.ClientId == clientId).ToList();
+
+                if (clientPortals.Count == 0)
+                {
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
+                }
+                return new JsonResult(new CustomResponse<List<ClientPortalsModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = clientPortals });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+            }
+        }
         #endregion
     }
 }
