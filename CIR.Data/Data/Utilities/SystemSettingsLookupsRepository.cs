@@ -1,19 +1,16 @@
 ﻿using CIR.Common.Data;
 using CIR.Common.Enums;
 using CIR.Common.Helper;
-using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Entities.Utilities;
 using CIR.Core.Interfaces.Utilities;
 using CIR.Core.ViewModel.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Data;
 
 namespace CIR.Data.Data.Utilities
 {
-    public class SystemSettingsLookupsRepository : ControllerBase, ILookupsRepository
+	public class SystemSettingsLookupsRepository : ControllerBase, ILookupsRepository
 	{
 		#region PROPERTIES   
 		private readonly CIRDbContext _CIRDBContext;
@@ -43,18 +40,18 @@ namespace CIR.Data.Data.Utilities
 					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgBadRequest });
 				}
 
-                if (lookupItemsTextModel.Id == 0)
-                {
-                    int displayOrder;
-                    var displayOrderId = _CIRDBContext.LookupItemsText.OrderByDescending(x => x.DisplayOrder).FirstOrDefault();
-                    if (displayOrderId != null)
-                    {
-                        displayOrder = displayOrderId.DisplayOrder + 1;
-                    }
-                    else
-                    {
-                        displayOrder = 1;
-                    }
+				if (lookupItemsTextModel.Id == 0)
+				{
+					int displayOrder;
+					var displayOrderId = _CIRDBContext.LookupItemsText.OrderByDescending(x => x.DisplayOrder).FirstOrDefault();
+					if (displayOrderId != null)
+					{
+						displayOrder = displayOrderId.DisplayOrder + 1;
+					}
+					else
+					{
+						displayOrder = 1;
+					}
 
 					LookupItem lookupItem = new()
 					{
@@ -121,21 +118,21 @@ namespace CIR.Data.Data.Utilities
 			{
 				searchCultureCode ??= string.Empty;
 
-                if (cultureId == null)
-                {
-                    cultureCodeCultureId = 0;
-                }
-                else
-                {
-                    cultureCodeCultureId = cultureId;
-                }
+				if (cultureId == null)
+				{
+					cultureCodeCultureId = 0;
+				}
+				else
+				{
+					cultureCodeCultureId = cultureId;
+				}
 
-                if (code == string.Empty || code == null)
-                {
-                    code = string.Empty;
-                }
+				if (code == string.Empty || code == null)
+				{
+					code = string.Empty;
+				}
 
-                lookupModel.CulturalCodesList = GetCulturalCodesList(cultureCodeCultureId, code, searchCultureCode);
+				lookupModel.CulturalCodesList = GetCulturalCodesList(cultureCodeCultureId, code, searchCultureCode);
 
 				if (lookupModel == null)
 				{
@@ -170,34 +167,34 @@ namespace CIR.Data.Data.Utilities
 					{ "SearchLookupItems", searchLookupItems}
 			};
 
-                DataTable lookupItemsDatatable = SQLHelper.ExecuteSqlQueryWithParams("spGetLookupItemList", dictionaryobj);
-                if (lookupItemsDatatable != null)
-                {
-                    foreach (DataRow row in lookupItemsDatatable.Rows)
-                    {
-                        LookupItemsText lookupModel = new LookupItemsText
-                        {
-                            Id = Convert.ToInt64(row["Id"]),
-                            Text = Convert.ToString(row["Text"]),
-                            LookupItemId = Convert.ToInt64(row["LookupItemId"]),
-                            Active = Convert.ToBoolean(row["Active"]),
-                            CultureId = Convert.ToInt64(row["CultureId"])
-                        };
-                        lookupsItemList.Add(lookupModel);
-                    }
-                }
-                if (lookupsItemList.Count == 0)
-                {
+				DataTable lookupItemsDatatable = SQLHelper.ExecuteSqlQueryWithParams("spGetLookupItemList", dictionaryobj);
+				if (lookupItemsDatatable != null)
+				{
+					foreach (DataRow row in lookupItemsDatatable.Rows)
+					{
+						LookupItemsText lookupModel = new LookupItemsText
+						{
+							Id = Convert.ToInt64(row["Id"]),
+							Text = Convert.ToString(row["Text"]),
+							LookupItemId = Convert.ToInt64(row["LookupItemId"]),
+							Active = Convert.ToBoolean(row["Active"]),
+							CultureId = Convert.ToInt64(row["CultureId"])
+						};
+						lookupsItemList.Add(lookupModel);
+					}
+				}
+				if (lookupsItemList.Count == 0)
+				{
 					return new JsonResult(new CustomResponse<LookupItemsText>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
 				}
 
 				return new JsonResult(new CustomResponse<List<LookupItemsText>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = lookupsItemList });
 			}
-            catch (Exception ex)
-            {
+			catch (Exception ex)
+			{
 				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
-        }
+		}
 
 		/// <summary>
 		/// This method retuns filtered LookupItems list
@@ -217,21 +214,21 @@ namespace CIR.Data.Data.Utilities
 					{ "SearchCultureCode", searchCultureCode},
 			 };
 
-            DataTable cultureCodeDatatable = SQLHelper.ExecuteSqlQueryWithParams("spGetCultureCodeList", dictionaryobj);
-            if (cultureCodeDatatable != null)
-            {
-                foreach (DataRow row in cultureCodeDatatable.Rows)
-                {
-                    CulturalCodesModel culturalCodesModel = new CulturalCodesModel
-                    {
-                        CultureId = Convert.ToInt64(row["CultureId"]),
-                        SystemCodeId = Convert.ToInt64(row["SystemCodeId"]),
-                        Code = Convert.ToString(row["Code"]),
-                        CultureDisplayText = Convert.ToString(row["DisplayName"].ToString())
-                    };
-                    codeList.Add(culturalCodesModel);
-                }
-            }
+			DataTable cultureCodeDatatable = SQLHelper.ExecuteSqlQueryWithParams("spGetCultureCodeList", dictionaryobj);
+			if (cultureCodeDatatable != null)
+			{
+				foreach (DataRow row in cultureCodeDatatable.Rows)
+				{
+					CulturalCodesModel culturalCodesModel = new CulturalCodesModel
+					{
+						CultureId = Convert.ToInt64(row["CultureId"]),
+						SystemCodeId = Convert.ToInt64(row["SystemCodeId"]),
+						Code = Convert.ToString(row["Code"]),
+						CultureDisplayText = Convert.ToString(row["DisplayName"])
+					};
+					codeList.Add(culturalCodesModel);
+				}
+			}
 
 			return codeList;
 		}

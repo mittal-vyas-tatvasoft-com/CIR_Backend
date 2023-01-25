@@ -15,7 +15,7 @@ namespace CIR.Application.Services.Website
         {
             return await _officesRepository.CreateOrUpdateOffice(offices);
         }
-        public async Task<IActionResult> GetOffices(int displayLength, int displayStart, string sortCol, string search, bool sortAscending = true)
+        public async Task<IActionResult> GetOffices(int displayLength, int displayStart, string? sortCol, string search, bool sortAscending = true)
         {
             return await _officesRepository.GetOffices(displayLength, displayStart, sortCol, search, sortAscending);
         }

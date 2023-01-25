@@ -34,7 +34,7 @@ namespace CIR.Application.Services.Users
             return await _userRepository.DeleteUser(id);
         }
 
-        public Task<IActionResult> GetAllUsersDetailBySP(int displayLength, int displayStart, string sortCol, string sortDir, string search, int roleId, bool? enabled = null)
+        public Task<IActionResult> GetAllUsersDetailBySP(int displayLength, int displayStart, string? sortCol, string? sortDir, string? search, int roleId, bool? enabled = null)
         {
             return _userRepository.GetAllUsersDetailBySP(displayLength, displayStart, sortCol, sortDir, search, roleId, enabled);
         }

@@ -1,7 +1,6 @@
 ﻿using CIR.Common.Enums;
 using CIR.Common.Helper;
 using CIR.Core.Entities.GlobalConfiguration;
-using CIR.Core.Entities.Utilities;
 using CIR.Core.Interfaces.Common;
 using CIR.Core.Interfaces.GlobalConfiguration;
 using CsvHelper;
@@ -11,23 +10,23 @@ using System.Globalization;
 
 namespace CIR.Controllers.GlobalConfiguration
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class GlobalConfigurationHolidaysController : ControllerBase
-    {
-        #region PROPERTIES
-        private readonly IGlobalConfigurationHolidaysService _globalConfigurationHolidaysService;
-        private readonly ICsvService _csvService;
-        #endregion
+	[Route("api/[controller]")]
+	[ApiController]
+	[Authorize]
+	public class GlobalConfigurationHolidaysController : ControllerBase
+	{
+		#region PROPERTIES
+		private readonly IGlobalConfigurationHolidaysService _globalConfigurationHolidaysService;
+		private readonly ICsvService _csvService;
+		#endregion
 
-        #region CONSTRUCTOR
-        public GlobalConfigurationHolidaysController(IGlobalConfigurationHolidaysService globalConfigurationHolidaysService, ICsvService csvService)
-        {
-            _globalConfigurationHolidaysService = globalConfigurationHolidaysService;
-            _csvService = csvService;
-        }
-        #endregion
+		#region CONSTRUCTOR
+		public GlobalConfigurationHolidaysController(IGlobalConfigurationHolidaysService globalConfigurationHolidaysService, ICsvService csvService)
+		{
+			_globalConfigurationHolidaysService = globalConfigurationHolidaysService;
+			_csvService = csvService;
+		}
+		#endregion
 
 		#region METHODS
 		/// <summary>
@@ -61,7 +60,7 @@ namespace CIR.Controllers.GlobalConfiguration
 							}
 							await _globalConfigurationHolidaysService.CreateOrUpdateGlobalConfigurationHolidays(record);
 						}
-						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data  = string.Format(SystemMessages.msgDataSavedSuccessfully, "Holiday") });
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Holiday") });
 					}
 				}
 				else
@@ -103,14 +102,14 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// <summary>
 		/// This method takes holiday id and return holiday
 		/// </summary>
-		/// <param name="holidayId"></param>
+		/// <param name="id"></param>
 		/// <returns></returns>
 		[HttpGet("{holidayId}")]
-		public async Task<IActionResult> Get(long holidayId)
+		public async Task<IActionResult> Get(long id)
 		{
 			try
 			{
-				return await _globalConfigurationHolidaysService.GetHolidayById(holidayId);
+				return await _globalConfigurationHolidaysService.GetHolidayById(id);
 			}
 			catch (Exception ex)
 			{

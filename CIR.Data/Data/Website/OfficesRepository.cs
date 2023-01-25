@@ -104,7 +104,7 @@ namespace CIR.Data.Data.Website
 				var officeRecords = await (from officedata in _CIRDbContext.offices
 										   join country in _CIRDbContext.CountryCodes
 											on officedata.CountryCode equals country.Id
-										   select new officevm()
+										   select new officeVm()
 										   {
 											   Id = officedata.Id,
 											   Address = officedata.AddressLine1 + officedata.AddressLine2,
