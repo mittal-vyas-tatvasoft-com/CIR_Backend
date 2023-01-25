@@ -1,121 +1,112 @@
 ﻿using CIR.Common.Data;
 using CIR.Common.Enums;
 using CIR.Common.Helper;
-using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.GlobalConfiguration;
 using CIR.Core.ViewModel.GlobalConfiguration;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Data;
+
 namespace CIR.Data.Data.GlobalConfiguration
 {
     public class GlobalConfigurationCurrenciesRepository : IGlobalConfigurationCurrenciesRepository
-	{
-		#region PROPERTIES
+    {
+        #region PROPERTIES
 
-		private readonly CIRDbContext _CIRDBContext;
+        private readonly CIRDbContext _CIRDBContext;
 
-		#endregion
+        #endregion
 
-		#region CONSTRUCTORS
-		public GlobalConfigurationCurrenciesRepository(CIRDbContext context)
-		{
-			_CIRDBContext = context ??
-				throw new ArgumentNullException(nameof(context));
-		}
+        #region CONSTRUCTORS
+        public GlobalConfigurationCurrenciesRepository(CIRDbContext context)
+        {
+            _CIRDBContext = context ??
+                throw new ArgumentNullException(nameof(context));
+        }
 
-		#endregion
+        #endregion
 
-		#region METHODS
+        #region METHODS
 
-		/// <summary>
-		/// This method used by getcurrency List countryid wise
-		/// </summary>
-		/// <param name="countryId"></param>
-		/// <returns></returns>
-		public async Task<IActionResult> GetGlobalConfigurationCurrenciesCountryWise(int countryId)
-		{
-			try
-			{
-				var globalConfigurationCurrenciesList = await (from globalCurrency in _CIRDBContext.GlobalConfigurationCurrencies
-															   join country in _CIRDBContext.CountryCodes
-															   on globalCurrency.CountryId equals country.Id
-															   join currency in _CIRDBContext.Currencies
-															   on globalCurrency.CurrencyId equals currency.Id
-															   select new GlobalConfigurationCurrencyModel()
-															   {
-																   Id = globalCurrency.Id,
-																   CountryId = globalCurrency.CountryId,
-																   CurrencyId = globalCurrency.CurrencyId,
-																   Enabled = globalCurrency.Enabled,
-																   CountryName = country.CountryName,
-																   CodeName = currency.CodeName
-															   }).Where(x => x.CountryId == countryId).ToListAsync();
+        /// <summary>
+        /// This method used by getcurrency List countryid wise
+        /// </summary>
+        /// <param name="countryId"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> GetGlobalConfigurationCurrenciesCountryWise(int countryId)
+        {
+            try
+            {
+                List<GlobalConfigurationCurrencyModel> globalConfigurationCurrenciesList;
 
-				if (globalConfigurationCurrenciesList.Count == 0)
-				{
-					return new JsonResult(new CustomResponse<List<GlobalConfigurationCurrencyModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute()});
-				}
-				return new JsonResult(new CustomResponse<List<GlobalConfigurationCurrencyModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = globalConfigurationCurrenciesList });
-			}
-			catch (Exception ex)
-			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
-			}
-		}
+                using (DbConnection dbConnection = new DbConnection())
+                {
+                    using (var connection = dbConnection.Connection)
+                    {
+                        DynamicParameters parameters = new DynamicParameters();
+                        parameters.Add("countryId", countryId);
+                        globalConfigurationCurrenciesList = connection.Query<GlobalConfigurationCurrencyModel>("spGetGlobalConfigurationCurrenciesCountryWise", parameters, commandType: CommandType.StoredProcedure).ToList();
+                    }
+                }
 
-		/// <summary>
-		/// This method is used by create method and update method of globalcurrency controller
-		/// </summary>
-		/// <param name="globalCurrencyModel"></param>
-		/// <returns>Success status if its valid else failure</returns>
+                if (globalConfigurationCurrenciesList.Count == 0)
+                {
+                    return new JsonResult(new CustomResponse<List<GlobalConfigurationCurrencyModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
+                }
+                return new JsonResult(new CustomResponse<List<GlobalConfigurationCurrencyModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = globalConfigurationCurrenciesList });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+            }
+        }
 
-		public async Task<IActionResult> CreateOrUpdateGlobalConfigurationCurrencies(List<GlobalCurrencyModel> globalCurrencyModel)
-		{
-			try
-			{
-				if (globalCurrencyModel.Any(x => x.CountryId == 0 || x.CurrencyId == 0))
-				{
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgEnterValidData });
-				}
-				if (globalCurrencyModel != null)
-				{
-					foreach (var item in globalCurrencyModel)
-					{
-						bool globalConfigurationCurrenciesDuplicate = _CIRDBContext.GlobalConfigurationCurrencies.Any(x => x.CountryId == item.CountryId && x.CurrencyId == item.CurrencyId && x.Id != item.Id);
+        /// <summary>
+        /// This method is used by create method and update method of globalcurrency controller
+        /// </summary>
+        /// <param name="globalCurrencyModel"></param>
+        /// <returns>Success status if its valid else failure</returns>
 
-						if (!globalConfigurationCurrenciesDuplicate)
-						{
-							GlobalConfigurationCurrency currency = new GlobalConfigurationCurrency()
-							{
-								Id = item.Id,
-								CountryId = item.CountryId,
-								CurrencyId = item.CurrencyId,
-								Enabled = item.Enabled
-							};
-							_CIRDBContext.GlobalConfigurationCurrencies.Update(currency);
-						}
-						else
-						{
-							GlobalConfigurationCurrency currency = new GlobalConfigurationCurrency()
-							{
-								CountryId = item.CountryId,
-								CurrencyId = item.CurrencyId,
-								Enabled = item.Enabled
-							};
-							_CIRDBContext.GlobalConfigurationCurrencies.Add(currency);
-						}
-					}
-					await _CIRDBContext.SaveChangesAsync();
+        public async Task<IActionResult> CreateOrUpdateGlobalConfigurationCurrencies(List<GlobalCurrencyModel> globalCurrencyModel)
+        {
+            try
+            {
+                if (globalCurrencyModel.Any(x => x.CountryId == 0 || x.CurrencyId == 0))
+                {
+                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgEnterValidData });
+                }
+                if (globalCurrencyModel != null)
+                {
+                    var result = 0;
+                    foreach (var item in globalCurrencyModel)
+                    {
+                        using (DbConnection dbConnection = new DbConnection())
+                        {
+                            using (var connection = dbConnection.Connection)
+                            {
+                                DynamicParameters parameters = new DynamicParameters();
+                                parameters.Add("@Id", item.Id);
+                                parameters.Add("@CountryId", item.CountryId);
+                                parameters.Add("@CurrencyId", item.CurrencyId);
+                                parameters.Add("@Enabled", item.Enabled);
 
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Global Currency") });
-				}
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgAddingDataError, "Global Currency") });
-			}
-			catch (Exception ex)
-			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
-			}
-		}
-		#endregion
-	}
+                                result = connection.Execute("spCreateOrUpdateGlobalConfigurationCurrencies", parameters, commandType: CommandType.StoredProcedure);
+                            }
+                        }
+                    }
+                    if (result != 0)
+                    {
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Global Currency") });
+                    }
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute() });
+                }
+                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgAddingDataError, "Global Currency") });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+            }
+        }
+        #endregion
+    }
 }
