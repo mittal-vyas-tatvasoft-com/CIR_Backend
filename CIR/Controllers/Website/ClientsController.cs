@@ -91,6 +91,24 @@ namespace CIR.Controllers.Website
 			return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgBadRequest });
 		}
 
+        /// <summary>
+        /// This method return client details of given client id
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
+        [HttpGet("{clientId}")]
+        public async Task<IActionResult> GetById(int clientId)
+        {
+            try
+            {
+                return await _clientService.GetClientDetailById(clientId);
+            }
+            catch (Exception ex)
+            {
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+			}
+        }
+
         #endregion
     }
 }

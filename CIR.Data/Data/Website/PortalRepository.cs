@@ -289,6 +289,97 @@ namespace CIR.Data.Data.Website
 				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
+
+		/// <summary>
+		/// This method returns portal details of given portal Id
+		/// </summary>
+		/// <param name="portalId"></param>
+		/// <returns></returns>
+		public async Task<IActionResult> GetPortalDetailsById(int portalId)
+		{
+			if (portalId == null)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute() });
+			}
+
+			try
+			{
+				var serviceTypes = _CIRDbContext.PortalServiceTypes.Where(x => x.PortalId == portalId).ToList();
+
+				PortalServiceTypes postalServiceTypeDetail = GetServiceTypeDetails(serviceTypes, WebsiteEnums.ServiceTypes.Postal);
+				PortalServiceTypes dropOffServiceTypeDetail = GetServiceTypeDetails(serviceTypes, WebsiteEnums.ServiceTypes.DropOff);
+				PortalServiceTypes collectionServiceTypeDetail = GetServiceTypeDetails(serviceTypes, WebsiteEnums.ServiceTypes.Collection);
+
+				var portalDetail = (from portal in _CIRDbContext.portals
+									join subsite in _CIRDbContext.SubSites
+									on portal.Id equals subsite.PortalId
+									join servicetype in _CIRDbContext.PortalServiceTypes
+									on portal.Id equals servicetype.PortalId
+									select new PortalModel()
+									{
+										Id = portal.Id,
+										DisplayName = subsite.DisplayName,
+										Directory = subsite.Directory,
+										Description = subsite.Description,
+										Stopped = subsite.Stopped,
+										EmailStopped = subsite.EmailStopped,
+										CreateResponse = portal.CreateResponse,
+										CountReturnIdentifier = portal.CountReturnIdentifier,
+										SystemEmailFromAddress = subsite.SystemEmailFromAddress,
+										BccemailAddress = subsite.BccemailAddress,
+										CurrencyId = portal.CurrencyId,
+										CountryId = portal.CountryId,
+										CultureId = portal.CultureId,
+										IntegrationLevel = portal.IntegrationLevel,
+										Entity = portal.Entity,
+										Account = portal.Account,
+										PostalServiceTypeEnabled = postalServiceTypeDetail.Enabled,
+										PostalServiceTypeCost = postalServiceTypeDetail.Cost,
+										DropOffServiceTypeEnabled = dropOffServiceTypeDetail.Enabled,
+										DropOffServiceTypeCost = dropOffServiceTypeDetail.Cost,
+										CollectionServiceTypeEnabled = collectionServiceTypeDetail.Enabled,
+										CollectionServiceTypeCost = collectionServiceTypeDetail.Cost
+									}).Where(x => x.Id == portalId).FirstOrDefault();
+
+				if (portalDetail == null)
+				{
+					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
+				}
+				return new JsonResult(new CustomResponse<PortalModel>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = portalDetail });
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+			}
+		}
+
+		/// <summary>
+		/// Returns relevant service type details
+		/// </summary>
+		/// <param name="serviceTypes"></param>
+		/// <param name="serviceTypeName"></param>
+		/// <returns></returns>
+		public PortalServiceTypes GetServiceTypeDetails(List<PortalServiceTypes> serviceTypes, WebsiteEnums.ServiceTypes serviceTypeName)
+		{
+			var serviceTypeValue = Convert.ToInt32(serviceTypeName);
+			foreach (var serviceType in serviceTypes)
+			{
+				if (serviceType.Type == serviceTypeValue)
+				{
+					var portalServiceType = new PortalServiceTypes()
+					{
+						Enabled = serviceType.Enabled,
+						Cost = serviceType.Cost,
+					};
+					return portalServiceType;
+				}
+			}
+			return new PortalServiceTypes()
+			{
+				Enabled = serviceTypes.FirstOrDefault().Enabled,
+				Cost = serviceTypes.FirstOrDefault().Cost
+			};
+		}
 		#endregion
 	}
 }

@@ -177,7 +177,47 @@ namespace CIR.Data.Data.Website
 					await _CIRDbContext.SaveChangesAsync();
 					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataUpdatedSuccessfully, "Client") });
 				}
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgIdNotFound, "Client") });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() ,Data= string.Format(SystemMessages.msgIdNotFound, "Client") });
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+			}
+		}
+
+		/// <summary>
+		/// This method returns client details of given client id
+		/// </summary>
+		/// <param name="clientId"></param>
+		/// <returns></returns>
+		public async Task<IActionResult> GetClientDetailById(int clientId)
+		{
+			if (clientId == null)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute() });
+			}
+
+			try
+			{
+				var clientDetail = (from client in _CIRDbContext.Clients
+									join subsite in _CIRDbContext.SubSites
+									on client.SubsiteId equals subsite.Id
+									select new ClientModel()
+									{
+										Id = client.Id,
+										Name = client.Name,
+										SubsiteId = client.SubsiteId,
+										Code = client.Code,
+										Domain = subsite.Domain,
+										Description = subsite.Description,
+										Stopped = subsite.Stopped,
+										EmailStopped = subsite.EmailStopped
+									}).Where(x => x.Id == clientId).FirstOrDefault();
+				if (clientDetail == null)
+				{
+					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
+				}
+				return new JsonResult(new CustomResponse<ClientModel>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = clientDetail });
 			}
 			catch (Exception ex)
 			{

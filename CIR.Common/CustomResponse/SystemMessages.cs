@@ -19,8 +19,8 @@ namespace CIR.Common.CustomResponse
         public static string msgDataDeletedSuccessfully = "{0} Deleted Successfully.";
         public static string msgUpdatingDataError = "An error occurred while updating {0}.";
         public static string msgDataUpdatedSuccessfully = "{0} Updated Successfully.";
-        public static string msgIdNotFound = "{0} Id Not Found.";
-        public static string msgAddingDataError = "An error occurred while adding new {0}.";
+        public static string msgIdNotFound = "{0} with given id not found";
+		public static string msgAddingDataError = "An error occurred while adding new {0}.";
         #endregion
 
         #region GlobalConfigurationHolidays
