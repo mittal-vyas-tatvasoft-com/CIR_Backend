@@ -9,5 +9,6 @@ namespace CIR.Core.Interfaces.Website
         Task<IActionResult> DisablePortal(long portalId);
 
         Task<IActionResult> GetPortalsByClientId(int clientId);
+        Task<IActionResult> GetPortalDetailsById(int portalId);
     }
 }
