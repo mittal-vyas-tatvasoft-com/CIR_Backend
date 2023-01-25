@@ -21,6 +21,7 @@
         public string CountryCode { get; set; }
 
         public string DayOfWeek { get; set; }
+        public int TotalCount { get; set; }
 
     }
 }
