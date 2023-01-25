@@ -13,28 +13,28 @@ using RandomStringCreator;
 
 namespace CIR.Data.Data
 {
-	public class LoginRepository : ILoginRepository
-	{
-		private readonly CIRDbContext _CIRDBContext;
-		private readonly EmailGeneration _emailGeneration;
-		private readonly JwtGenerateToken _jwtGenerateToken;
-		public LoginRepository(CIRDbContext context, EmailGeneration emailGeneration, JwtGenerateToken jwtGenerateToken)
-		{
-			_CIRDBContext = context ??
-				throw new ArgumentNullException(nameof(context));
-			_emailGeneration = emailGeneration;
-			_jwtGenerateToken = jwtGenerateToken;
-		}
-		/// <summary>
-		/// This method used by login user
-		/// </summary>
-		/// <param name="model"></param>
-		/// <returns></returns>
-		public async Task<IActionResult> Login(LoginModel model)
-		{
-			try
-			{
-				var userRecords = _CIRDBContext.Users.Where((x) => x.Email == model.Email && x.Password == model.Password).FirstOrDefault();
+    public class LoginRepository : ILoginRepository
+    {
+        private readonly CIRDbContext _CIRDBContext;
+        private readonly EmailGeneration _emailGeneration;
+        private readonly JwtGenerateToken _jwtGenerateToken;
+        public LoginRepository(CIRDbContext context, EmailGeneration emailGeneration, JwtGenerateToken jwtGenerateToken)
+        {
+            _CIRDBContext = context ??
+                throw new ArgumentNullException(nameof(context));
+            _emailGeneration = emailGeneration;
+            _jwtGenerateToken = jwtGenerateToken;
+        }
+        /// <summary>
+        /// This method used by login user
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> Login(LoginModel model)
+        {
+            try
+            {
+                var userRecords = _CIRDBContext.Users.Where((x) => x.Email == model.Email && x.Password == model.Password).FirstOrDefault();
 
 				if (userRecords != null && userRecords.ResetRequired == true)
 				{
@@ -83,33 +83,33 @@ namespace CIR.Data.Data
 			}
 		}
 
-		/// <summary>
-		/// This method used by forgot password
-		/// </summary>
-		/// <param name="forgotPasswordModel"></param>
-		/// <returns>Success status if its valid else failure</returns>
-		public async Task<IActionResult> ForgotPassword(ForgotPasswordModel forgotPasswordModel)
-		{
-			try
-			{
-				var user = _CIRDBContext.Users.Where(c => c.UserName == forgotPasswordModel.UserName && c.Email == forgotPasswordModel.Email).FirstOrDefault();
-				if (user != null)
-				{
-					string randomString = SystemConfig.randomString;
-					string newPassword = new StringCreator(randomString).Get(8);
+        /// <summary>
+        /// This method used by forgot password
+        /// </summary>
+        /// <param name="forgotPasswordModel"></param>
+        /// <returns>Success status if its valid else failure</returns>
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordModel forgotPasswordModel)
+        {
+            try
+            {
+                var user = _CIRDBContext.Users.Where(c => c.UserName == forgotPasswordModel.UserName && c.Email == forgotPasswordModel.Email).FirstOrDefault();
+                if (user != null)
+                {
+                    string randomString = SystemConfig.randomString;
+                    string newPassword = new StringCreator(randomString).Get(8);
 
-					_CIRDBContext.Users.Where(x => x.Id == user.Id).ToList().ForEach((a =>
-					{
-						a.Password = newPassword;
-						a.ResetRequired = true;
-					}
-					));
-					await _CIRDBContext.SaveChangesAsync();
+                    _CIRDBContext.Users.Where(x => x.Id == user.Id).ToList().ForEach((a =>
+                    {
+                        a.Password = newPassword;
+                        a.ResetRequired = true;
+                    }
+                    ));
+                    await _CIRDBContext.SaveChangesAsync();
 
-					//Send NewPassword in Mail
-					string mailSubject = MailTemplate.ForgotPasswordSubject();
-					string mailBody = MailTemplate.ForgotPasswordTemplate(user);
-					_emailGeneration.SendMail(forgotPasswordModel.Email, mailSubject, mailBody);
+                    //Send NewPassword in Mail
+                    string mailSubject = MailTemplate.ForgotPasswordSubject();
+                    string mailBody = MailTemplate.ForgotPasswordTemplate(user);
+                    _emailGeneration.SendMail(forgotPasswordModel.Email, mailSubject, mailBody);
 
 					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = SystemMessages.msgSendNewPasswordOnMail });
 				}
@@ -121,16 +121,16 @@ namespace CIR.Data.Data
 			}
 		}
 
-		/// <summary>
-		/// This method used by reset password
-		/// </summary>
-		/// <param name="resetPasswordModel"></param>
-		/// <returns>Success status if its valid else failure</returns>
-		public async Task<IActionResult> ResetPassword(ResetPasswordModel resetPasswordModel)
-		{
-			try
-			{
-				var user = _CIRDBContext.Users.Where(c => c.Email == resetPasswordModel.Email).FirstOrDefault();
+        /// <summary>
+        /// This method used by reset password
+        /// </summary>
+        /// <param name="resetPasswordModel"></param>
+        /// <returns>Success status if its valid else failure</returns>
+        public async Task<IActionResult> ResetPassword(ResetPasswordModel resetPasswordModel)
+        {
+            try
+            {
+                var user = _CIRDBContext.Users.Where(c => c.Email == resetPasswordModel.Email).FirstOrDefault();
 
 				if (user != null)
 				{
@@ -157,5 +157,5 @@ namespace CIR.Data.Data
 		}
 
 
-	}
+    }
 }

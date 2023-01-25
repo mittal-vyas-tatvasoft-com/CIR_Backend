@@ -21,5 +21,10 @@ namespace CIR.Application.Services.Website
         {
             return await _portalRepository.DisablePortal(portalId);
         }
+
+        public async Task<IActionResult> GetPortalsByClientId(int clientId)
+        {
+            return await _portalRepository.GetPortalsByClientId(clientId);
+        }
     }
 }

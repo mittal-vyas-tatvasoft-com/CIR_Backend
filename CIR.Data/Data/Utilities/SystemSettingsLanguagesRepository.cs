@@ -6,21 +6,15 @@ using CIR.Core.Entities;
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.Utilities;
 using CIR.Core.ViewModel.Utilities;
-using Microsoft.AspNetCore.JsonPatch.Internal;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CIR.Data.Data.Utilities
 {
-	public class SystemSettingsLanguagesRepository : ISytemSettingsLanguagesRepository
-	{
-		#region PROPERTIES
-		private readonly CIRDbContext _CIRDbContext;
-		#endregion
+    public class SystemSettingsLanguagesRepository : ISytemSettingsLanguagesRepository
+    {
+        #region PROPERTIES
+        private readonly CIRDbContext _CIRDbContext;
+        #endregion
 
 		#region CONSTRUCTOR
 		public SystemSettingsLanguagesRepository(CIRDbContext context)
@@ -65,24 +59,24 @@ namespace CIR.Data.Data.Utilities
 			}
 		}
 
-		/// <summary>
-		/// This method is used for Getting Updated List for Languages
-		/// </summary>
-		/// <param name="culturesModels" ></param>
-		/// <returns></returns>
-		public List<Culture> GetListForUpdatedLanguages(List<CulturesModel> culturesModels)
-		{
-			List<Culture> list = new List<Culture>();
-			foreach (CulturesModel item in culturesModels)
-			{
-				var culture = _CIRDbContext.Cultures.FirstOrDefault(x => x.Id == item.Id);
-				if (culture != null)
-				{
-					culture.Enabled = item.Enabled;
-					list.Add(culture);
-				}
-			}
-			return list;
+        /// <summary>
+        /// This method is used for Getting Updated List for Languages
+        /// </summary>
+        /// <param name="culturesModels" ></param>
+        /// <returns></returns>
+        public List<Culture> GetListForUpdatedLanguages(List<CulturesModel> culturesModels)
+        {
+            List<Culture> list = new List<Culture>();
+            foreach (CulturesModel item in culturesModels)
+            {
+                var culture = _CIRDbContext.Cultures.FirstOrDefault(x => x.Id == item.Id);
+                if (culture != null)
+                {
+                    culture.Enabled = item.Enabled;
+                    list.Add(culture);
+                }
+            }
+            return list;
 
 		}
 

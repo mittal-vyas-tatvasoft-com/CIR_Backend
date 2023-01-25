@@ -9,21 +9,21 @@ using Microsoft.AspNetCore.Mvc;
 namespace CIR.Controllers.GlobalConfiguration
 {
     [Route("api/[controller]")]
-	[ApiController]
-	[Authorize]
-	public class GlobalConfigurationFontsController : ControllerBase
-	{
-		#region PROPERTIES
-		private readonly IGlobalConfigurationFontsServices _globalConfigurationFontsServices;
-		#endregion
-		#region CONSTRUCTOR
-		public GlobalConfigurationFontsController(IGlobalConfigurationFontsServices globalConfigurationFontsServices)
-		{
-			_globalConfigurationFontsServices = globalConfigurationFontsServices;
-		}
-		#endregion
+    [ApiController]
+    [Authorize]
+    public class GlobalConfigurationFontsController : ControllerBase
+    {
+        #region PROPERTIES
+        private readonly IGlobalConfigurationFontsServices _globalConfigurationFontsServices;
+        #endregion
+        #region CONSTRUCTOR
+        public GlobalConfigurationFontsController(IGlobalConfigurationFontsServices globalConfigurationFontsServices)
+        {
+            _globalConfigurationFontsServices = globalConfigurationFontsServices;
+        }
+        #endregion
 
-		#region METHODS
+        #region METHODS
 
 		/// <summary>
 		/// This method takes a get globalconfiguration fonts list
@@ -87,6 +87,6 @@ namespace CIR.Controllers.GlobalConfiguration
 		}
 
 
-		#endregion
-	}
+        #endregion
+    }
 }

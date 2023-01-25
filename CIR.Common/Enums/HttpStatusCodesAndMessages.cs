@@ -9,7 +9,7 @@ namespace CIR.Common.Enums
             [Description("Success")]
             Success = 200,
 
-            [Description("Data Saved Successfully")]
+            [Description("Data Created or Updated Successfully")]
             Saved = 201,
 
             [Description("Data Deleted Successfully")]

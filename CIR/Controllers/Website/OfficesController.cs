@@ -17,12 +17,12 @@ namespace CIR.Controllers.Website
 		private readonly IOfficeService _officeService;
 		#endregion
 
-		#region CONSTRUCTOR
-		public OfficesController(IOfficeService OfficeService)
-		{
-			_officeService = OfficeService;
-		}
-		#endregion
+        #region CONSTRUCTOR
+        public OfficesController(IOfficeService OfficeService)
+        {
+            _officeService = OfficeService;
+        }
+        #endregion
 
 		#region METHODS
 		/// <summary>

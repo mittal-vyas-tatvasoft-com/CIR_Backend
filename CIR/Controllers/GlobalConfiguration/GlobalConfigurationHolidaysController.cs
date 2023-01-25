@@ -12,23 +12,23 @@ using System.Globalization;
 
 namespace CIR.Controllers.GlobalConfiguration
 {
-	[Route("api/[controller]")]
-	[ApiController]
-	[Authorize]
-	public class GlobalConfigurationHolidaysController : ControllerBase
-	{
-		#region PROPERTIES
-		private readonly IGlobalConfigurationHolidaysService _globalConfigurationHolidaysService;
-		private readonly ICsvService _csvService;
-		#endregion
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
+    public class GlobalConfigurationHolidaysController : ControllerBase
+    {
+        #region PROPERTIES
+        private readonly IGlobalConfigurationHolidaysService _globalConfigurationHolidaysService;
+        private readonly ICsvService _csvService;
+        #endregion
 
-		#region CONSTRUCTOR
-		public GlobalConfigurationHolidaysController(IGlobalConfigurationHolidaysService globalConfigurationHolidaysService, ICsvService csvService)
-		{
-			_globalConfigurationHolidaysService = globalConfigurationHolidaysService;
-			_csvService = csvService;
-		}
-		#endregion
+        #region CONSTRUCTOR
+        public GlobalConfigurationHolidaysController(IGlobalConfigurationHolidaysService globalConfigurationHolidaysService, ICsvService csvService)
+        {
+            _globalConfigurationHolidaysService = globalConfigurationHolidaysService;
+            _csvService = csvService;
+        }
+        #endregion
 
 		#region METHODS
 		/// <summary>

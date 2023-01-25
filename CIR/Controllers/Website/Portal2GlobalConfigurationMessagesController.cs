@@ -4,30 +4,28 @@ using CIR.Common.Helper;
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Entities.Website;
 using CIR.Core.Interfaces.Website;
-using CIR.Core.Interfaces.Websites;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Controllers.Website
 {
-	[Route("api/[controller]")]
-	[ApiController]
-	[Authorize]
-	public class Portal2GlobalConfigurationMessagesController : ControllerBase
-	{
-		#region PROPERTIES
-		private readonly IPortal2GlobalConfigurationMessagesService _portal2GlobalConfigurationMessagesService;
-		#endregion
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
+    public class Portal2GlobalConfigurationMessagesController : ControllerBase
+    {
+        #region PROPERTIES
+        private readonly IPortal2GlobalConfigurationMessagesService _portal2GlobalConfigurationMessagesService;
+        #endregion
 
-		#region CONSTRUCTORS
-		public Portal2GlobalConfigurationMessagesController(IPortal2GlobalConfigurationMessagesService portal2GlobalConfigurationMessagesService)
-		{
-			_portal2GlobalConfigurationMessagesService = portal2GlobalConfigurationMessagesService;
-		}
-		#endregion
+        #region CONSTRUCTORS
+        public Portal2GlobalConfigurationMessagesController(IPortal2GlobalConfigurationMessagesService portal2GlobalConfigurationMessagesService)
+        {
+            _portal2GlobalConfigurationMessagesService = portal2GlobalConfigurationMessagesService;
+        }
+        #endregion
 
-		#region METHODS
+        #region METHODS
 
 		/// <summary>
 		/// This method takes a get GetPortalToGlobalConfigurationMessagesList

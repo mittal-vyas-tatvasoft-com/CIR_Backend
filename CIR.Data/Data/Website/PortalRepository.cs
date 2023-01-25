@@ -10,6 +10,7 @@ using CIR.Core.Interfaces.Website;
 using CIR.Core.ViewModel.Website;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace CIR.Data.Data.Website
 {
@@ -247,6 +248,41 @@ namespace CIR.Data.Data.Website
 					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgIdNotFound, "Portal") });
 				}
 				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgBadRequest });
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+			}
+		}
+
+		/// <summary>
+		/// This method will return all the portals under given client
+		/// </summary>
+		/// <param name="clientId"></param>
+		/// <returns></returns>
+		public async Task<IActionResult> GetPortalsByClientId(int clientId)
+		{
+			if (clientId == null)
+			{
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgBadRequest });
+			}
+			try
+			{
+				var clientPortals = (from portal in _CIRDbContext.portals
+									 join subsite in _CIRDbContext.SubSites
+									 on portal.Id equals subsite.PortalId
+									 select new ClientPortalsModel()
+									 {
+										 ClientId = portal.ClientId,
+										 PortalId = portal.Id,
+										 PortalName = subsite.DisplayName
+									 }).Where(x => x.ClientId == clientId).ToList();
+
+				if (clientPortals.Count == 0)
+				{
+					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
+				}
+				return new JsonResult(new CustomResponse<List<ClientPortalsModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = clientPortals });
 			}
 			catch (Exception ex)
 			{

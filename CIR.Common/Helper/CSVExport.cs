@@ -1,4 +1,5 @@
 ﻿using CIR.Common.CustomResponse;
+using CIR.Common.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
@@ -38,7 +39,7 @@ namespace CIR.Common.Helper
 
 				for (int i = 0; i < data2.Count; i++)
 				{
-					string[] u = (string[])data2[i].ToArray();
+					string[] u = data2[i].ToArray();
 					for (int j = 0; j < u.Length; j++)
 					{
 						sb.Append(u[j] + ',');
@@ -51,7 +52,7 @@ namespace CIR.Common.Helper
 			}
 			else
 			{
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute() });
 			}
 		}
 	}

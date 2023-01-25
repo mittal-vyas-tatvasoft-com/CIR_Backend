@@ -6,14 +6,10 @@ using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Entities.Website;
 using CIR.Core.Entities.Websites;
 using CIR.Core.Interfaces.Website;
-using CIR.Core.ViewModel.Website;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CIR.Data.Data.Website
 {
@@ -72,9 +68,13 @@ namespace CIR.Data.Data.Website
 				}
 
 				if (result != null)
+				{
 					return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationCurrency>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = result });
+				}
 				else
+				{
 					return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationCurrency>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
+				}
 			}
 			catch (Exception ex)
 			{
@@ -101,11 +101,10 @@ namespace CIR.Data.Data.Website
 							Currency.PortalId = item.PortalId;
 							Currency.GlobalConfigurationCurrencyId = item.GlobalConfigurationCurrencyId;
 							Currency.EnabledOverride = item.EnabledOverride;
-
 						}
 						else
 						{
-							return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest });
+							return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute() });
 						}
 
 						_CIRDBContext.Portal2GlobalConfigurationCurrencies.Update(Currency);

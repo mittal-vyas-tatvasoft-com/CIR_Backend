@@ -10,23 +10,23 @@ using Microsoft.AspNetCore.Mvc;
 namespace CIR.Controllers.Websites
 {
     [Route("api/[controller]")]
-	[ApiController]
-	[Authorize]
-	public class Portal2GlobalConfigurationReasonsController : ControllerBase
-	{
-		#region PROPERTIES
-		private readonly IPortal2GlobalConfigurationReasonsServices _portal2GlobalConfigurationReasonsServices;
-		#endregion
+    [ApiController]
+    [Authorize]
+    public class Portal2GlobalConfigurationReasonsController : ControllerBase
+    {
+        #region PROPERTIES
+        private readonly IPortal2GlobalConfigurationReasonsServices _portal2GlobalConfigurationReasonsServices;
+        #endregion
 
-		#region CONSTRUCTOR
-		public Portal2GlobalConfigurationReasonsController(IPortal2GlobalConfigurationReasonsServices portal2GlobalConfigurationReasonsServices)
-		{
-			_portal2GlobalConfigurationReasonsServices = portal2GlobalConfigurationReasonsServices;
-		}
-		#endregion
+        #region CONSTRUCTOR
+        public Portal2GlobalConfigurationReasonsController(IPortal2GlobalConfigurationReasonsServices portal2GlobalConfigurationReasonsServices)
+        {
+            _portal2GlobalConfigurationReasonsServices = portal2GlobalConfigurationReasonsServices;
+        }
+        #endregion
 
 
-		#region METHODS
+        #region METHODS
 
 		/// <summary>
 		/// This method fetched the list of Reasons

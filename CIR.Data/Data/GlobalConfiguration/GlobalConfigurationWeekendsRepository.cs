@@ -97,8 +97,9 @@ namespace CIR.Data.Data.GlobalConfiguration
             string searchText = string.Empty;
             GlobalConfigurationWeekendsModel weekends = new();
             if (search != null && search != string.Empty)
+            {
                 searchText = search.ToLower();
-
+            }
 
             if (string.IsNullOrEmpty(sortCol))
             {

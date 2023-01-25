@@ -53,6 +53,7 @@ namespace CIR.Controllers.Users
 		/// <returns > created user </returns>
 
 		[HttpPost("[action]")]
+		[CustomPermissionFilter(RolePriviledgesEnums.User_Create)]
 		public async Task<IActionResult> Create([FromBody] User user)
 		{
 			if (ModelState.IsValid)
@@ -85,6 +86,7 @@ namespace CIR.Controllers.Users
 		/// <returns> updated user </returns>
 
 		[HttpPut("[action]")]
+		[CustomPermissionFilter(RolePriviledgesEnums.User_Update)]
 		public async Task<IActionResult> Update([FromBody] User user)
 		{
 			if (ModelState.IsValid)
@@ -116,6 +118,7 @@ namespace CIR.Controllers.Users
 		/// <returns> disabled user </returns>
 
 		[HttpDelete("[action]")]
+		[CustomPermissionFilter(RolePriviledgesEnums.User_Delete)]
 		public async Task<IActionResult> Delete(int id)
 		{
 			if (ModelState.IsValid)
@@ -148,6 +151,7 @@ namespace CIR.Controllers.Users
 		/// <param name="enabled">sorting enable wise</param>
 		/// <returns></returns>
 		[HttpGet("[action]")]
+		[CustomPermissionFilter(RolePriviledgesEnums.User_List)]
 		public async Task<IActionResult> GetAllUsersDetailBySP(int displayLength, int displayStart, string? sortCol, string? search, string? sortDir, int roleId, bool? enabled = null)
 		{
 			try
@@ -173,6 +177,7 @@ namespace CIR.Controllers.Users
 		/// <returns></returns>
 
 		[HttpGet]
+		[CustomPermissionFilter(RolePriviledgesEnums.User_List)]
 		public async Task<IActionResult> UsersLinq(int displayLength, int displayStart, string? sortCol, string? search, int roleId, bool? enabled = null, bool sortAscending = true)
 		{
 			try
