@@ -1,4 +1,4 @@
-﻿namespace CIR.Common.SystemConfig
+﻿namespace CIR.Common.Helper
 {
     public static class SystemConfig
     {

@@ -1,4 +1,5 @@
 ﻿using CIR.Common.EmailGeneration;
+using CIR.Core.Entities.Users;
 using Microsoft.Extensions.Options;
 using System.Net;
 using System.Net.Mail;
@@ -47,6 +48,19 @@ namespace CIR.Common.Helper
             {
                 throw;
             }
+        }
+
+        public static string ForgotPasswordTemplate(User user)
+        {
+            string template = "<p style=\"font-family:verdana;font-size:15px;\">" +
+                                "Hello " + user.UserName + ", <br/><br/> " +
+                                "Your New Login Password is : <b>" + user.Password + "</b>" +
+                              "</p>";
+            return template;
+        }
+        public static string ForgotPasswordSubject()
+        {
+            return "Forgot Password";
         }
     }
 }

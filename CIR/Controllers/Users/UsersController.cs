@@ -1,5 +1,4 @@
-﻿using CIR.Common.CustomResponse;
-using CIR.Common.Enums;
+﻿using CIR.Common.Enums;
 using CIR.Common.Helper;
 using CIR.Core.Entities.Users;
 using CIR.Core.Interfaces.Users;

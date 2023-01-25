@@ -1,7 +1,8 @@
-﻿using CIR.Common.CustomResponse;
-using CIR.Common.Enums;
+﻿using CIR.Common.Enums;
+using CsvHelper;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Globalization;
 using System.Text;
 
 namespace CIR.Common.Helper
@@ -54,6 +55,14 @@ namespace CIR.Common.Helper
 			{
 				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute() });
 			}
+		}
+		public IEnumerable<T> ReadCSV<T>(Stream file)
+		{
+			var reader = new StreamReader(file);
+			var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+
+			var records = csv.GetRecords<T>();
+			return records;
 		}
 	}
 }

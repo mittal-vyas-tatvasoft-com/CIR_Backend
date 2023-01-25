@@ -1,5 +1,4 @@
-﻿using CIR.Common.CustomResponse;
-using CIR.Common.Data;
+﻿using CIR.Common.Data;
 using CIR.Common.Enums;
 using CIR.Common.Helper;
 using CIR.Core.Entities.GlobalConfiguration;
@@ -9,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 namespace CIR.Data.Data.GlobalConfiguration
 {
-	public class GlobalConfigurationCurrenciesRepository : IGlobalConfigurationCurrenciesRepository
+    public class GlobalConfigurationCurrenciesRepository : IGlobalConfigurationCurrenciesRepository
 	{
 		#region PROPERTIES
 

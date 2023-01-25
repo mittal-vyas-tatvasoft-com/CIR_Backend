@@ -1,5 +1,4 @@
-﻿using CIR.Common.CustomResponse;
-using CIR.Common.Data;
+﻿using CIR.Common.Data;
 using CIR.Common.Enums;
 using CIR.Common.Helper;
 using CIR.Core.Entities.GlobalConfiguration;
@@ -10,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CIR.Data.Data.GlobalConfiguration
 {
-	public class GlobalConfigurationMessagesRepository : ControllerBase, IGlobalConfigurationMessagesRepository
+    public class GlobalConfigurationMessagesRepository : ControllerBase, IGlobalConfigurationMessagesRepository
 	{
 		#region PROPERTIES   
 		private readonly CIRDbContext _CIRDBContext;

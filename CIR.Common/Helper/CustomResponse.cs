@@ -1,4 +1,4 @@
-﻿namespace CIR.Common.CustomResponse
+﻿namespace CIR.Common.Helper
 {
     public class CustomResponse<T>
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CIR.Common.CustomResponse
+namespace CIR.Common.Helper
 {
     public class SystemMessages
     {
@@ -20,7 +20,7 @@ namespace CIR.Common.CustomResponse
         public static string msgUpdatingDataError = "An error occurred while updating {0}.";
         public static string msgDataUpdatedSuccessfully = "{0} Updated Successfully.";
         public static string msgIdNotFound = "{0} with given id not found";
-		public static string msgAddingDataError = "An error occurred while adding new {0}.";
+        public static string msgAddingDataError = "An error occurred while adding new {0}.";
         #endregion
 
         #region GlobalConfigurationHolidays

@@ -1,5 +1,4 @@
-﻿using CIR.Common.CustomResponse;
-using CIR.Common.Data;
+﻿using CIR.Common.Data;
 using CIR.Common.Enums;
 using CIR.Common.Helper;
 using CIR.Core.Entities.GlobalConfiguration;
@@ -14,7 +13,7 @@ using Roles = CIR.Core.Entities.Users.Roles;
 
 namespace CIR.Data.Data.Users
 {
-	public class RolesRepository : ControllerBase, IRolesRepository
+    public class RolesRepository : ControllerBase, IRolesRepository
 	{
 		#region PROPERTIES
 		private readonly CIRDbContext _CIRDbContext;

@@ -1,5 +1,4 @@
-﻿using CIR.Common.CustomResponse;
-using CIR.Common.Data;
+﻿using CIR.Common.Data;
 using CIR.Common.Enums;
 using CIR.Common.Helper;
 using CIR.Core.Entities.GlobalConfiguration;
@@ -13,7 +12,7 @@ using System.Collections.Generic;
 
 namespace CIR.Data.Data.Website
 {
-	public class Portal2GlobalConfigurationCurrenciesRepository : IPortal2GlobalConfigurationCurrenciesRepository
+    public class Portal2GlobalConfigurationCurrenciesRepository : IPortal2GlobalConfigurationCurrenciesRepository
 	{
 		#region PROPERTIES
 

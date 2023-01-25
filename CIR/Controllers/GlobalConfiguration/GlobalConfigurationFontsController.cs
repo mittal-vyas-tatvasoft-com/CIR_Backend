@@ -1,5 +1,4 @@
-﻿using CIR.Common.CustomResponse;
-using CIR.Common.Enums;
+﻿using CIR.Common.Enums;
 using CIR.Common.Helper;
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.GlobalConfiguration;
@@ -8,22 +7,22 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Controllers.GlobalConfiguration
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class GlobalConfigurationFontsController : ControllerBase
-    {
-        #region PROPERTIES
-        private readonly IGlobalConfigurationFontsServices _globalConfigurationFontsServices;
-        #endregion
-        #region CONSTRUCTOR
-        public GlobalConfigurationFontsController(IGlobalConfigurationFontsServices globalConfigurationFontsServices)
-        {
-            _globalConfigurationFontsServices = globalConfigurationFontsServices;
-        }
-        #endregion
+	[Route("api/[controller]")]
+	[ApiController]
+	[Authorize]
+	public class GlobalConfigurationFontsController : ControllerBase
+	{
+		#region PROPERTIES
+		private readonly IGlobalConfigurationFontsServices _globalConfigurationFontsServices;
+		#endregion
+		#region CONSTRUCTOR
+		public GlobalConfigurationFontsController(IGlobalConfigurationFontsServices globalConfigurationFontsServices)
+		{
+			_globalConfigurationFontsServices = globalConfigurationFontsServices;
+		}
+		#endregion
 
-        #region METHODS
+		#region METHODS
 
 		/// <summary>
 		/// This method takes a get globalconfiguration fonts list
@@ -87,6 +86,6 @@ namespace CIR.Controllers.GlobalConfiguration
 		}
 
 
-        #endregion
-    }
+		#endregion
+	}
 }

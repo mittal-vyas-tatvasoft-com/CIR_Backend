@@ -1,5 +1,4 @@
-﻿using CIR.Common.CustomResponse;
-using CIR.Common.Enums;
+﻿using CIR.Common.Enums;
 using CIR.Common.Helper;
 using CIR.Core.Entities.Users;
 using CIR.Core.Interfaces;
@@ -13,7 +12,7 @@ using System.Text;
 
 namespace CIR.Controllers
 {
-	[Route("api/[controller]")]
+    [Route("api/[controller]")]
 	[ApiController]
 	public class LoginController : ControllerBase
 	{

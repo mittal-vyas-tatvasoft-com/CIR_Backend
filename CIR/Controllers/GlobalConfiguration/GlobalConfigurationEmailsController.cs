@@ -1,5 +1,4 @@
-﻿using CIR.Common.CustomResponse;
-using CIR.Common.Enums;
+﻿using CIR.Common.Enums;
 using CIR.Common.Helper;
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.GlobalConfiguration;
@@ -8,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Controllers.GlobalConfiguration
 {
-	[Route("api/[controller]")]
+    [Route("api/[controller]")]
 	[ApiController]
 	[Authorize]
 	public class GlobalConfigurationEmailsController : ControllerBase

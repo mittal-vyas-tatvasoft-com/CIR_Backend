@@ -1,5 +1,4 @@
-﻿using CIR.Common.CustomResponse;
-using CIR.Common.Data;
+﻿using CIR.Common.Data;
 using CIR.Common.Enums;
 using CIR.Common.Helper;
 using CIR.Core.Entities;
@@ -12,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CIR.Data.Data.Website
 {
-	public class ClientRepository : IClientRepository
+    public class ClientRepository : IClientRepository
 	{
 		#region PROPERTIES
 
