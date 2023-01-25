@@ -181,6 +181,46 @@ namespace CIR.Data.Data.Website
                 return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
             }
         }
+
+        /// <summary>
+        /// This method returns client details of given client id
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> GetClientDetailById(int clientId)
+        {
+            if (clientId == null)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest });
+            }
+
+            try
+            {
+                var clientDetail = (from client in _CIRDbContext.Clients
+                                    join subsite in _CIRDbContext.SubSites
+                                    on client.SubsiteId equals subsite.Id
+                                    select new ClientModel()
+                                    {
+                                        Id = client.Id,
+                                        Name = client.Name,
+                                        SubsiteId = client.SubsiteId,
+                                        Code = client.Code,
+                                        Domain = subsite.Domain,
+                                        Description = subsite.Description,
+                                        Stopped = subsite.Stopped,
+                                        EmailStopped = subsite.EmailStopped
+                                    }).Where(x => x.Id == clientId).FirstOrDefault();
+                if (clientDetail == null)
+                {
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
+                }
+                return new JsonResult(new CustomResponse<ClientModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = clientDetail });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+            }
+        }
         #endregion
     }
 }
