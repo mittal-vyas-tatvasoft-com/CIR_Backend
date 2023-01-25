@@ -98,12 +98,12 @@ namespace CIR.Data.Data
                     string randomString = SystemConfig.randomString;
                     string newPassword = new StringCreator(randomString).Get(8);
 
-                    _CIRDBContext.Users.Where(x => x.Id == user.Id).ToList().ForEach((a =>
+                    _CIRDBContext.Users.Where(x => x.Id == user.Id).ToList().ForEach(a =>
                     {
                         a.Password = newPassword;
                         a.ResetRequired = true;
                     }
-                    ));
+                    );
                     await _CIRDBContext.SaveChangesAsync();
 
                     //Send NewPassword in Mail

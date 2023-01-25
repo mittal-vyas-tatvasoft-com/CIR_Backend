@@ -209,9 +209,9 @@ namespace CIR.Data.Data.Users
 				else
 				{
 
-					var rolesDetails = (from var in _CIRDbContext.Roles
-										where var.Id == roles.Id
-										select var.CreatedOn);
+                    var rolesDetails = from var in _CIRDbContext.Roles
+                                       where var.Id == roles.Id
+                                       select var.CreatedOn;
 
 					Roles updaterole = new()
 					{
