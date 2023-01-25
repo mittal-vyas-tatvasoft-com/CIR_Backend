@@ -19,9 +19,9 @@ namespace CIR.Application.Services.Utilities
 
         #region METHODS
 
-        public Task<IActionResult> CreateOrUpdateLookupItem(LookupItemsTextModel lookupModel)
+        public Task<IActionResult> CreateOrUpdateLookupItem(LookupItemsTextModel lookupItemsTextModel)
         {
-            return _lookupsRepository.CreateOrUpdateLookupItem(lookupModel);
+            return _lookupsRepository.CreateOrUpdateLookupItem(lookupItemsTextModel);
         }
 
         public async Task<bool> LookupItemExists(long cultureId, long lookupItemId)

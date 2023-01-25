@@ -1,7 +1,6 @@
 ﻿using CIR.Common.Data;
 using CIR.Common.Enums;
 using CIR.Common.Helper;
-using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Entities.Users;
 using CIR.Core.Interfaces.Users;
 using CIR.Core.ViewModel;
@@ -13,7 +12,7 @@ using Roles = CIR.Core.Entities.Users.Roles;
 
 namespace CIR.Data.Data.Users
 {
-    public class RolesRepository : ControllerBase, IRolesRepository
+	public class RolesRepository : ControllerBase, IRolesRepository
 	{
 		#region PROPERTIES
 		private readonly CIRDbContext _CIRDbContext;
@@ -64,7 +63,7 @@ namespace CIR.Data.Data.Users
 		/// <param name="search"> word that we want to search in user table </param>
 		/// <param name="sortAscending"> 'asc' or 'desc' direction for sort </param>
 		/// <returns> filtered list of roles </returns>
-		public async Task<RolesModel> GetAllRoles(int displayLength, int displayStart, string sortCol, string? search, bool sortAscending = true)
+		public async Task<RolesModel> GetAllRoles(int displayLength, int displayStart, string? sortCol, string? search, bool sortAscending = true)
 		{
 			RolesModel roles = new();
 			IQueryable<Core.Entities.Users.Roles> roleList = roles.RolesList.AsQueryable();
@@ -208,9 +207,9 @@ namespace CIR.Data.Data.Users
 				else
 				{
 
-                    var rolesDetails = from var in _CIRDbContext.Roles
-                                       where var.Id == roles.Id
-                                       select var.CreatedOn;
+					var rolesDetails = from var in _CIRDbContext.Roles
+									   where var.Id == roles.Id
+									   select var.CreatedOn;
 
 					Roles updaterole = new()
 					{
@@ -465,50 +464,50 @@ namespace CIR.Data.Data.Users
 		{
 			List<SubRolesModel> subRoleList = new List<SubRolesModel>();
 
-            var listMain = SQLHelper.ConvertToGenericModelList<SubModel>(roleListDatatable);
-            var groupData = listMain.GroupBy(x => x.GroupId);
-            foreach (var item in groupData)
-            {
-                var siteGroup = listMain.Where(x => x.GroupId == item.Key).GroupBy(x => x.SiteId);
-                SubRolesModel subRole = new SubRolesModel
-                {
-                    site = new List<RoleGrouping2SubSiteModel>()
-                };
-                foreach (var itemSite in siteGroup)
-                {
-                    RoleGrouping2SubSiteModel roleGrouping2SubSiteModel = new RoleGrouping2SubSiteModel
-                    {
-                        SiteId = itemSite.Key,
-                        Languages = new List<RoleGrouping2CultureModel>()
-                    };
+			var listMain = SQLHelper.ConvertToGenericModelList<SubModel>(roleListDatatable);
+			var groupData = listMain.GroupBy(x => x.GroupId);
+			foreach (var item in groupData)
+			{
+				var siteGroup = listMain.Where(x => x.GroupId == item.Key).GroupBy(x => x.SiteId);
+				SubRolesModel subRole = new SubRolesModel
+				{
+					site = new List<RoleGrouping2SubSiteModel>()
+				};
+				foreach (var itemSite in siteGroup)
+				{
+					RoleGrouping2SubSiteModel roleGrouping2SubSiteModel = new RoleGrouping2SubSiteModel
+					{
+						SiteId = itemSite.Key,
+						Languages = new List<RoleGrouping2CultureModel>()
+					};
 
-                    var cultureGroup = listMain.Where(x => x.GroupId == item.Key && x.SiteId == itemSite.Key).GroupBy(x => x.CultureId);
-                    foreach (var itemCulture in cultureGroup)
-                    {
-                        RoleGrouping2CultureModel roleGrouping2CultureModel = new RoleGrouping2CultureModel
-                        {
-                            CultureId = itemCulture.Key,
-                            Privileges = new List<RoleGrouping2PermissionModel>()
-                        };
+					var cultureGroup = listMain.Where(x => x.GroupId == item.Key && x.SiteId == itemSite.Key).GroupBy(x => x.CultureId);
+					foreach (var itemCulture in cultureGroup)
+					{
+						RoleGrouping2CultureModel roleGrouping2CultureModel = new RoleGrouping2CultureModel
+						{
+							CultureId = itemCulture.Key,
+							Privileges = new List<RoleGrouping2PermissionModel>()
+						};
 
-                        var privilegesGroup = listMain.Where(x => x.GroupId == item.Key && x.SiteId == itemSite.Key && x.CultureId == itemCulture.Key).GroupBy(x => x.PrivilegesId);
-                        foreach (var itemprivileges in privilegesGroup)
-                        {
-                            RoleGrouping2PermissionModel roleGrouping2PermissionModel = new RoleGrouping2PermissionModel
-                            {
-                                PrivilegesId = itemprivileges.Key
-                            };
-                            roleGrouping2CultureModel.Privileges.Add(roleGrouping2PermissionModel);
-                        }
-                        roleGrouping2SubSiteModel.Languages.Add(roleGrouping2CultureModel);
-                    }
-                    subRole.site.Add(roleGrouping2SubSiteModel);
-                }
-                subRole.groupId = listMain.Where(x => x.GroupId == item.Key).FirstOrDefault().GroupId;
-                subRoleList.Add(subRole);
-            }
-            return subRoleList;
-        }
-        #endregion
-    }
+						var privilegesGroup = listMain.Where(x => x.GroupId == item.Key && x.SiteId == itemSite.Key && x.CultureId == itemCulture.Key).GroupBy(x => x.PrivilegesId);
+						foreach (var itemprivileges in privilegesGroup)
+						{
+							RoleGrouping2PermissionModel roleGrouping2PermissionModel = new RoleGrouping2PermissionModel
+							{
+								PrivilegesId = itemprivileges.Key
+							};
+							roleGrouping2CultureModel.Privileges.Add(roleGrouping2PermissionModel);
+						}
+						roleGrouping2SubSiteModel.Languages.Add(roleGrouping2CultureModel);
+					}
+					subRole.site.Add(roleGrouping2SubSiteModel);
+				}
+				subRole.groupId = listMain.Where(x => x.GroupId == item.Key).FirstOrDefault().GroupId;
+				subRoleList.Add(subRole);
+			}
+			return subRoleList;
+		}
+		#endregion
+	}
 }

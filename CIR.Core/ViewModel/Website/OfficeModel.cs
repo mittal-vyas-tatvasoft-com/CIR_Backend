@@ -2,10 +2,10 @@
 {
     public class OfficeModel
     {
-        public List<officevm> OfficeList { get; set; } = new();
+        public List<officeVm> OfficeList { get; set; } = new();
         public int Count { get; set; }
 
-        public class officevm
+        public class officeVm
         {
             public long Id { get; set; }
             public string Name { get; set; }

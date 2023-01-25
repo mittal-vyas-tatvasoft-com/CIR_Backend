@@ -24,9 +24,9 @@ namespace CIR.Application.Services.Users
             return await _rolesRepository.GetAllRoles(displayLength, displayStart, sortCol, search, sortAscending);
         }
 
-        public async Task<Boolean> RoleExists(string rolename, long id)
+        public async Task<Boolean> RoleExists(string roleName, long id)
         {
-            return await _rolesRepository.RoleExists(rolename, id);
+            return await _rolesRepository.RoleExists(roleName, id);
         }
 
         public async Task<IActionResult> GetRoleDetailById(long roleId)

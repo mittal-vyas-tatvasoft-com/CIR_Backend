@@ -1,20 +1,17 @@
 ﻿using CIR.Common.Data;
+using CIR.Common.Enums;
+using CIR.Common.Helper;
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.GlobalConfiguration;
 using CIR.Core.ViewModel.GlobalConfiguration;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System;
 using System.Data;
-using System.Threading.Tasks;
-using CIR.Common.Enums;
-using CIR.Common.Helper;
 
 namespace CIR.Data.Data.GlobalConfiguration
 {
-    public class GlobalConfigurationHolidaysRepository : ControllerBase, IGlobalConfigurationHolidaysRepository
+	public class GlobalConfigurationHolidaysRepository : ControllerBase, IGlobalConfigurationHolidaysRepository
 	{
 		#region PROPERTIES
 		private readonly CIRDbContext _CIRDbContext;
@@ -132,13 +129,13 @@ namespace CIR.Data.Data.GlobalConfiguration
 		/// <summary>
 		/// fetches holidays based on input holiday id
 		/// </summary>
-		/// <param name="holidayId"></param>
+		/// <param name="id"></param>
 		/// <returns> holiday or null holiday if not found </returns>
-		public async Task<IActionResult> GetHolidayById(long holidayId)
+		public async Task<IActionResult> GetHolidayById(long id)
 		{
 			try
 			{
-				var holidayList = await _CIRDbContext.Holidays.Where(x => x.Id == holidayId).FirstOrDefaultAsync();
+				var holidayList = await _CIRDbContext.Holidays.Where(x => x.Id == id).FirstOrDefaultAsync();
 				if (holidayList == null)
 				{
 					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });

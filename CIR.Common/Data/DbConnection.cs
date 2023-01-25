@@ -13,15 +13,6 @@ namespace CIR.Common.Data
         /// <summary>
         /// Initializes a new instance of the <see cref="DbConnection" /> class.
         /// </summary>
-        //public DbConnection()
-        //{
-        //    Connection = new SqlConnection(ConfigSettings.ConnectionString);
-        //    Connection.Open();
-        //}
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DbConnection" /> class.
-        /// </summary>
         public DbConnection()
         {
             var connectionString = configuration.GetConnectionString("CIR");
