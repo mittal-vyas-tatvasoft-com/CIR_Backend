@@ -1,5 +1,4 @@
-﻿using CIR.Common.CustomResponse;
-using CIR.Common.Data;
+﻿using CIR.Common.Data;
 using CIR.Common.Enums;
 using CIR.Common.Helper;
 using CIR.Core.Entities;
@@ -14,7 +13,7 @@ using System;
 
 namespace CIR.Data.Data.Website
 {
-	public class PortalRepository : IPortalRepository
+    public class PortalRepository : IPortalRepository
 	{
 		#region PROPERTIES
 

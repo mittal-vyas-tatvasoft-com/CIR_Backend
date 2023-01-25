@@ -1,5 +1,4 @@
-﻿using CIR.Common.CustomResponse;
-using CIR.Common.Data;
+﻿using CIR.Common.Data;
 using CIR.Common.Enums;
 using CIR.Common.Helper;
 using CIR.Core.Entities.GlobalConfiguration;
@@ -14,7 +13,7 @@ using System.Data;
 
 namespace CIR.Data.Data.Utilities
 {
-	public class SystemSettingsLookupsRepository : ControllerBase, ILookupsRepository
+    public class SystemSettingsLookupsRepository : ControllerBase, ILookupsRepository
 	{
 		#region PROPERTIES   
 		private readonly CIRDbContext _CIRDBContext;

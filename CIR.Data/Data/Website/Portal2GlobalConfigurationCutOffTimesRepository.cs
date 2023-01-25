@@ -1,5 +1,4 @@
-﻿using CIR.Common.CustomResponse;
-using CIR.Common.Data;
+﻿using CIR.Common.Data;
 using CIR.Common.Enums;
 using CIR.Common.Helper;
 using CIR.Core.Entities.Websites;
@@ -9,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Data.Data.Website
 {
-	public class Portal2GlobalConfigurationCutOffTimesRepository : IPortal2GlobalConfigurationCutOffTimesRepository
+    public class Portal2GlobalConfigurationCutOffTimesRepository : IPortal2GlobalConfigurationCutOffTimesRepository
 	{
 
 		#region PROPERTIES

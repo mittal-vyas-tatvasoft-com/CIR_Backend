@@ -1,5 +1,4 @@
-﻿using CIR.Common.CustomResponse;
-using CIR.Common.Enums;
+﻿using CIR.Common.Enums;
 using CIR.Common.Helper;
 using CIR.Core.Interfaces.Website;
 using CIR.Core.ViewModel.Website;
@@ -8,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Controllers.Website
 {
-	[Route("api/[controller]")]
+    [Route("api/[controller]")]
 	[ApiController]
 	[Authorize]
 	public class Portal2GlobalConfigurationCutOffTimesController : Controller

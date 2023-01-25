@@ -1,5 +1,4 @@
-﻿using CIR.Common.CustomResponse;
-using CIR.Common.Data;
+﻿using CIR.Common.Data;
 using CIR.Common.Enums;
 using CIR.Common.Helper;
 using CIR.Core.Entities.GlobalConfiguration;
@@ -34,31 +33,31 @@ namespace CIR.Data.Data.Websites
         /// <param name="reasonsModel"></param>
         /// <returns>return Ok if successful else returns bad request</returns>
 
-		public async Task<IActionResult> CreateReason(List<Portal2GlobalConfigurationReasonsModel> reasonsModel)
-		{
-			try
-			{
-				if (reasonsModel.Any(x => x.Id < 0 || x.OficeIdPK < 0 || x.PortalIdPK < 0))
-				{
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgAddingDataError, "Reasons") });
-				}
-				if (reasonsModel != null)
-				{
-					foreach (var item in reasonsModel)
-					{
-						var newOffice = new Offices()
-						{
-							AddressLine1 = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).AddressLine1,
-							TownCity = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).TownCity,
-							CountryCode = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).CountryCode,
-							CreatedOn = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).CreatedOn,
-							Enabled = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).Enabled,
-							Latitude = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).Latitude,
-							Longitude = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).Longitude,
-							AddressType = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).AddressType
-						};
-						_CIRDbContext.offices.Add(newOffice);
-						_CIRDbContext.SaveChanges();
+        public async Task<IActionResult> CreateReason(List<Portal2GlobalConfigurationReasonsModel> reasonsModel)
+        {
+            try
+            {
+                if (reasonsModel.Any(x => x.Id < 0 || x.OficeIdPK < 0 || x.PortalIdPK < 0))
+                {
+                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgAddingDataError, "Reasons") });
+                }
+                if (reasonsModel != null)
+                {
+                    foreach (var item in reasonsModel)
+                    {
+                        var newOffice = new Offices()
+                        {
+                            AddressLine1 = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).AddressLine1,
+                            TownCity = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).TownCity,
+                            CountryCode = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).CountryCode,
+                            CreatedOn = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).CreatedOn,
+                            Enabled = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).Enabled,
+                            Latitude = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).Latitude,
+                            Longitude = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).Longitude,
+                            AddressType = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).AddressType
+                        };
+                        _CIRDbContext.offices.Add(newOffice);
+                        _CIRDbContext.SaveChanges();
 
                         var officeId = newOffice.Id;
 
@@ -100,16 +99,16 @@ namespace CIR.Data.Data.Websites
                         _CIRDbContext.portal2GlobalConfigurationReasons.Add(globalConfigurationReasons);
                         _CIRDbContext.SaveChanges();
 
-						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Reason") });
-					}
-				}
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgAddingDataError, "Reason") });
-			}
-			catch (Exception ex)
-			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
-			}
-		}
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Reason") });
+                    }
+                }
+                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgAddingDataError, "Reason") });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+            }
+        }
 
         /// <summary>
         /// this method will be used by GetAll method of Reasons controller
@@ -137,17 +136,17 @@ namespace CIR.Data.Data.Websites
                                                        PortalId = Portal2GlobalConfigurationReason.PortalId
                                                    }).ToListAsync();
 
-				if (portaltoGLobalReasons.Count == 0)
-				{
-					return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationReasonsModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
-				}
-				return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationReasonsModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = portaltoGLobalReasons });
-			}
-			catch (Exception ex)
-			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
-			}
-		}
-		#endregion
-	}
+                if (portaltoGLobalReasons.Count == 0)
+                {
+                    return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationReasonsModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
+                }
+                return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationReasonsModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = portaltoGLobalReasons });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+            }
+        }
+        #endregion
+    }
 }

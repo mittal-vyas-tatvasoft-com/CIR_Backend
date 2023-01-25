@@ -1,5 +1,4 @@
-﻿using CIR.Common.CustomResponse;
-using CIR.Common.Data;
+﻿using CIR.Common.Data;
 using CIR.Common.Enums;
 using CIR.Common.Helper;
 using CIR.Core.Entities.GlobalConfiguration;
@@ -11,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace CIR.Data.Data.GlobalConfiguration
 {
-	public class GlobalConfigurationEmailsRepository : ControllerBase, IGlobalConfigurationEmailsRepository
+    public class GlobalConfigurationEmailsRepository : ControllerBase, IGlobalConfigurationEmailsRepository
 	{
 		#region PROPERTIES
 
