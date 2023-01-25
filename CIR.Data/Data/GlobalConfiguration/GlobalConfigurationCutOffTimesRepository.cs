@@ -1,6 +1,7 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
 using CIR.Common.Enums;
+using CIR.Common.Helper;
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.GlobalConfiguration;
 using CIR.Core.ViewModel.GlobalConfiguration;
@@ -49,8 +50,8 @@ namespace CIR.Data.Data.GlobalConfiguration
                         CutOffTime = checkCountryIdData.CutOffTime.ToString(),
                         CutOffDay = checkCountryIdData.CutOffDay
                     };
-                    return new JsonResult(new CustomResponse<GlobalConfigurationCutOffTimeModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = cutOffTime });
-                }
+					return new JsonResult(new CustomResponse<GlobalConfigurationCutOffTimeModel>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = cutOffTime });
+				}
                 else
                 {
                     GlobalConfigurationCutOffTimeModel cutOffTimeModel = new()
@@ -59,13 +60,13 @@ namespace CIR.Data.Data.GlobalConfiguration
                         CutOffTime = _configuration.GetSection("StaticCutOffTime").GetSection("CutOffTime").Value,
                         CutOffDay = (int)GlobalConfigurationEnums.CutOffDays.PreviousDay
                     };
-                    return new JsonResult(new CustomResponse<GlobalConfigurationCutOffTimeModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = cutOffTimeModel });
-                }
+					return new JsonResult(new CustomResponse<GlobalConfigurationCutOffTimeModel>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = cutOffTimeModel });
+				}
             }
             catch (Exception ex)
             {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
-            }
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+			}
         }
 
         /// <summary>
@@ -79,8 +80,8 @@ namespace CIR.Data.Data.GlobalConfiguration
             {
                 if (globalConfigurationCutOffTimeModel.CutOffTime == null || globalConfigurationCutOffTimeModel.CutOffTime == "string" || globalConfigurationCutOffTimeModel.CountryId == 0)
                 {
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Please enter valid data" });
-                }
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgEnterValidData });
+				}
                 GlobalConfigurationCutOffTime newCutOffTime = new()
                 {
                     Id = globalConfigurationCutOffTimeModel.Id,
@@ -103,12 +104,12 @@ namespace CIR.Data.Data.GlobalConfiguration
 
                 await _cIRDbContext.SaveChangesAsync();
 
-                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "GlobalConfiguration CutOfTime saved successfully." });
-            }
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "GlobalConfiguration CutOfTime") });
+			}
             catch (Exception ex)
             {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
-            }
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+			}
         }
         #endregion
     }

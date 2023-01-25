@@ -1,5 +1,7 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
+using CIR.Common.Enums;
+using CIR.Common.Helper;
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Entities.Websites;
 using CIR.Core.Interfaces.Website;
@@ -61,22 +63,22 @@ namespace CIR.Data.Data.Website
                     Website = offices.Website
                 };
 
-                if (offices.Id > 0)
-                {
-                    _CIRDbContext.offices.Update(newOffice);
-                }
-                else
-                {
-                    _CIRDbContext.offices.Add(newOffice);
-                }
-                await _CIRDbContext.SaveChangesAsync();
-                return Ok(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "Offices saved successfully." });
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
-            }
-        }
+				if (offices.Id > 0)
+				{
+					_CIRDbContext.offices.Update(newOffice);
+				}
+				else
+				{
+					_CIRDbContext.offices.Add(newOffice);
+				}
+				await _CIRDbContext.SaveChangesAsync();
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Offices") });
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+			}
+		}
 
         /// <summary>
         /// This method retuns filtered holidays list
@@ -111,74 +113,73 @@ namespace CIR.Data.Data.Website
                                                Name = officedata.Name
                                            }).ToListAsync();
 
-                if (officeRecords.Count == 0)
-                {
-                    return new JsonResult(new CustomResponse<List<OfficeModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
-                }
+				if (officeRecords.Count == 0)
+				{
+					return new JsonResult(new CustomResponse<List<OfficeModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
+				}
+
+				officeRecords = officeRecords.Where(y => y.Name.Contains(search) || y.Address.Contains(search) || y.country.Contains(search)).ToList();
+				office.Count = officeRecords.Count();
+
+				if (sortAscending)
+				{
+					officeRecords = officeRecords.OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
+				}
+				else
+				{
+					officeRecords = officeRecords.OrderByDescending(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
+				}
+				office.OfficeList = officeRecords;
+				return new JsonResult(new CustomResponse<OfficeModel>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = office });
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute(), Data = ex });
+			}
+		}
+
+		/// <summary>
+		/// fetches offices based on input office id
+		/// </summary>
+		/// <param name="officeId"></param>
+		/// <returns> holiday or null holiday if not found </returns>
+		public async Task<IActionResult> GetOfficesById(long officeId)
+		{
+			try
+			{
+				var officeList = await _CIRDbContext.offices.Where(x => x.Id == officeId).FirstOrDefaultAsync();
+				if (officeList == null)
+				{
+					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
+				}
+				return new JsonResult(new CustomResponse<Offices>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = officeList });
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+			}
+		}
 
 
-                officeRecords = officeRecords.Where(y => y.Name.Contains(search) || y.Address.Contains(search) || y.country.Contains(search)).ToList();
-                office.Count = officeRecords.Count();
-
-                if (sortAscending)
-                {
-                    officeRecords = officeRecords.OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
-                }
-                else
-                {
-                    officeRecords = officeRecords.OrderByDescending(x => x.GetType().GetProperty(sortCol).GetValue(x, null)).Skip(displayStart).Take(displayLength).ToList();
-                }
-                office.OfficeList = officeRecords;
-                return new JsonResult(new CustomResponse<OfficeModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = office });
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = true, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = ex });
-            }
-        }
-
-        /// <summary>
-        /// fetches offices based on input office id
-        /// </summary>
-        /// <param name="officeId"></param>
-        /// <returns> holiday or null holiday if not found </returns>
-        public async Task<IActionResult> GetOfficesById(long officeId)
-        {
-            try
-            {
-                var officeList = await _CIRDbContext.offices.Where(x => x.Id == officeId).FirstOrDefaultAsync();
-                if (officeList == null)
-                {
-                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
-                }
-                return new JsonResult(new CustomResponse<Offices>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = officeList });
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
-            }
-        }
-
-
-        /// <summary>
-        /// This method takes a delete holiday 
-        /// </summary>
-        /// <param name="officeId"></param>
-        /// <returns></returns>
-        public async Task<IActionResult> DeleteOffice(long officeId)
-        {
-            var office = new Holidays() { Id = officeId };
-            try
-            {
-                _CIRDbContext.offices.RemoveRange(_CIRDbContext.offices.Where(x => x.Id == officeId));
-                await _CIRDbContext.SaveChangesAsync();
-                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Deleted, Data = "office Deleted Successfully" });
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = true, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = ex });
-            }
-        }
-        #endregion
-    }
+		/// <summary>
+		/// This method takes a delete holiday 
+		/// </summary>
+		/// <param name="officeId"></param>
+		/// <returns></returns>
+		public async Task<IActionResult> DeleteOffice(long officeId)
+		{
+			var office = new Holidays() { Id = officeId };
+			try
+			{
+				_CIRDbContext.offices.RemoveRange(_CIRDbContext.offices.Where(x => x.Id == officeId));
+				await _CIRDbContext.SaveChangesAsync();
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Deleted, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Deleted.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataDeletedSuccessfully, "Office") });
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute(), Data = ex });
+			}
+		}
+		#endregion
+	}
 }

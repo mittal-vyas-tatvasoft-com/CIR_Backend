@@ -1,4 +1,7 @@
 ﻿using CIR.Common.CustomResponse;
+using CIR.Common.Enums;
+using CIR.Common.Helper;
+using CIR.Core.Entities.Website;
 using CIR.Core.Entities.Websites;
 using CIR.Core.Interfaces.Website;
 using Microsoft.AspNetCore.Authorization;
@@ -21,16 +24,16 @@ namespace CIR.Controllers.Website
         {
             _portal2GlobalConfigurationCurrenciesService = portal2GlobalConfigurationCurrenciesService;
         }
-        #endregion
+		#endregion
 
-        #region METHODS
+		#region METHODS
 
-        /// <summary>
+		/// <summary>
 		/// This method takes a update website portal2GlobalConfigurationCurrencies
 		/// </summary>
-		/// <param name="portalToGlobalConfigurationCurrency"></param>
+		/// <param name="portal2GlobalConfigurationCurrency"></param>
 		/// <returns></returns>
-        [HttpPost("[action]")]
+		[HttpPost("[action]")]
         public async Task<IActionResult> Post(List<Portal2GlobalConfigurationCurrency> portal2GlobalConfigurationCurrency)
         {
             if (ModelState.IsValid)
@@ -42,27 +45,28 @@ namespace CIR.Controllers.Website
                 }
                 catch (Exception ex)
                 {
-                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
-                }
+					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+				}
             }
-            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
+			return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgBadRequest });
 
-        }
-        /// <summary>
+		}
+		/// <summary>
 		/// This method takes a get website portalToGlobalConfigurationCurrencies list
 		/// </summary>
+		/// <param name="portalId"></param>
 		/// <returns></returns>
-        [HttpGet("{PortalId}")]
-        public async Task<IActionResult> Get(long PortalId)
+		[HttpGet("{portalId}")]
+        public async Task<IActionResult> Get(long portalId)
         {
             try
             {
-                return await _portal2GlobalConfigurationCurrenciesService.GetPortalToGlobalConfigurationCurrenciesList(PortalId);
+                return await _portal2GlobalConfigurationCurrenciesService.GetPortalToGlobalConfigurationCurrenciesList(portalId);
             }
             catch (Exception ex)
             {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
-            }
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+			}
         }
         #endregion
     }

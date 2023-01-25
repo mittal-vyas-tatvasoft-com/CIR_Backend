@@ -1,6 +1,9 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
+using CIR.Common.Enums;
+using CIR.Common.Helper;
 using CIR.Core.Entities;
+using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.Utilities;
 using CIR.Core.ViewModel.Utilities;
 using Microsoft.AspNetCore.Mvc;
@@ -13,48 +16,48 @@ namespace CIR.Data.Data.Utilities
         private readonly CIRDbContext _CIRDbContext;
         #endregion
 
-        #region CONSTRUCTOR
-        public SystemSettingsLanguagesRepository(CIRDbContext context)
-        {
-            _CIRDbContext = context ??
-                throw new ArgumentNullException(nameof(context));
-        }
-        #endregion
+		#region CONSTRUCTOR
+		public SystemSettingsLanguagesRepository(CIRDbContext context)
+		{
+			_CIRDbContext = context ??
+				throw new ArgumentNullException(nameof(context));
+		}
+		#endregion
 
-        #region METHODS
+		#region METHODS
 
-        /// <summary>
-        /// This method is used by Update method of SystemSettings Languages
-        /// </summary>
-        /// <param name="cultureList"> List of Culture</param>
-        /// <returns></returns>
-        public async Task<IActionResult> UpdateSystemSettingsLanguage(List<CulturesModel> cultureList)
-        {
-            try
-            {
-                var cultureData = GetListForUpdatedLanguages(cultureList);
-                if (cultureData != null)
-                {
+		/// <summary>
+		/// This method is used by Update method of SystemSettings Languages
+		/// </summary>
+		/// <param name="cultureList"> List of Culture</param>
+		/// <returns></returns>
+		public async Task<IActionResult> UpdateSystemSettingsLanguage(List<CulturesModel> cultureList)
+		{
+			try
+			{
+				var cultureData = GetListForUpdatedLanguages(cultureList);
+				if (cultureData != null)
+				{
 
-                    foreach (Culture item in cultureData)
-                    {
-                        _CIRDbContext.Cultures.Update(item);
-                        await _CIRDbContext.SaveChangesAsync();
-                    }
+					foreach (Culture item in cultureData)
+					{
+						_CIRDbContext.Cultures.Update(item);
+						await _CIRDbContext.SaveChangesAsync();
+					}
 
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "Language Updated successfully" });
-                }
-                else
-                {
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = true, Message = HttpStatusCodesMessages.NotFound, Data = "Language id not found." });
-                }
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataUpdatedSuccessfully, "Language") });
+				}
+				else
+				{
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgIdNotFound, "Language") });
+				}
 
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = ex });
-            }
-        }
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = ex });
+			}
+		}
 
         /// <summary>
         /// This method is used for Getting Updated List for Languages
@@ -75,9 +78,9 @@ namespace CIR.Data.Data.Utilities
             }
             return list;
 
-        }
+		}
 
-        #endregion
+		#endregion
 
-    }
+	}
 }

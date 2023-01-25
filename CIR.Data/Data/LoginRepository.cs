@@ -1,8 +1,10 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
+using CIR.Common.Enums;
 using CIR.Common.Helper;
 using CIR.Common.MailTemplate;
 using CIR.Common.SystemConfig;
+using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces;
 using CIR.Core.ViewModel;
 using Microsoft.AspNetCore.Mvc;
@@ -34,56 +36,52 @@ namespace CIR.Data.Data
             {
                 var userRecords = _CIRDBContext.Users.Where((x) => x.Email == model.Email && x.Password == model.Password).FirstOrDefault();
 
-                if (userRecords != null && userRecords.ResetRequired == true)
-                {
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Forbidden, Result = false, Message = HttpStatusCodesMessages.Forbidden, Data = "Your Account is locked. To Unlock this account contact to Aramex Support team" });
-                }
-                if (userRecords == null)
-                {
-                    var userDetails = _CIRDBContext.Users.Where(x => x.Email == model.Email).FirstOrDefault();
-                    if (userDetails != null)
-                    {
-                        var userId = from item in _CIRDBContext.Users where item.Email == model.Email select item.Id;
-                        if (userDetails.LoginAttempts < 5)
-                        {
-                            userDetails.Id = userId.FirstOrDefault();
-                            userDetails.LoginAttempts += 1;
-                            _CIRDBContext.Entry(userDetails).State = EntityState.Modified;
-                            _CIRDBContext.SaveChanges();
-                        }
-                        else
-                        {
-                            userDetails.ResetRequired = true;
-                            _CIRDBContext.Users.Update(userDetails);
-                            _CIRDBContext.SaveChanges();
-                            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Forbidden, Result = false, Message = HttpStatusCodesMessages.Forbidden, Data = "Your Account is locked. To Unlock this account contact to Aramex Support team" });
-                        }
-                    }
-                    else
-                    {
-                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Invalid username or password" });
-                    }
-                }
-                var userData = _CIRDBContext.Users.FirstOrDefault((u) => u.Email == model.Email && u.Password == model.Password);
-                if (userData != null)
-                {
-                    var generatedToken = await _jwtGenerateToken.GenerateJwtToken(userData);
-                    if (generatedToken != null)
-                    {
-                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = generatedToken });
-                    }
-                    else
-                    {
-                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Token not generated" });
-                    }
-                }
-                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Invalid username or password" });
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
-            }
-        }
+				if (userRecords != null && userRecords.ResetRequired == true)
+				{
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Forbidden, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.Forbidden.GetDescriptionAttribute(), Data = SystemMessages.msgAccountIsLocked });
+				}
+				if (userRecords == null)
+				{
+					var userDetails = _CIRDBContext.Users.Where(x => x.Email == model.Email).FirstOrDefault();
+					if (userDetails != null)
+					{
+						var userId = (from item in _CIRDBContext.Users where item.Email == model.Email select item.Id);
+						if (userDetails.LoginAttempts < 5)
+						{
+							userDetails.Id = userId.FirstOrDefault();
+							userDetails.LoginAttempts += 1;
+							_CIRDBContext.Entry(userDetails).State = EntityState.Modified;
+							_CIRDBContext.SaveChanges();
+						}
+						else
+						{
+							userDetails.ResetRequired = true;
+							_CIRDBContext.Users.Update(userDetails);
+							_CIRDBContext.SaveChanges();
+							return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Forbidden, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.Forbidden.GetDescriptionAttribute(), Data = SystemMessages.msgAccountIsLocked });
+						}
+					}
+					else
+					{
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgInvalidUserNameOrPassword });
+					}
+				}
+				var userData = _CIRDBContext.Users.FirstOrDefault((u) => u.Email == model.Email && u.Password == model.Password);
+				if (userData != null)
+				{
+					var generatedToken = await _jwtGenerateToken.GenerateJwtToken(userData);
+					if (generatedToken != null)
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = generatedToken });
+					else
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgTokenNotGenerated });
+				}
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgInvalidUserNameOrPassword });
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+			}
+		}
 
         /// <summary>
         /// This method used by forgot password
@@ -113,15 +111,15 @@ namespace CIR.Data.Data
                     string mailBody = MailTemplate.ForgotPasswordTemplate(user);
                     _emailGeneration.SendMail(forgotPasswordModel.Email, mailSubject, mailBody);
 
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Successfully send new password on your mail,please check once!" });
-                }
-                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Please enter valid username and email" });
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
-            }
-        }
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = SystemMessages.msgSendNewPasswordOnMail });
+				}
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute(), Data = SystemMessages.msgEnterValidUserNameAndEmail });
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+			}
+		}
 
         /// <summary>
         /// This method used by reset password
@@ -134,29 +132,29 @@ namespace CIR.Data.Data
             {
                 var user = _CIRDBContext.Users.Where(c => c.Email == resetPasswordModel.Email).FirstOrDefault();
 
-                if (user != null)
-                {
-                    if (user.Password == resetPasswordModel.OldPassword)
-                    {
-                        user.Email = resetPasswordModel.Email;
-                        user.Password = resetPasswordModel.NewPassword;
-                        user.ResetRequired = false;
-                        _CIRDBContext.Users.Update(user);
-                        await _CIRDBContext.SaveChangesAsync();
-                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Password Change Successfully." });
-                    }
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "OldPassword InCorrect." });
-                }
-                else
-                {
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = "Invalid Email Address." });
-                }
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
-            }
-        }
+				if (user != null)
+				{
+					if (user.Password == resetPasswordModel.OldPassword)
+					{
+						user.Email = resetPasswordModel.Email;
+						user.Password = resetPasswordModel.NewPassword;
+						user.ResetRequired = false;
+						_CIRDBContext.Users.Update(user);
+						await _CIRDBContext.SaveChangesAsync();
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = SystemMessages.msgPasswordChangedSuccessfully });
+					}
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute(), Data = SystemMessages.msgIncorrectOldPassword });
+				}
+				else
+				{
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute(), Data = SystemMessages.msgInvalidEmailAddress });
+				}
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+			}
+		}
 
 
     }
