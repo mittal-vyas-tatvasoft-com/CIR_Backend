@@ -32,7 +32,7 @@ namespace CIR.Core.Entities
         public long? PortalId { get; set; }
 
         [EmailAddress(ErrorMessage = "Please Enter Valid Email Address")]
-        public string? BccemailAddress { get; set; }
+        public string? BccEmailAddress { get; set; }
 
         public string? CloudFrontDistributionId { get; set; }
 

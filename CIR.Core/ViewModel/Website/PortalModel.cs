@@ -10,7 +10,10 @@ namespace CIR.Core.ViewModel.Website
         [Required]
         public string DisplayName { get; set; }
 
+        public long ClientId { get; set; }
+
         public string? Directory { get; set; }
+        public string? Domain { get; set; }
         public string? Description { get; set; }
 
         [Required]
@@ -30,7 +33,7 @@ namespace CIR.Core.ViewModel.Website
         public string? SystemEmailFromAddress { get; set; }
 
         [EmailAddress(ErrorMessage = "Please Enter Valid Email Address")]
-        public string? BccemailAddress { get; set; }
+        public string? BccEmailAddress { get; set; }
 
         [Required]
         public long CurrencyId { get; set; }

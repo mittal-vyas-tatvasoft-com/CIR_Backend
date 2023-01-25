@@ -8,7 +8,7 @@ namespace CIR.Core.Interfaces.Website
         Task<IActionResult> CreateorUpdatePortal(PortalModel portalModel, long clientId);
         Task<IActionResult> DisablePortal(long portalId);
 
-        Task<IActionResult> GetPortalsByClientId(int clientId);
-        Task<IActionResult> GetPortalDetailsById(int portalId);
+        Task<IActionResult> GetByClientId(int clientId);
+        Task<IActionResult> GetById(int portalId);
     }
 }
