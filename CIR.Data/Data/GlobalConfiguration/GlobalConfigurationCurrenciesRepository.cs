@@ -1,10 +1,11 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
-using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.GlobalConfiguration;
 using CIR.Core.ViewModel.GlobalConfiguration;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Data;
+
 namespace CIR.Data.Data.GlobalConfiguration
 {
     public class GlobalConfigurationCurrenciesRepository : IGlobalConfigurationCurrenciesRepository
@@ -35,21 +36,17 @@ namespace CIR.Data.Data.GlobalConfiguration
         {
             try
             {
-                var globalConfigurationCurrenciesList = await (from globalCurrency in _CIRDBContext.GlobalConfigurationCurrencies
-                                                               join country in _CIRDBContext.CountryCodes
-                                                               on globalCurrency.CountryId equals country.Id
-                                                               join currency in _CIRDBContext.Currencies
-                                                               on globalCurrency.CurrencyId equals currency.Id
-                                                               select new GlobalConfigurationCurrencyModel()
-                                                               {
-                                                                   Id = globalCurrency.Id,
-                                                                   CountryId = globalCurrency.CountryId,
-                                                                   CurrencyId = globalCurrency.CurrencyId,
-                                                                   Enabled = globalCurrency.Enabled,
-                                                                   CountryName = country.CountryName,
-                                                                   CodeName = currency.CodeName
-                                                               }).Where(x => x.CountryId == countryId).ToListAsync();
+                List<GlobalConfigurationCurrencyModel> globalConfigurationCurrenciesList;
 
+                using (DbConnection dbConnection = new DbConnection())
+                {
+                    using (var connection = dbConnection.Connection)
+                    {
+                        DynamicParameters parameters = new DynamicParameters();
+                        parameters.Add("countryId", countryId);
+                        globalConfigurationCurrenciesList = connection.Query<GlobalConfigurationCurrencyModel>("spGetGlobalConfigurationCurrenciesCountryWise", parameters, commandType: CommandType.StoredProcedure).ToList();
+                    }
+                }
                 if (globalConfigurationCurrenciesList.Count == 0)
                 {
                     return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
@@ -78,34 +75,28 @@ namespace CIR.Data.Data.GlobalConfiguration
                 }
                 if (globalCurrencyModel != null)
                 {
+                    var result = 0;
                     foreach (var item in globalCurrencyModel)
                     {
-                        bool globalConfigurationCurrenciesDuplicate = _CIRDBContext.GlobalConfigurationCurrencies.Any(x => x.CountryId == item.CountryId && x.CurrencyId == item.CurrencyId && x.Id != item.Id);
+                        using (DbConnection dbConnection = new DbConnection())
+                        {
+                            using (var connection = dbConnection.Connection)
+                            {
+                                DynamicParameters parameters = new DynamicParameters();
+                                parameters.Add("@Id", item.Id);
+                                parameters.Add("@CountryId", item.CountryId);
+                                parameters.Add("@CurrencyId", item.CurrencyId);
+                                parameters.Add("@Enabled", item.Enabled);
 
-                        if (!globalConfigurationCurrenciesDuplicate)
-                        {
-                            GlobalConfigurationCurrency currency = new GlobalConfigurationCurrency()
-                            {
-                                Id = item.Id,
-                                CountryId = item.CountryId,
-                                CurrencyId = item.CurrencyId,
-                                Enabled = item.Enabled
-                            };
-                            _CIRDBContext.GlobalConfigurationCurrencies.Update(currency);
-                        }
-                        else
-                        {
-                            GlobalConfigurationCurrency currency = new GlobalConfigurationCurrency()
-                            {
-                                CountryId = item.CountryId,
-                                CurrencyId = item.CurrencyId,
-                                Enabled = item.Enabled
-                            };
-                            _CIRDBContext.GlobalConfigurationCurrencies.Add(currency);
+                                result = connection.Execute("spCreateOrUpdateGlobalConfigurationCurrencies", parameters, commandType: CommandType.StoredProcedure);
+                            }
                         }
                     }
-                    await _CIRDBContext.SaveChangesAsync();
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Global Currency saved successfully" });
+                    if (result != 0)
+                    {
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Global Currency saved successfully" });
+                    }
+                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = false, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = "error" });
                 }
                 return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "Error occurred while adding new Global Currency" });
             }
