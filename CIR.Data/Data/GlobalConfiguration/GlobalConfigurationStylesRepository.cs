@@ -2,8 +2,9 @@
 using CIR.Common.Data;
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.GlobalConfiguration;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace CIR.Data.Data.GlobalConfiguration
 {
@@ -31,24 +32,22 @@ namespace CIR.Data.Data.GlobalConfiguration
         {
             try
             {
-                var globalConfigurationStyleList = await _CIRDBContext.GlobalConfigurationStyles.Select(x => new GlobalConfigurationStyle()
+                List<GlobalConfigurationStyle> globalConfigurationStyleList;
+                using (DbConnection dbConnection = new DbConnection())
                 {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Description = x.Description,
-                    TypeCode = x.TypeCode,
-                    TypeName = x.TypeName,
-                    ValueType = x.ValueType,
-                    Value = x.Value,
-                    SortOrder = x.SortOrder
-
-                }).ToListAsync();
+                    using (var connection = dbConnection.Connection)
+                    {
+                        globalConfigurationStyleList = connection.Query<GlobalConfigurationStyle>("spGetGlobalConfigurationStyles", null, commandType: CommandType.StoredProcedure).ToList();
+                    }
+                }
 
                 if (globalConfigurationStyleList.Count == 0)
                 {
                     return new JsonResult(new CustomResponse<List<GlobalConfigurationStyle>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
                 }
+
                 return new JsonResult(new CustomResponse<List<GlobalConfigurationStyle>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = globalConfigurationStyleList });
+
             }
             catch (Exception ex)
             {
@@ -68,24 +67,31 @@ namespace CIR.Data.Data.GlobalConfiguration
             {
                 if (globalConfigurationStyles != null)
                 {
-                    foreach (var item in globalConfigurationStyles)
+                    var result = 0;
+                    using (DbConnection dbConnection = new DbConnection())
                     {
-                        GlobalConfigurationStyle newGlobalConfigStyle = new GlobalConfigurationStyle()
+                        using (var connection = dbConnection.Connection)
                         {
-                            Id = item.Id,
-                            Name = item.Name,
-                            Description = item.Description,
-                            TypeCode = item.TypeCode,
-                            TypeName = item.TypeName,
-                            ValueType = item.ValueType,
-                            Value = item.Value,
-                            SortOrder = item.SortOrder
-                        };
-                        _CIRDBContext.GlobalConfigurationStyles.Update(newGlobalConfigStyle);
-
+                            foreach (var item in globalConfigurationStyles)
+                            {
+                                DynamicParameters parameters = new DynamicParameters();
+                                parameters.Add("@Id", item.Id);
+                                parameters.Add("@Name", item.Name);
+                                parameters.Add("@Description", item.Description);
+                                parameters.Add("@TypeCode", item.TypeCode);
+                                parameters.Add("@TypeName", item.TypeName);
+                                parameters.Add("@ValueType", item.ValueType);
+                                parameters.Add("@Value", item.Value);
+                                parameters.Add("@SortOrder", item.SortOrder);
+                                result = connection.Execute("spUpdateGlobalConfigurationStyles", parameters, commandType: CommandType.StoredProcedure);
+                            }
+                        }
+                        if (result != 0)
+                        {
+                            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "GlobalConfiguration styles update successfully." });
+                        }
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = false, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = "Something went wrong!" });
                     }
-                    await _CIRDBContext.SaveChangesAsync();
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "GlobalConfiguration styles update successfully." });
                 }
                 return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
             }

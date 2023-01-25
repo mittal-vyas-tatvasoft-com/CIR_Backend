@@ -3,8 +3,9 @@ using CIR.Common.Data;
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.GlobalConfiguration;
 using CIR.Core.ViewModel.GlobalConfiguration;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace CIR.Data.Data.GlobalConfiguration
 {
@@ -33,18 +34,16 @@ namespace CIR.Data.Data.GlobalConfiguration
         {
             try
             {
-
-                var globalConfigurationMessagesList = await (from globalMessages in _CIRDBContext.GlobalConfigurationMessages
-                                                             join culture in _CIRDBContext.Cultures on globalMessages.CultureId equals culture.Id
-                                                             select new GlobalMessagesModel()
-                                                             {
-                                                                 Id = globalMessages.Id,
-                                                                 Type = globalMessages.Type,
-                                                                 Content = globalMessages.Content,
-                                                                 CultureId = globalMessages.CultureId,
-                                                                 CultureName = culture.Name
-                                                             }).Where(x => x.CultureId == cultureId).ToListAsync();
-
+                List<GlobalMessagesModel> globalConfigurationMessagesList;
+                using (DbConnection dbConnection = new DbConnection())
+                {
+                    using (var connection = dbConnection.Connection)
+                    {
+                        DynamicParameters parameters = new DynamicParameters();
+                        parameters.Add("@CultureId", cultureId);
+                        globalConfigurationMessagesList = connection.Query<GlobalMessagesModel>("spGetGlobalConfigurationMessagesList", parameters, commandType: CommandType.StoredProcedure).ToList();
+                    }
+                }
                 if (globalConfigurationMessagesList.Count == 0)
                 {
                     return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
@@ -69,32 +68,27 @@ namespace CIR.Data.Data.GlobalConfiguration
             {
                 if (globalConfigurationMessages != null)
                 {
-                    foreach (var item in globalConfigurationMessages)
+                    var result = 0;
+                    using (DbConnection dbConnection = new DbConnection())
                     {
-                        if (item.Id != 0)
+                        using (var connection = dbConnection.Connection)
                         {
-                            GlobalConfigurationMessages globalConfigMessage = new GlobalConfigurationMessages()
+                            foreach (var item in globalConfigurationMessages)
                             {
-                                Id = item.Id,
-                                Type = item.Type,
-                                CultureId = item.CultureId,
-                                Content = item.Content
-                            };
-                            _CIRDBContext.GlobalConfigurationMessages.Update(globalConfigMessage);
+                                DynamicParameters parameters = new DynamicParameters();
+                                parameters.Add("@Id", item.Id);
+                                parameters.Add("@Type", item.Type);
+                                parameters.Add("@Content", item.Content);
+                                parameters.Add("@CultureId", item.CultureId);
+                                result = connection.Execute("spCreateOrUpdateGlobalConfigurationMessages", parameters, commandType: CommandType.StoredProcedure);
+                            }
                         }
-                        else
+                        if (result != 0)
                         {
-                            GlobalConfigurationMessages globalConfigMessage = new GlobalConfigurationMessages()
-                            {
-                                Type = item.Type,
-                                CultureId = item.CultureId,
-                                Content = item.Content
-                            };
-                            _CIRDBContext.GlobalConfigurationMessages.Add(globalConfigMessage);
+                            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = "GlobalConfiguration messages saved succesfully." });
                         }
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = false, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = "Something went wrong!" });
                     }
-                    await _CIRDBContext.SaveChangesAsync();
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "GlobalConfiguration messages saved succesfully." });
                 }
                 return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = "error" });
             }
