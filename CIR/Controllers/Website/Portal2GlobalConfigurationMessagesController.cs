@@ -2,45 +2,44 @@
 using CIR.Common.Enums;
 using CIR.Common.Helper;
 using CIR.Core.Entities.GlobalConfiguration;
-using CIR.Core.Interfaces.GlobalConfiguration;
+using CIR.Core.Entities.Website;
+using CIR.Core.Interfaces.Website;
+using CIR.Core.Interfaces.Websites;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CIR.Controllers.GlobalConfiguration
+namespace CIR.Controllers.Website
 {
-    [Route("api/[controller]")]
+	[Route("api/[controller]")]
 	[ApiController]
 	[Authorize]
-	public class GlobalConfigurationReasonsController : ControllerBase
+	public class Portal2GlobalConfigurationMessagesController : ControllerBase
 	{
 		#region PROPERTIES
-
-		private readonly IGlobalConfigurationReasonsService _globalConfigurationReasonsService;
-
+		private readonly IPortal2GlobalConfigurationMessagesService _portal2GlobalConfigurationMessagesService;
 		#endregion
 
 		#region CONSTRUCTORS
-
-		public GlobalConfigurationReasonsController(IGlobalConfigurationReasonsService globalConfigurationReasonsService)
+		public Portal2GlobalConfigurationMessagesController(IPortal2GlobalConfigurationMessagesService portal2GlobalConfigurationMessagesService)
 		{
-			_globalConfigurationReasonsService = globalConfigurationReasonsService;
+			_portal2GlobalConfigurationMessagesService = portal2GlobalConfigurationMessagesService;
 		}
-
 		#endregion
-
 
 		#region METHODS
 
 		/// <summary>
-		/// This method takes a get globalconfiguration reasons list
+		/// This method takes a get GetPortalToGlobalConfigurationMessagesList
 		/// </summary>
+		/// <param name="portalId"></param>
 		/// <returns></returns>
-		[HttpGet]
-		public async Task<IActionResult> GetGlobalConfigurationReasons()
+		[HttpGet("{portalId}")]
+		public async Task<IActionResult> GetPortalToGlobalConfigurationMessagesList(long portalId)
 		{
 			try
 			{
-				return await _globalConfigurationReasonsService.GetGlobalConfigurationReasons();
+				return await _portal2GlobalConfigurationMessagesService.GetPortalToGlobalConfigurationMessagesList(portalId);
 			}
 			catch (Exception ex)
 			{
@@ -49,18 +48,18 @@ namespace CIR.Controllers.GlobalConfiguration
 		}
 
 		/// <summary>
-		/// This method takes a create globalconfiguration reason
+		/// This method takes a create portalToGlobalConfigration Messages
 		/// </summary>
-		/// <param name="globalConfigurationReasons"></param>
+		/// <param name="portal2GlobalConfigurationMessages"></param>
 		/// <returns></returns>
 		[HttpPost("[action]")]
-		public async Task<IActionResult> Create(List<GlobalConfigurationReasons> globalConfigurationReasons)
+		public async Task<IActionResult> Create(List<Portal2GlobalConfigurationMessage> portal2GlobalConfigurationMessages)
 		{
 			if (ModelState.IsValid)
 			{
 				try
 				{
-					return await _globalConfigurationReasonsService.CreateOrUpdateGlobalConfigurationReasons(globalConfigurationReasons);
+					return await _portal2GlobalConfigurationMessagesService.CreateOrUpdatePortalToGlobalConfigurationMessages(portal2GlobalConfigurationMessages);
 				}
 				catch (Exception ex)
 				{
@@ -69,21 +68,20 @@ namespace CIR.Controllers.GlobalConfiguration
 			}
 			return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgBadRequest });
 		}
-
 
 		/// <summary>
-		/// This method takes a update globalconfiguration reason
+		/// This method takes a update portalToGlobalConfigration Messages
 		/// </summary>
-		/// <param name="globalConfigurationReasons"></param>
+		/// <param name="portal2GlobalConfigurationMessages"></param>
 		/// <returns></returns>
 		[HttpPut("[action]")]
-		public async Task<IActionResult> Update(List<GlobalConfigurationReasons> globalConfigurationReasons)
+		public async Task<IActionResult> Update(List<Portal2GlobalConfigurationMessage> portal2GlobalConfigurationMessages)
 		{
 			if (ModelState.IsValid)
 			{
 				try
 				{
-					return await _globalConfigurationReasonsService.CreateOrUpdateGlobalConfigurationReasons(globalConfigurationReasons);
+					return await _portal2GlobalConfigurationMessagesService.CreateOrUpdatePortalToGlobalConfigurationMessages(portal2GlobalConfigurationMessages);
 				}
 				catch (Exception ex)
 				{
@@ -92,7 +90,6 @@ namespace CIR.Controllers.GlobalConfiguration
 			}
 			return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgBadRequest });
 		}
-
 		#endregion
 	}
 }

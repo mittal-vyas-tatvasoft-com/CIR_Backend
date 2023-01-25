@@ -1,4 +1,6 @@
 ﻿using CIR.Common.CustomResponse;
+using CIR.Common.Enums;
+using CIR.Common.Helper;
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.GlobalConfiguration;
 using Microsoft.AspNetCore.Authorization;
@@ -38,7 +40,7 @@ namespace CIR.Controllers.GlobalConfiguration
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -58,11 +60,11 @@ namespace CIR.Controllers.GlobalConfiguration
 				}
 				catch (Exception ex)
 				{
-					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 				}
 
 			}
-			return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = SystemMessages.msgBadRequest });
+			return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgBadRequest });
 		}
 
 		#endregion

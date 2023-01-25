@@ -1,5 +1,7 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
+using CIR.Common.Enums;
+using CIR.Common.Helper;
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.GlobalConfiguration;
 using CIR.Core.ViewModel.GlobalConfiguration;
@@ -7,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 namespace CIR.Data.Data.GlobalConfiguration
 {
-    public class GlobalConfigurationCurrenciesRepository : IGlobalConfigurationCurrenciesRepository
+	public class GlobalConfigurationCurrenciesRepository : IGlobalConfigurationCurrenciesRepository
 	{
 		#region PROPERTIES
 
@@ -52,13 +54,13 @@ namespace CIR.Data.Data.GlobalConfiguration
 
 				if (globalConfigurationCurrenciesList.Count == 0)
 				{
-					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
+					return new JsonResult(new CustomResponse<List<GlobalConfigurationCurrencyModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute()});
 				}
-				return new JsonResult(new CustomResponse<List<GlobalConfigurationCurrencyModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = globalConfigurationCurrenciesList });
+				return new JsonResult(new CustomResponse<List<GlobalConfigurationCurrencyModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = globalConfigurationCurrenciesList });
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -74,7 +76,7 @@ namespace CIR.Data.Data.GlobalConfiguration
 			{
 				if (globalCurrencyModel.Any(x => x.CountryId == 0 || x.CurrencyId == 0))
 				{
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = SystemMessages.msgEnterValidData });
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgEnterValidData });
 				}
 				if (globalCurrencyModel != null)
 				{
@@ -105,13 +107,14 @@ namespace CIR.Data.Data.GlobalConfiguration
 						}
 					}
 					await _CIRDBContext.SaveChangesAsync();
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Global Currency") });
+
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Global Currency") });
 				}
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = string.Format(SystemMessages.msgAddingDataError, "Global Currency") });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgAddingDataError, "Global Currency") });
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 		#endregion

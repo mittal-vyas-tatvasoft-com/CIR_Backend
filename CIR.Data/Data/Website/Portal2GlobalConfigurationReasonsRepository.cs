@@ -1,5 +1,7 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
+using CIR.Common.Enums;
+using CIR.Common.Helper;
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Entities.Websites;
 using CIR.Core.Interfaces.Websites;
@@ -9,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CIR.Data.Data.Websites
 {
-    public class Portal2GlobalConfigurationReasonsRepository : IPortal2GlobalConfigurationReasonsRepository
+	public class Portal2GlobalConfigurationReasonsRepository : IPortal2GlobalConfigurationReasonsRepository
 	{
 
 		#region PROPERTIES
@@ -38,7 +40,7 @@ namespace CIR.Data.Data.Websites
 			{
 				if (reasonsModel.Any(x => x.Id < 0 || x.OficeIdPK < 0 || x.PortalIdPK < 0))
 				{
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = string.Format(SystemMessages.msgAddingDataError, "Reasons") });
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgAddingDataError, "Reasons") });
 				}
 				if (reasonsModel != null)
 				{
@@ -98,14 +100,14 @@ namespace CIR.Data.Data.Websites
 						_CIRDbContext.portal2GlobalConfigurationReasons.Add(globalConfigurationReasons);
 						_CIRDbContext.SaveChanges();
 
-						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Reason") });
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Reason") });
 					}
 				}
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = string.Format(SystemMessages.msgAddingDataError, "Reason") });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgAddingDataError, "Reason") });
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -137,14 +139,13 @@ namespace CIR.Data.Data.Websites
 
 				if (portaltoGLobalReasons.Count == 0)
 				{
-					return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationReasonsModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+					return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationReasonsModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
 				}
-
-				return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationReasonsModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = portaltoGLobalReasons });
+				return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationReasonsModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = portaltoGLobalReasons });
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 		#endregion

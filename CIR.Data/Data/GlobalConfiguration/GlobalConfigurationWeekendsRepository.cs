@@ -1,10 +1,12 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
+using CIR.Common.Enums;
+using CIR.Common.Helper;
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.GlobalConfiguration;
 using CIR.Core.ViewModel.GlobalConfiguration;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CIR.Data.Data.GlobalConfiguration
 {
@@ -43,12 +45,12 @@ namespace CIR.Data.Data.GlobalConfiguration
                 _CIRDbContext.Weekends.Add(globalConfigWeeknds);
 
                 await _CIRDbContext.SaveChangesAsync();
-                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Globalconfiguration Weekends")});
-            }
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Globalconfiguration Weekends") });
+			}
             catch (Exception ex)
             {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
-            }
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+			}
         }
 
 
@@ -66,19 +68,17 @@ namespace CIR.Data.Data.GlobalConfiguration
                 {
                     _CIRDbContext.Weekends.Remove(weekend);
                     await _CIRDbContext.SaveChangesAsync();
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Deleted, Data = string.Format(SystemMessages.msgDataDeletedSuccessfully, "Weekends")});
-                }
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Deleted.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataDeletedSuccessfully, "Weekends") });
+				}
                 else
                 {
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = true, Message = HttpStatusCodesMessages.NotFound, Data = string.Format(SystemMessages.msgIdNotFound, "Weekend")});
-                }
-
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgIdNotFound, "Weekend") });
+				}
             }
             catch (Exception ex)
             {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
-            }
-
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+			}
         }
 
         /// <summary>
@@ -126,31 +126,45 @@ namespace CIR.Data.Data.GlobalConfiguration
                     weekend.DayOfWeek = GetDayOfWeek(item.DayOfWeekId);
                     weekends.WeekendsList.Add(weekend);
                 }
-                
+
                 IEnumerable<WeekendModel> weekendLists = weekends.WeekendsList;
                 weekendLists = weekends.WeekendsList.Where(x => x.CountryName.ToLower().Contains(searchText) || x.CountryCode.ToLower().Contains(searchText) || x.DayOfWeek.ToLower().Contains(searchText));
 
-                if (filterCountryCodeId != null)
+                if (filterCountryCodeId != null && filterCountryNameId == null && searchText.IsNullOrEmpty())
                 {
                     weekendLists = weekendLists.Where(x => x.CountryId == filterCountryCodeId).ToList();
                 }
-                if (filterCountryNameId != null)
+                if (filterCountryNameId != null && filterCountryCodeId == null && searchText.IsNullOrEmpty())
                 {
-                    weekendLists = weekendLists.Where(x => x.CountryId == filterCountryNameId).ToList();
+                    weekendLists = weekends.WeekendsList.Where(x => x.CountryId == filterCountryNameId).ToList();
+                }
+                if (filterCountryNameId != null && filterCountryCodeId != null && searchText.IsNullOrEmpty())
+                {
+                    weekendLists = weekends.WeekendsList.Where(x => x.CountryId == filterCountryNameId && x.CountryId == filterCountryCodeId).ToList();
+                }
+                if (filterCountryCodeId != null && filterCountryNameId == null && !searchText.IsNullOrEmpty())
+                {
+                    weekendLists = weekends.WeekendsList.Where(x => x.CountryId == filterCountryCodeId && (x.CountryName.ToLower().Contains(searchText) || x.CountryCode.ToLower().Contains(searchText) || x.DayOfWeek.ToLower().Contains(searchText))).ToList();
+                }
+                if (filterCountryNameId != null && filterCountryCodeId == null && !searchText.IsNullOrEmpty())
+                {
+                    weekendLists = weekends.WeekendsList.Where(x => x.CountryId == filterCountryNameId && (x.CountryName.ToLower().Contains(searchText) || x.CountryCode.ToLower().Contains(searchText) || x.DayOfWeek.ToLower().Contains(searchText))).ToList();
+                }
+                if (filterCountryNameId != null && filterCountryCodeId != null && !searchText.IsNullOrEmpty())
+                {
+                    weekendLists = weekendLists.Where(x => x.CountryId == filterCountryNameId && x.CountryId == filterCountryCodeId && (x.CountryName.ToLower().Contains(searchText) || x.CountryCode.ToLower().Contains(searchText) || x.DayOfWeek.ToLower().Contains(searchText))).ToList();
                 }
                 weekendLists = sortAscending ? weekendLists.OrderBy(x => x.GetType().GetProperty(sortCol).GetValue(x, null)) : weekendLists.OrderByDescending(x => x.GetType().GetProperty(sortCol).GetValue(x, null));
                 weekends.Count = weekendLists.Count();
 
                 var sortedWeekends = weekendLists.Skip(displayStart).Take(displayLength);
                 weekends.WeekendsList = sortedWeekends.ToList();
-
-                return new JsonResult(new CustomResponse<GlobalConfigurationWeekendsModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = weekends });
-
-            }
+				return new JsonResult(new CustomResponse<GlobalConfigurationWeekendsModel>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = weekends });
+			}
             catch (Exception ex)
             {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
-            }
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+			}
         }
 
         private string GetDayOfWeek(long dayOfWeekId)
@@ -162,11 +176,11 @@ namespace CIR.Data.Data.GlobalConfiguration
             else if ((DayOfWeek)dayOfWeekId == System.DayOfWeek.Monday)
             {
 
-                return Enum.GetName(System.DayOfWeek.Monday.GetType(), System.DayOfWeek.Monday); 
+                return Enum.GetName(System.DayOfWeek.Monday.GetType(), System.DayOfWeek.Monday);
             }
             else if ((DayOfWeek)dayOfWeekId == System.DayOfWeek.Tuesday)
             {
-                    return Enum.GetName(System.DayOfWeek.Tuesday.GetType(), System.DayOfWeek.Tuesday);
+                return Enum.GetName(System.DayOfWeek.Tuesday.GetType(), System.DayOfWeek.Tuesday);
             }
             else if ((DayOfWeek)dayOfWeekId == System.DayOfWeek.Wednesday)
             {

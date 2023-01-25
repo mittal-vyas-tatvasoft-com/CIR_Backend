@@ -1,6 +1,9 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
+using CIR.Common.Enums;
+using CIR.Common.Helper;
 using CIR.Core.Entities;
+using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Entities.Website;
 using CIR.Core.Interfaces.Website;
 using CIR.Core.ViewModel.Website;
@@ -9,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CIR.Data.Data.Website
 {
-    public class ClientRepository : IClientRepository
+	public class ClientRepository : IClientRepository
 	{
 		#region PROPERTIES
 
@@ -54,16 +57,16 @@ namespace CIR.Data.Data.Website
 
 				if (clients.Count == 0)
 				{
-					return new JsonResult(new CustomResponse<List<ClientModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+					return new JsonResult(new CustomResponse<List<ClientModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
 				}
 				else
 				{
-					return new JsonResult(new CustomResponse<List<ClientModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = clients });
+					return new JsonResult(new CustomResponse<List<ClientModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = clients });
 				}
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -80,7 +83,7 @@ namespace CIR.Data.Data.Website
 				{
 					if (clientModel.Id < 0)
 					{
-						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = string.Format(SystemMessages.msgAddingDataError, "Client") });
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgAddingDataError, "Client") });
 					}
 					else if (clientModel.Id == 0)
 					{
@@ -91,11 +94,11 @@ namespace CIR.Data.Data.Website
 						return await UpdateClient(clientModel);
 					}
 				}
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = string.Format(SystemMessages.msgAddingDataError, "Client") });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgAddingDataError, "Client") });
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -130,11 +133,11 @@ namespace CIR.Data.Data.Website
 				};
 				_CIRDbContext.Clients.Add(client);
 				await _CIRDbContext.SaveChangesAsync();
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Client") });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Client") });
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -172,13 +175,13 @@ namespace CIR.Data.Data.Website
 					}
 					));
 					await _CIRDbContext.SaveChangesAsync();
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = string.Format(SystemMessages.msgDataUpdatedSuccessfully, "Client") });
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataUpdatedSuccessfully, "Client") });
 				}
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = string.Format(SystemMessages.msgIdNotFound, "Client") });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgIdNotFound, "Client") });
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 		#endregion

@@ -1,20 +1,14 @@
-﻿using CIR.Application.Services.Users;
-using CIR.Common.CustomResponse;
-using CIR.Controllers.Users;
-using CIR.Core.Entities.Users;
-using CIR.Core.Entities.Utilities;
-using CIR.Core.Interfaces.Users;
+﻿using CIR.Common.CustomResponse;
+using CIR.Common.Enums;
+using CIR.Common.Helper;
 using CIR.Core.Interfaces.Utilities;
-using CIR.Core.ViewModel;
-using CIR.Core.ViewModel.Usersvm;
 using CIR.Core.ViewModel.Utilities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Controllers.Utilities
 {
-    [Route("api/[controller]")]
+	[Route("api/[controller]")]
 	[ApiController]
 	[Authorize]
 	public class SystemSettingsLookupsController : ControllerBase
@@ -51,7 +45,7 @@ namespace CIR.Controllers.Utilities
 			catch (Exception ex)
 			{
 
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -73,7 +67,7 @@ namespace CIR.Controllers.Utilities
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -92,7 +86,7 @@ namespace CIR.Controllers.Utilities
 					var isExist = await _lookupService.LookupItemExists(lookupItemsTextmodel.CultureId, lookupItemsTextmodel.LookupItemId);
 					if (isExist)
 					{
-						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = string.Format(SystemMessages.msgDataExists, "Lookup Item") });
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataExists, "Lookup Item") });
 					}
 					else
 					{
@@ -101,10 +95,10 @@ namespace CIR.Controllers.Utilities
 				}
 				catch (Exception ex)
 				{
-					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 				}
 			}
-			return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = SystemMessages.msgBadRequest });
+			return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgBadRequest });
 		}
 
 		/// <summary>
@@ -124,10 +118,23 @@ namespace CIR.Controllers.Utilities
 				}
 				catch (Exception ex)
 				{
-					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 				}
 			}
-			return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = SystemMessages.msgBadRequest });
+			return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgBadRequest });
+		}
+
+		[HttpGet("[action]/{id}")]
+		public async Task<IActionResult> GetById(int id)
+		{
+			try
+			{
+				return await _lookupService.GetLookupById(id);
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+			}
 		}
 
 		#endregion

@@ -1,6 +1,8 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
+using CIR.Common.Enums;
 using CIR.Common.Helper;
+using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Entities.Users;
 using CIR.Core.Interfaces.Users;
 using CIR.Core.ViewModel;
@@ -12,7 +14,7 @@ using Roles = CIR.Core.Entities.Users.Roles;
 
 namespace CIR.Data.Data.Users
 {
-    public class RolesRepository : ControllerBase, IRolesRepository
+	public class RolesRepository : ControllerBase, IRolesRepository
 	{
 		#region PROPERTIES
 		private readonly CIRDbContext _CIRDbContext;
@@ -44,13 +46,13 @@ namespace CIR.Data.Data.Users
 
 				if (roles.Count == 0)
 				{
-					return new JsonResult(new CustomResponse<List<RoleViewModel>>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+					return new JsonResult(new CustomResponse<List<RoleViewModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
 				}
-				return new JsonResult(new CustomResponse<List<RoleViewModel>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = roles });
+				return new JsonResult(new CustomResponse<List<RoleViewModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = roles });
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -127,7 +129,7 @@ namespace CIR.Data.Data.Users
 			{
 				if (roles.Name == "" || roles.Name == "string")
 				{
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = SystemMessages.msgEnterValidData });
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgEnterValidData });
 				}
 
 				if (roles.Id == 0)
@@ -201,7 +203,7 @@ namespace CIR.Data.Data.Users
 					}
 					if (roles.Name != null)
 					{
-						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Role") });
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Role") });
 					}
 				}
 				else
@@ -346,14 +348,14 @@ namespace CIR.Data.Data.Users
 					}
 					if (roles.Name != null)
 					{
-						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = string.Format(SystemMessages.msgDataUpdatedSuccessfully, "Role") });
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Role") });
 					}
 				}
-				return new JsonResult(new CustomResponse<Roles>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = false, Message = HttpStatusCodesMessages.UnprocessableEntity });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute() });
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = false, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -369,18 +371,18 @@ namespace CIR.Data.Data.Users
 			{
 				if (_CIRDbContext.Users.Any(x => x.RoleId == roleId))
 				{
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = true, Message = HttpStatusCodesMessages.BadRequest, Data = SystemMessages.msgCannotRemoveRecord });
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgCannotRemoveRecord });
 				}
 				else
 				{
 					_CIRDbContext.Roles.Remove(role);
 					await _CIRDbContext.SaveChangesAsync();
 				}
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Deleted, Data = string.Format(SystemMessages.msgDataDeletedSuccessfully, "Role") });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Deleted, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Deleted.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataDeletedSuccessfully, "Role") });
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = true, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 		/// <summary>
@@ -398,11 +400,11 @@ namespace CIR.Data.Data.Users
 					_CIRDbContext.RolesGroupings.Remove(item);
 					await _CIRDbContext.SaveChangesAsync();
 				}
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Deleted, Data = string.Format(SystemMessages.msgDataDeletedSuccessfully, "Section") });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Deleted, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Deleted.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataDeletedSuccessfully, "Section") });
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = true, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -440,18 +442,18 @@ namespace CIR.Data.Data.Users
 					}
 					if (rolePermissionModel == null)
 					{
-						return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = true, Message = HttpStatusCodesMessages.NotFound });
+						return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
 					}
-					return new JsonResult(new CustomResponse<RolePermissionModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = rolePermissionModel });
+					return new JsonResult(new CustomResponse<RolePermissionModel>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = rolePermissionModel });
 				}
 				else
 				{
-					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = true, Message = HttpStatusCodesMessages.NotFound });
+					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
 				}
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = true, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -493,9 +495,9 @@ namespace CIR.Data.Data.Users
 						}
 						roleGrouping2SubSiteModel.Languages.Add(roleGrouping2CultureModel);
 					}
-					subRole.groupId = listMain.Where(x => x.SiteId == itemSite.Key).FirstOrDefault().GroupId;
 					subRole.site.Add(roleGrouping2SubSiteModel);
 				}
+				subRole.groupId = listMain.Where(x => x.GroupId == item.Key).FirstOrDefault().GroupId;
 				subRoleList.Add(subRole);
 			}
 			return subRoleList;

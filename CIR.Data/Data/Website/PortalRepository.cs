@@ -1,16 +1,19 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
-using CIR.Common.Website;
+using CIR.Common.Enums;
+using CIR.Common.Helper;
 using CIR.Core.Entities;
+using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Entities.Website;
 using CIR.Core.Entities.Websites;
 using CIR.Core.Interfaces.Website;
 using CIR.Core.ViewModel.Website;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Data.Data.Website
 {
-    public class PortalRepository : IPortalRepository
+	public class PortalRepository : IPortalRepository
 	{
 		#region PROPERTIES
 
@@ -51,11 +54,11 @@ namespace CIR.Data.Data.Website
 						return await UpdatePortal(portalModel, clientId);
 					}
 				}
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = string.Format(SystemMessages.msgAddingDataError, "Portal") });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgAddingDataError, "Portal") });
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -107,7 +110,7 @@ namespace CIR.Data.Data.Website
 				{
 					Enabled = portalModel.PostalServiceTypeEnabled,
 					Cost = portalModel.PostalServiceTypeCost,
-					Type = Convert.ToInt16(ServiceTypes.Postal),
+					Type = Convert.ToInt16(WebsiteEnums.ServiceTypes.Postal),
 					PortalId = portal.Id
 				};
 				serviceTypes.Add(postalServiceType);
@@ -116,7 +119,7 @@ namespace CIR.Data.Data.Website
 				{
 					Enabled = portalModel.DropOffServiceTypeEnabled,
 					Cost = portalModel.DropOffServiceTypeCost,
-					Type = Convert.ToInt16(ServiceTypes.DropOff),
+					Type = Convert.ToInt16(WebsiteEnums.ServiceTypes.DropOff),
 					PortalId = portal.Id
 				};
 				serviceTypes.Add(dropoffServiceType);
@@ -125,18 +128,18 @@ namespace CIR.Data.Data.Website
 				{
 					Enabled = portalModel.CollectionServiceTypeEnabled,
 					Cost = portalModel.CollectionServiceTypeCost,
-					Type = Convert.ToInt16(ServiceTypes.Collection),
+					Type = Convert.ToInt16(WebsiteEnums.ServiceTypes.Collection),
 					PortalId = portal.Id
 				};
 				serviceTypes.Add(collectionServiceType);
 
 				_CIRDbContext.PortalServiceTypes.AddRange(serviceTypes);
 				await _CIRDbContext.SaveChangesAsync();
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Portal") });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Portal") });
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -213,14 +216,13 @@ namespace CIR.Data.Data.Website
 						_CIRDbContext.PortalServiceTypes.Update(serviceType);
 						await _CIRDbContext.SaveChangesAsync();
 					}
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = string.Format(SystemMessages.msgDataUpdatedSuccessfully, "Portal") });
-
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataUpdatedSuccessfully, "Portal") });
 				}
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = string.Format(SystemMessages.msgIdNotFound, "Portal") });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgIdNotFound, "Portal") });
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -240,15 +242,15 @@ namespace CIR.Data.Data.Website
 					{
 						portalSubsite.Enabled = false;
 						_CIRDbContext.SaveChanges();
-						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NoContent, Result = true, Message = HttpStatusCodesMessages.NoContent, Data =  string.Format(SystemMessages.msgDataDisabledSuccessfully, "Portal")  });
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NoContent, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.NoContent.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataDisabledSuccessfully, "Portal") });
 					}
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = string.Format(SystemMessages.msgIdNotFound, "Portal") });
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgIdNotFound, "Portal") });
 				}
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = SystemMessages.msgBadRequest });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgBadRequest });
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 		#endregion

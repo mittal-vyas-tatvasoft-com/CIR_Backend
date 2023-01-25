@@ -1,6 +1,9 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
+using CIR.Common.Enums;
+using CIR.Common.Helper;
 using CIR.Core.Entities;
+using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.Utilities;
 using CIR.Core.ViewModel.Utilities;
 using Microsoft.AspNetCore.JsonPatch.Internal;
@@ -13,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace CIR.Data.Data.Utilities
 {
-    public class SystemSettingsLanguagesRepository : ISytemSettingsLanguagesRepository
+	public class SystemSettingsLanguagesRepository : ISytemSettingsLanguagesRepository
 	{
 		#region PROPERTIES
 		private readonly CIRDbContext _CIRDbContext;
@@ -48,17 +51,17 @@ namespace CIR.Data.Data.Utilities
 						await _CIRDbContext.SaveChangesAsync();
 					}
 
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = string.Format(SystemMessages.msgDataUpdatedSuccessfully, "Language") });
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataUpdatedSuccessfully, "Language") });
 				}
 				else
 				{
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = true, Message = HttpStatusCodesMessages.NotFound, Data = string.Format(SystemMessages.msgIdNotFound, "Language") });
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgIdNotFound, "Language") });
 				}
 
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 

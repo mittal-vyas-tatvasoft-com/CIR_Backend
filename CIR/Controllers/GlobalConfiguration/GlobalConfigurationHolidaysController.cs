@@ -1,5 +1,8 @@
 ﻿using CIR.Common.CustomResponse;
+using CIR.Common.Enums;
+using CIR.Common.Helper;
 using CIR.Core.Entities.GlobalConfiguration;
+using CIR.Core.Entities.Utilities;
 using CIR.Core.Interfaces.Common;
 using CIR.Core.Interfaces.GlobalConfiguration;
 using CsvHelper;
@@ -9,7 +12,7 @@ using System.Globalization;
 
 namespace CIR.Controllers.GlobalConfiguration
 {
-    [Route("api/[controller]")]
+	[Route("api/[controller]")]
 	[ApiController]
 	[Authorize]
 	public class GlobalConfigurationHolidaysController : ControllerBase
@@ -59,17 +62,17 @@ namespace CIR.Controllers.GlobalConfiguration
 							}
 							await _globalConfigurationHolidaysService.CreateOrUpdateGlobalConfigurationHolidays(record);
 						}
-						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated });
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data  = string.Format(SystemMessages.msgDataSavedSuccessfully, "Holiday") });
 					}
 				}
 				else
 				{
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = SystemMessages.msgSelectXlsxOrCSVFile });
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgSelectXlsxOrCSVFile });
 				}
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -85,18 +88,16 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// <param name="countryCode"> word takes country name </param>
 		/// <returns> filtered list of holidays </returns>
 		[HttpGet]
-		public async Task<IActionResult> GetAllHolidays(int displayLength, int displayStart, string? sortCol, string? search, int? countryCode, int? countryName, bool sortAscending = true)
+		public async Task<IActionResult> GetAllHolidays(int displayLength, int displayStart, string? sortCol, string? search, int countryCode, int countryName, bool sortAscending = true)
 		{
 			try
 			{
 				search ??= string.Empty;
-				countryCode ??= null;
-				countryName ??= null;
 				return await _globalConfigurationHolidaysService.GetGlobalConfigurationHolidays(displayLength, displayStart, sortCol, search, countryCode, countryName, sortAscending);
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -105,7 +106,7 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// </summary>
 		/// <param name="holidayId"></param>
 		/// <returns></returns>
-		[HttpGet("{HolidayId}")]
+		[HttpGet("{holidayId}")]
 		public async Task<IActionResult> Get(long holidayId)
 		{
 			try
@@ -114,7 +115,7 @@ namespace CIR.Controllers.GlobalConfiguration
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -123,7 +124,7 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// </summary>
 		/// <param name="holidayModel"></param>
 		/// <returns></returns>
-		[HttpPut("Update")]
+		[HttpPut("[action]")]
 		public async Task<IActionResult> Update(Holidays holidayModel)
 		{
 			try
@@ -132,7 +133,7 @@ namespace CIR.Controllers.GlobalConfiguration
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -141,7 +142,7 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// </summary>
 		/// <param name="holidayModel"></param>
 		/// <returns></returns>
-		[HttpPost("Create")]
+		[HttpPost("[action]")]
 		public async Task<IActionResult> Create(Holidays holidayModel)
 		{
 			try
@@ -150,7 +151,7 @@ namespace CIR.Controllers.GlobalConfiguration
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -159,7 +160,7 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// </summary>
 		/// <param name="holidayId"></param>
 		/// <returns></returns>
-		[HttpDelete("Delete")]
+		[HttpDelete("[action]")]
 		public async Task<IActionResult> Delete(long holidayId)
 		{
 			try
@@ -168,11 +169,11 @@ namespace CIR.Controllers.GlobalConfiguration
 				{
 					return await _globalConfigurationHolidaysService.DeleteHolidays(holidayId);
 				}
-				return new JsonResult(new CustomResponse<String>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = SystemMessages.msgInvalidId });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute(), Data = SystemMessages.msgInvalidId });
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 	}

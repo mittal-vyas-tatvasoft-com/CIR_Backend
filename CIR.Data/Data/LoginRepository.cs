@@ -1,8 +1,10 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
+using CIR.Common.Enums;
 using CIR.Common.Helper;
 using CIR.Common.MailTemplate;
 using CIR.Common.SystemConfig;
+using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces;
 using CIR.Core.ViewModel;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +13,7 @@ using RandomStringCreator;
 
 namespace CIR.Data.Data
 {
-    public class LoginRepository : ILoginRepository
+	public class LoginRepository : ILoginRepository
 	{
 		private readonly CIRDbContext _CIRDBContext;
 		private readonly EmailGeneration _emailGeneration;
@@ -36,7 +38,7 @@ namespace CIR.Data.Data
 
 				if (userRecords != null && userRecords.ResetRequired == true)
 				{
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Forbidden, Result = false, Message = HttpStatusCodesMessages.Forbidden, Data = SystemMessages.msgAccountIsLocked });
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Forbidden, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.Forbidden.GetDescriptionAttribute(), Data = SystemMessages.msgAccountIsLocked });
 				}
 				if (userRecords == null)
 				{
@@ -56,12 +58,12 @@ namespace CIR.Data.Data
 							userDetails.ResetRequired = true;
 							_CIRDBContext.Users.Update(userDetails);
 							_CIRDBContext.SaveChanges();
-							return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Forbidden, Result = false, Message = HttpStatusCodesMessages.Forbidden, Data = SystemMessages.msgAccountIsLocked });
+							return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Forbidden, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.Forbidden.GetDescriptionAttribute(), Data = SystemMessages.msgAccountIsLocked });
 						}
 					}
 					else
 					{
-						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = SystemMessages.msgInvalidUserNameOrPassword });
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgInvalidUserNameOrPassword });
 					}
 				}
 				var userData = _CIRDBContext.Users.FirstOrDefault((u) => u.Email == model.Email && u.Password == model.Password);
@@ -69,15 +71,15 @@ namespace CIR.Data.Data
 				{
 					var generatedToken = await _jwtGenerateToken.GenerateJwtToken(userData);
 					if (generatedToken != null)
-						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = generatedToken });
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = generatedToken });
 					else
-						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = SystemMessages.msgTokenNotGenerated });
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgTokenNotGenerated });
 				}
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = SystemMessages.msgInvalidUserNameOrPassword });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgInvalidUserNameOrPassword });
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -109,13 +111,13 @@ namespace CIR.Data.Data
 					string mailBody = MailTemplate.ForgotPasswordTemplate(user);
 					_emailGeneration.SendMail(forgotPasswordModel.Email, mailSubject, mailBody);
 
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = SystemMessages.msgSendNewPasswordOnMail });
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = SystemMessages.msgSendNewPasswordOnMail });
 				}
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = SystemMessages.msgEnterValidUserNameAndEmail });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute(), Data = SystemMessages.msgEnterValidUserNameAndEmail });
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -139,18 +141,18 @@ namespace CIR.Data.Data
 						user.ResetRequired = false;
 						_CIRDBContext.Users.Update(user);
 						await _CIRDBContext.SaveChangesAsync();
-						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = SystemMessages.msgPasswordChangedSuccessfully });
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = SystemMessages.msgPasswordChangedSuccessfully });
 					}
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = SystemMessages.msgIncorrectOldPassword });
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute(), Data = SystemMessages.msgIncorrectOldPassword });
 				}
 				else
 				{
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = SystemMessages.msgInvalidEmailAddress  });
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute(), Data = SystemMessages.msgInvalidEmailAddress });
 				}
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 

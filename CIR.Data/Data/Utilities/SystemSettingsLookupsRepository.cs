@@ -1,6 +1,8 @@
 ﻿using CIR.Common.CustomResponse;
 using CIR.Common.Data;
+using CIR.Common.Enums;
 using CIR.Common.Helper;
+using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Entities.Utilities;
 using CIR.Core.Interfaces.Utilities;
 using CIR.Core.ViewModel.Utilities;
@@ -10,7 +12,7 @@ using System.Data;
 
 namespace CIR.Data.Data.Utilities
 {
-    public class SystemSettingsLookupsRepository : ControllerBase, ILookupsRepository
+	public class SystemSettingsLookupsRepository : ControllerBase, ILookupsRepository
 	{
 		#region PROPERTIES   
 		private readonly CIRDbContext _CIRDBContext;
@@ -37,7 +39,7 @@ namespace CIR.Data.Data.Utilities
 			{
 				if (lookupItemsTextModel.Code == null || lookupItemsTextModel.CultureId == 0)
 				{
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest });
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgBadRequest });
 				}
 
 				if (lookupItemsTextModel.Id == 0)
@@ -49,16 +51,16 @@ namespace CIR.Data.Data.Utilities
 					else
 						displayOrder = 1;
 
-					var lookupItemId = (from sc in _CIRDBContext.SystemCodes
-										join lookup in _CIRDBContext.LookupItems on sc.Id equals lookup.SystemCodeId
-										select new LookupItem
-										{
-											LookupItemId = lookup.LookupItemId
-										}).FirstOrDefault();
+					LookupItem lookupItem = new()
+					{
+						SystemCodeId = lookupItemsTextModel.SystemCodeId,
+					};
+					_CIRDBContext.LookupItems.Add(lookupItem);
+					_CIRDBContext.SaveChanges();
 
 					LookupItemsText newLookupItem = new()
 					{
-						LookupItemId = lookupItemsTextModel.LookupItemId,
+						LookupItemId = lookupItem.LookupItemId,
 						CultureId = lookupItemsTextModel.CultureId,
 						DisplayOrder = displayOrder,
 						Text = lookupItemsTextModel.Text,
@@ -66,27 +68,33 @@ namespace CIR.Data.Data.Utilities
 					};
 					_CIRDBContext.LookupItemsText.Add(newLookupItem);
 					_CIRDBContext.SaveChanges();
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Lookup Item") });
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Lookup Item") });
 				}
 				else
 				{
 					var lookupItemTextData = _CIRDBContext.LookupItemsText.FirstOrDefault(x => x.Id == lookupItemsTextModel.Id);
 					if (lookupItemTextData != null)
 					{
-						LookupItemsText updateItem = lookupItemTextData;
-						updateItem.Text = lookupItemsTextModel.Text;
-						updateItem.Active = lookupItemsTextModel.Active;
 
-						_CIRDBContext.LookupItemsText.Update(updateItem);
+						_CIRDBContext.LookupItemsText.Where(x => x.Id == lookupItemsTextModel.Id).ForEachAsync(item =>
+						{
+							item.Id = lookupItemsTextModel.Id;
+							item.LookupItemId = lookupItemsTextModel.LookupItemId;
+							item.CultureId = lookupItemsTextModel.CultureId;
+							item.DisplayOrder = lookupItemTextData.DisplayOrder;
+							item.Text = lookupItemsTextModel.Text;
+							item.Active = lookupItemsTextModel.Active;
+						});
+
 						_CIRDBContext.SaveChanges();
-						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.CreatedOrUpdated, Result = true, Message = HttpStatusCodesMessages.CreatedOrUpdated, Data = string.Format(SystemMessages.msgDataUpdatedSuccessfully, "Lookup Item") });
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataUpdatedSuccessfully, "Lookup Item") });
 					}
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = string.Format(SystemMessages.msgNotFound, "Lookup Item") });
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgNotFound, "Lookup Item") });
 				}
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.UnprocessableEntity, Result = false, Message = HttpStatusCodesMessages.UnprocessableEntity, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -118,14 +126,14 @@ namespace CIR.Data.Data.Utilities
 
 				if (lookupModel == null)
 				{
-					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound });
+					return new JsonResult(new CustomResponse<LookupsModel>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
 				}
-
-				return new JsonResult(new CustomResponse<LookupsModel>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = lookupModel });
+				return new JsonResult(new CustomResponse<LookupsModel>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = lookupModel });
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+
 			}
 		}
 
@@ -166,14 +174,13 @@ namespace CIR.Data.Data.Utilities
 				}
 				if (lookupsItemList.Count == 0)
 				{
-					return new JsonResult(new CustomResponse<LookupItemsText>() { StatusCode = (int)HttpStatusCodes.NotFound, Result = false, Message = HttpStatusCodesMessages.NotFound, Data = null });
+					return new JsonResult(new CustomResponse<LookupItemsText>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
 				}
-
-				return new JsonResult(new CustomResponse<List<LookupItemsText>>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = lookupsItemList });
+				return new JsonResult(new CustomResponse<List<LookupItemsText>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = lookupsItemList });
 			}
 			catch (Exception ex)
 			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
 		}
 
@@ -227,6 +234,44 @@ namespace CIR.Data.Data.Utilities
 				return true;
 			}
 			return false;
+		}
+
+		/// <summary>
+		/// This method will return look up items of given id
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public async Task<IActionResult> GetLookupById(int id)
+		{
+			try
+			{
+				var lookupItem = await (from lookUp in _CIRDBContext.LookupItems
+										join code in _CIRDBContext.SystemCodes
+										on lookUp.SystemCodeId equals code.Id
+										join text in _CIRDBContext.LookupItemsText
+										on lookUp.LookupItemId equals text.LookupItemId
+										select new LookupItemsTextModel()
+										{
+											Id = text.Id,
+											SystemCodeId = code.Id,
+											LookupItemId = text.LookupItemId,
+											CultureId = text.CultureId,
+											DisplayOrderId = text.DisplayOrder,
+											Text = text.Text,
+											Active = text.Active,
+											Code = code.Code
+										}).Where(x => x.Id == id).FirstOrDefaultAsync();
+
+				if (lookupItem == null)
+				{
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgNotFound, "Lookup Item") });
+				}
+				return new JsonResult(new CustomResponse<LookupItemsTextModel>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = lookupItem });
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+			}
 		}
 		#endregion
 	}

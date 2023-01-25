@@ -10,7 +10,7 @@ namespace CIR.Common.CustomResponse
     {
         #region Common
         public static string msgInvalidId = "Invalid Input Id.";
-        public static string msgBadRequest = "Error";
+        public static string msgBadRequest = "Bad Request, issue in client request";
         public static string msgNotFound = "Requested {0} were not found.";
         public static string msgDataExists = "{0} Already Exists.";
         public static string msgEnterValidData = "Please enter valid Data.";

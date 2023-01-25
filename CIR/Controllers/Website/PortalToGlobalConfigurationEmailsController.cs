@@ -1,4 +1,6 @@
 ﻿using CIR.Common.CustomResponse;
+using CIR.Common.Enums;
+using CIR.Common.Helper;
 using CIR.Core.Entities.Website;
 using CIR.Core.Interfaces.Website;
 using Microsoft.AspNetCore.Authorization;
@@ -41,12 +43,12 @@ namespace CIR.Controllers.Website
                 }
                 catch (Exception ex)
                 {
-                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
-                }
+					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+				}
             }
-            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.BadRequest, Result = false, Message = HttpStatusCodesMessages.BadRequest, Data = SystemMessages.msgBadRequest });
+			return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgBadRequest });
 
-        }
+		}
         /// <summary>
 		/// This method takes a get website portalToGlobalConfigurationEmails list
 		/// </summary>
@@ -61,8 +63,8 @@ namespace CIR.Controllers.Website
             }
             catch (Exception ex)
             {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodes.InternalServerError, Result = false, Message = HttpStatusCodesMessages.InternalServerError, Data = ex });
-            }
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+			}
         }
         #endregion
     }
