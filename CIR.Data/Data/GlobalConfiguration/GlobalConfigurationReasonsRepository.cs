@@ -3,104 +3,106 @@ using CIR.Common.Enums;
 using CIR.Common.Helper;
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.GlobalConfiguration;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace CIR.Data.Data.GlobalConfiguration
 {
     public class GlobalConfigurationReasonsRepository : IGlobalConfigurationReasonsRepository
-	{
-		#region PROPERTIES
+    {
+        #region PROPERTIES
 
-		private readonly CIRDbContext _CIRDbContext;
+        private readonly CIRDbContext _CIRDbContext;
 
-		#endregion
+        #endregion
 
-		#region CONSTRUCTORS
+        #region CONSTRUCTORS
 
-		public GlobalConfigurationReasonsRepository(CIRDbContext context)
-		{
-			_CIRDbContext = context ??
-				throw new ArgumentNullException(nameof(context));
-		}
+        public GlobalConfigurationReasonsRepository(CIRDbContext context)
+        {
+            _CIRDbContext = context ??
+                throw new ArgumentNullException(nameof(context));
+        }
 
-		#endregion
+        #endregion
 
-		#region METHODS
+        #region METHODS
 
-		/// <summary>
-		/// This method takes a get globalconfiguration reasons list
-		/// </summary>
-		/// <returns></returns>
-		public async Task<IActionResult> GetGlobalConfigurationReasons()
-		{
-			try
-			{
-				var globalConfigReasonsList = await (from globalConfigReason in _CIRDbContext.GlobalConfigurationReasons
-													 select new GlobalConfigurationReasons()
-													 {
-														 Id = globalConfigReason.Id,
-														 Type = globalConfigReason.Type,
-														 Enabled = globalConfigReason.Enabled,
-														 Content = globalConfigReason.Content,
-													 }).OrderBy(x => x.Type).ThenBy(x => x.Content).ToListAsync();
+        /// <summary>
+        /// This method takes a get globalconfiguration reasons list
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> GetGlobalConfigurationReasons()
+        {
+            try
+            {
+                List<GlobalConfigurationReasons> globalConfigurationReasonsList;
+                using (DbConnection dbConnection = new DbConnection())
+                {
+                    using (var connection = dbConnection.Connection)
+                    {
+                        globalConfigurationReasonsList = connection.Query<GlobalConfigurationReasons>("spGetGlobalConfigurationReasons", null, commandType: CommandType.StoredProcedure).ToList();
+                    }
+                }
 
-				if (globalConfigReasonsList.Count == 0)
-				{
-					return new JsonResult(new CustomResponse<List<GlobalConfigurationReasons>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
-				}
+                if (globalConfigurationReasonsList.Count == 0)
+                {
+                    return new JsonResult(new CustomResponse<List<GlobalConfigurationReasons>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
+                }
 
-				return new JsonResult(new CustomResponse<List<GlobalConfigurationReasons>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = globalConfigReasonsList });
+                return new JsonResult(new CustomResponse<List<GlobalConfigurationReasons>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = globalConfigurationReasonsList });
 
-			}
-			catch (Exception ex)
-			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
-			}
-		}
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+            }
+        }
 
 
-		/// <summary>
-		/// This method takes a create or update globalconfiguration reasons
-		/// </summary>
-		/// <param name="globalConfigurationReasons"></param>
-		/// <returns></returns>
-		public async Task<IActionResult> CreateOrUpdateGlobalConfigurationReasons(List<GlobalConfigurationReasons> globalConfigurationReasons)
-		{
-			try
-			{
-				if (globalConfigurationReasons != null)
-				{
-					foreach (var option in globalConfigurationReasons)
-					{
-						GlobalConfigurationReasons globalReasons = new GlobalConfigurationReasons()
-						{
-							Id = option.Id,
-							Type = option.Type,
-							Enabled = option.Enabled,
-							Content = option.Content,
-						};
+        /// <summary>
+        /// This method takes a create or update globalconfiguration reasons
+        /// </summary>
+        /// <param name="globalConfigurationReasons"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> CreateOrUpdateGlobalConfigurationReasons(List<GlobalConfigurationReasons> globalConfigurationReasons)
+        {
+            try
+            {
+                if (globalConfigurationReasons != null)
+                {
+                    var result = 0;
+                    foreach (var option in globalConfigurationReasons)
+                    {
+                        using (DbConnection dbConnection = new DbConnection())
+                        {
+                            using (var connection = dbConnection.Connection)
+                            {
+                                DynamicParameters parameters = new DynamicParameters();
+                                parameters.Add("@Id", option.Id);
+                                parameters.Add("@Type", option.Type);
+                                parameters.Add("@Enabled", option.Enabled);
+                                parameters.Add("@Content", option.Content);
 
-						if (option.Id > 0)
-						{
-							_CIRDbContext.GlobalConfigurationReasons.Update(globalReasons);
-						}
-						else
-						{
-							_CIRDbContext.GlobalConfigurationReasons.Add(globalReasons);
-						}
-					}
-					await _CIRDbContext.SaveChangesAsync();
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "GlobalConfiguration Reason") });
-				}
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgBadRequest });
-			}
-			catch (Exception ex)
-			{
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
-			}
-		}
+                                result = connection.Execute("spCreateOrUpdateGlobalConfigurationReasons", parameters, commandType: CommandType.StoredProcedure);
+                            }
+                        }
+                    }
+                    if (result != 0)
+                    {
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "GlobalConfiguration Reason") });
+                    }
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute() });
+                }
+                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgBadRequest });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+            }
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }
