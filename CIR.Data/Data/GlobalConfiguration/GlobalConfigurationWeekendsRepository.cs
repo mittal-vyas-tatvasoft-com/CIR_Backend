@@ -109,17 +109,17 @@ namespace CIR.Data.Data.GlobalConfiguration
             try
 
             {
-                var weekendList = (from week in _CIRDbContext.Weekends
-                                   join country in _CIRDbContext.CountryCodes
-                                   on week.CountryId equals country.Id
-                                   select new WeekendModel()
-                                   {
-                                       Id = week.Id,
-                                       CountryId = country.Id,
-                                       DayOfWeekId = week.DayOfWeekId,
-                                       CountryCode = country.Code,
-                                       CountryName = country.CountryName
-                                   });
+                var weekendList = from week in _CIRDbContext.Weekends
+                                  join country in _CIRDbContext.CountryCodes
+                                  on week.CountryId equals country.Id
+                                  select new WeekendModel()
+                                  {
+                                      Id = week.Id,
+                                      CountryId = country.Id,
+                                      DayOfWeekId = week.DayOfWeekId,
+                                      CountryCode = country.Code,
+                                      CountryName = country.CountryName
+                                  };
 
                 foreach (var item in weekendList)
                 {

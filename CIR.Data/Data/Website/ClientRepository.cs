@@ -164,13 +164,13 @@ namespace CIR.Data.Data.Website
                     _CIRDbContext.SubSites.Update(subsite);
                     await _CIRDbContext.SaveChangesAsync();
 
-                    _CIRDbContext.Clients.Where(_ => _.Id == clientModel.Id).ToList().ForEach((client =>
+                    _CIRDbContext.Clients.Where(_ => _.Id == clientModel.Id).ToList().ForEach(client =>
                     {
                         client.Name = clientModel.Name;
                         client.SubsiteId = subsite.Id;
                         client.Code = clientModel.Code;
                     }
-                    ));
+                    );
                     await _CIRDbContext.SaveChangesAsync();
                     return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodes.Success, Result = true, Message = HttpStatusCodesMessages.Success, Data = "Client Updated Successfully" });
                 }

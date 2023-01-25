@@ -43,7 +43,7 @@ namespace CIR.Data.Data
                     var userDetails = _CIRDBContext.Users.Where(x => x.Email == model.Email).FirstOrDefault();
                     if (userDetails != null)
                     {
-                        var userId = (from item in _CIRDBContext.Users where item.Email == model.Email select item.Id);
+                        var userId = from item in _CIRDBContext.Users where item.Email == model.Email select item.Id;
                         if (userDetails.LoginAttempts < 5)
                         {
                             userDetails.Id = userId.FirstOrDefault();
@@ -100,12 +100,12 @@ namespace CIR.Data.Data
                     string randomString = SystemConfig.randomString;
                     string newPassword = new StringCreator(randomString).Get(8);
 
-                    _CIRDBContext.Users.Where(x => x.Id == user.Id).ToList().ForEach((a =>
+                    _CIRDBContext.Users.Where(x => x.Id == user.Id).ToList().ForEach(a =>
                     {
                         a.Password = newPassword;
                         a.ResetRequired = true;
                     }
-                    ));
+                    );
                     await _CIRDBContext.SaveChangesAsync();
 
                     //Send NewPassword in Mail

@@ -26,7 +26,7 @@ namespace CIR.Common.Helper
             //TODO when functionality start completely need to remove below return line
             return;
             ClaimsPrincipal claimsPrincipals = context.HttpContext.User;
-            var lstAccessCode = (claimsPrincipals.Claims.FirstOrDefault(x => x.Type == "RoleId").Value);
+            var lstAccessCode = claimsPrincipals.Claims.FirstOrDefault(x => x.Type == "RoleId").Value;
             var roleData = GetRoleDetailById(Convert.ToInt64(lstAccessCode));
             if (roleData.Result != null)
             {
