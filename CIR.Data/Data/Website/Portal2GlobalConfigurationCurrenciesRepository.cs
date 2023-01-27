@@ -1,18 +1,15 @@
 ﻿using CIR.Common.Data;
 using CIR.Common.Enums;
 using CIR.Common.Helper;
-using CIR.Core.Entities.GlobalConfiguration;
-using CIR.Core.Entities.Website;
 using CIR.Core.Entities.Websites;
 using CIR.Core.Interfaces.Website;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+using System.Data;
 
 namespace CIR.Data.Data.Website
 {
-    public class Portal2GlobalConfigurationCurrenciesRepository : IPortal2GlobalConfigurationCurrenciesRepository
+	public class Portal2GlobalConfigurationCurrenciesRepository : IPortal2GlobalConfigurationCurrenciesRepository
 	{
 		#region PROPERTIES
 
@@ -36,50 +33,32 @@ namespace CIR.Data.Data.Website
 		{
 			try
 			{
-				var result = (from PGCurrency in _CIRDBContext.Portal2GlobalConfigurationCurrencies
-							  select new Portal2GlobalConfigurationCurrency()
-							  {
-								  Id = PGCurrency.Id,
-								  PortalId = PGCurrency.PortalId,
-								  GlobalConfigurationCurrencyId = PGCurrency.GlobalConfigurationCurrencyId,
-								  EnabledOverride = PGCurrency.EnabledOverride,
+				List<Portal2GlobalConfigurationCurrency> portal2GlobalConfigurationCurrencies;
 
-
-							  }).Where(x =>
-
-							  x.PortalId == portalId).ToList();
-
-
-				var CurrencyId = (from PGCC in _CIRDBContext.Portal2GlobalConfigurationCurrencies
-								  select new Portal2GlobalConfigurationCurrency()
-								  {
-									  Id = PGCC.Id,
-									  PortalId = PGCC.PortalId,
-									  GlobalConfigurationCurrencyId = PGCC.GlobalConfigurationCurrencyId,
-									  EnabledOverride = PGCC.EnabledOverride
-								  }).FirstOrDefault(x => x.PortalId == portalId);
-				var serializedParent = JsonConvert.SerializeObject(CurrencyId);
-				Portal2GlobalConfigurationCurrency Currency = JsonConvert.DeserializeObject<Portal2GlobalConfigurationCurrency>(serializedParent);
-
-				if (Currency.EnabledOverride)
+				using (DbConnection dbConnection = new DbConnection())
 				{
-					Currency.EnabledOverride = true;
-				}
 
-				if (result != null)
-				{
-					return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationCurrency>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = result });
+					using (var connection = dbConnection.Connection)
+					{
+						DynamicParameters parameters = new DynamicParameters();
+						parameters.Add("portalId", portalId);
+						portal2GlobalConfigurationCurrencies = connection.Query<Portal2GlobalConfigurationCurrency>("spGetportal2GlobalConfigurationCurrenciesPortalWise", parameters, commandType: CommandType.StoredProcedure).ToList();
+					}
 				}
-				else
+				if (portal2GlobalConfigurationCurrencies.Count == 0)
 				{
 					return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationCurrency>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
 				}
+				return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationCurrency>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = portal2GlobalConfigurationCurrencies });
 			}
 			catch (Exception ex)
 			{
 				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
 			}
+
 		}
+
+
 		/// <summary>
 		/// This method is used by create method and update method of portal2GlobalConfigurationCurrencies controller
 		/// </summary>
@@ -89,29 +68,31 @@ namespace CIR.Data.Data.Website
 		{
 			try
 			{
-
 				if (portal2GlobalConfigurationCurrencies != null)
 				{
+					var result = 0;
 					foreach (var item in portal2GlobalConfigurationCurrencies)
 					{
-						var Currency = _CIRDBContext.Portal2GlobalConfigurationCurrencies.FirstOrDefault(x => x.Id == item.Id);
-						if (Currency != null)
+						using (DbConnection dbConnection = new())
 						{
-							Currency.PortalId = item.PortalId;
-							Currency.GlobalConfigurationCurrencyId = item.GlobalConfigurationCurrencyId;
-							Currency.EnabledOverride = item.EnabledOverride;
+							using (var connection = dbConnection.Connection)
+							{
+								DynamicParameters parameters = new DynamicParameters();
+								parameters.Add("@Id", item.Id);
+								parameters.Add("@PortalId", item.PortalId);
+								parameters.Add("@EnabledOverride", item.EnabledOverride);
+								parameters.Add("@GlobalConfigurationCurrencyId", item.GlobalConfigurationCurrencyId);
+								result = connection.Execute("spUpdatePortalToGlobalConfigurationCurrencies", parameters, commandType: CommandType.StoredProcedure);
+							}
 						}
-						else
-						{
-							return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute() });
-						}
-
-						_CIRDBContext.Portal2GlobalConfigurationCurrencies.Update(Currency);
 					}
-					await _CIRDBContext.SaveChangesAsync();
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataUpdatedSuccessfully, "Portal To Global Configuration Currencies") });
+					if (result != 0)
+					{
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Portal2Global Currency") });
+					}
+					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute() });
 				}
-				return new JsonResult(new CustomResponse<PortalToGlobalConfigurationEmails>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgAddingDataError, "Portal2Global Currency") });
 			}
 			catch (Exception ex)
 			{
@@ -121,3 +102,4 @@ namespace CIR.Data.Data.Website
 		#endregion
 	}
 }
+
