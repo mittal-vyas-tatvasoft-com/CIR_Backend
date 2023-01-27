@@ -1,12 +1,12 @@
 ﻿using CIR.Common.Data;
 using CIR.Common.Enums;
 using CIR.Common.Helper;
-using CIR.Core.Entities;
 using CIR.Core.Entities.Website;
-using CIR.Core.Entities.Websites;
 using CIR.Core.Interfaces.Website;
 using CIR.Core.ViewModel.Website;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace CIR.Data.Data.Website
 {
@@ -31,36 +31,7 @@ namespace CIR.Data.Data.Website
         #region METHODS
 
         /// <summary>
-        /// This method is used by the create method of portals controller
-        /// </summary>
-        /// <param name="portalModel"></param>
-        /// <param name="clientId"></param>
-        public async Task<IActionResult> CreateorUpdatePortal(PortalModel portalModel, long clientId)
-        {
-            try
-            {
-                if (portalModel != null && clientId >= 0)
-                {
-
-                    if (portalModel.Id == 0)
-                    {
-                        return await CreatePortal(portalModel, clientId);
-                    }
-                    else
-                    {
-                        return await UpdatePortal(portalModel, clientId);
-                    }
-                }
-                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgAddingDataError, "Portal") });
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
-            }
-        }
-
-        /// <summary>
-        /// This method is used by CreateOrUpdate method of portal repository
+        /// This method is used by Create method of portal controller
         /// </summary>
         /// <param name="portalModel"></param>
         /// <param name="clientId"></param>
@@ -69,73 +40,119 @@ namespace CIR.Data.Data.Website
         {
             try
             {
+                var result = 0;
                 var existingClient = _CIRDbContext.Clients.FirstOrDefault(c => c.Id == clientId);
-                var portal = new Portals()
-                {
-                    CreateResponse = portalModel.CreateResponse,
-                    CountReturnIdentifier = portalModel.CountReturnIdentifier,
-                    CountryId = portalModel.CountryId,
-                    CurrencyId = portalModel.CurrencyId,
-                    CultureId = portalModel.CultureId,
-                    IntegrationLevel = portalModel.IntegrationLevel,
-                    ReturnItemsEnabled = false,
-                    ClientId = clientId,
-                    GlobalConfigurationFontId = _CIRDbContext.Fonts.FirstOrDefault(fontId => fontId.IsDefault).Id,
-                    Account = portalModel.Account,
-                    Entity = portalModel.Entity
-                };
-                _CIRDbContext.portals.Add(portal);
-                await _CIRDbContext.SaveChangesAsync();
 
-                var subsite = new SubSite()
+                using (DbConnection dbConnection = new DbConnection())
                 {
-                    DisplayName = portalModel.DisplayName,
-                    Directory = portalModel.Directory,
-                    Domain = _CIRDbContext.SubSites.FirstOrDefault(x => x.Id == existingClient.SubsiteId).Domain,
-                    Description = portalModel.Description,
-                    Stopped = portalModel.Stopped,
-                    EmailStopped = portalModel.EmailStopped,
-                    SystemEmailFromAddress = portalModel.SystemEmailFromAddress,
-                    BccEmailAddress = portalModel.BccEmailAddress,
-                    Enabled = true,
-                    ShowTax = false,
-                    PortalId = portal.Id
-                };
-                _CIRDbContext.SubSites.Add(subsite);
-                await _CIRDbContext.SaveChangesAsync();
+                    using (var connection = dbConnection.Connection)
+                    {
+                        DynamicParameters parameters = new DynamicParameters();
+                        parameters.Add("@CreateResponse", portalModel.CreateResponse);
+                        parameters.Add("@CountReturnIdentifier", portalModel.CountReturnIdentifier);
+                        parameters.Add("@CountryId", portalModel.CountryId);
+                        parameters.Add("CurrencyId", portalModel.CurrencyId);
+                        parameters.Add("@CultureId", portalModel.CultureId);
+                        parameters.Add("@IntegrationLevel", portalModel.IntegrationLevel);
+                        parameters.Add("@ReturnItemsEnabled", false);
+                        parameters.Add("@ClientId", clientId);
+                        parameters.Add("@GlobalConfigurationFontId", _CIRDbContext.Fonts.FirstOrDefault(fontId => fontId.IsDefault).Id);
+                        parameters.Add("@Account", portalModel.Account);
+                        parameters.Add("@Entity", portalModel.Entity);
 
-                List<PortalServiceTypes> serviceTypes = new List<PortalServiceTypes>();
-                var postalServiceType = new PortalServiceTypes()
+                        result = connection.Execute("spCreatePortal", parameters, commandType: CommandType.StoredProcedure);
+                    }
+                    if (result == 0)
+                    {
+                        return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute() });
+                    }
+                }
+                long portalId = _CIRDbContext.portals.OrderByDescending(x => x.Id).FirstOrDefault().Id;
+                using (DbConnection dbConnection = new DbConnection())
                 {
-                    Enabled = portalModel.PostalServiceTypeEnabled,
-                    Cost = portalModel.PostalServiceTypeCost,
-                    Type = Convert.ToInt16(WebsiteEnums.ServiceTypes.Postal),
-                    PortalId = portal.Id
-                };
-                serviceTypes.Add(postalServiceType);
+                    using (var connection = dbConnection.Connection)
+                    {
+                        DynamicParameters parameters = new DynamicParameters();
+                        parameters.Add("@DisplayName", portalModel.DisplayName);
+                        parameters.Add("@Directory", portalModel.Directory);
+                        parameters.Add("@Domain", _CIRDbContext.SubSites.FirstOrDefault(x => x.Id == existingClient.SubsiteId).Domain);
+                        parameters.Add("@Description", portalModel.Description);
+                        parameters.Add("@Stopped", portalModel.Stopped);
+                        parameters.Add("@EmailStopped", portalModel.EmailStopped);
+                        parameters.Add("@SystemEmailFromAddress", portalModel.SystemEmailFromAddress);
+                        parameters.Add("@BccEmailAddress", portalModel.BccEmailAddress);
+                        parameters.Add("@Enabled", true);
+                        parameters.Add("@ShowTax", false);
+                        parameters.Add("@PortalId", portalId);
 
-                var dropoffServiceType = new PortalServiceTypes()
+                        result = connection.Execute("spCreateSubsite", parameters, commandType: CommandType.StoredProcedure);
+                    }
+                    if (result == 0)
+                    {
+                        return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute() });
+                    }
+                }
+
+                using (DbConnection dbConnection = new DbConnection())
                 {
-                    Enabled = portalModel.DropOffServiceTypeEnabled,
-                    Cost = portalModel.DropOffServiceTypeCost,
-                    Type = Convert.ToInt16(WebsiteEnums.ServiceTypes.DropOff),
-                    PortalId = portal.Id
-                };
-                serviceTypes.Add(dropoffServiceType);
+                    using (var connection = dbConnection.Connection)
+                    {
+                        DynamicParameters parameters = new DynamicParameters();
+                        parameters.Add("@Enabled", portalModel.PostalServiceTypeEnabled);
+                        parameters.Add("@Cost", portalModel.PostalServiceTypeCost);
+                        parameters.Add("@PortalId", portalId);
+                        parameters.Add("@Type", Convert.ToInt16(WebsiteEnums.ServiceTypes.Postal));
 
-                var collectionServiceType = new PortalServiceTypes()
+                        result = connection.Execute("spAddServiceTypes", parameters, commandType: CommandType.StoredProcedure);
+                    }
+                    if (result == 0)
+                    {
+                        return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute() });
+                    }
+                }
+
+                using (DbConnection dbConnection = new DbConnection())
                 {
-                    Enabled = portalModel.CollectionServiceTypeEnabled,
-                    Cost = portalModel.CollectionServiceTypeCost,
-                    Type = Convert.ToInt16(WebsiteEnums.ServiceTypes.Collection),
-                    PortalId = portal.Id
-                };
-                serviceTypes.Add(collectionServiceType);
+                    using (var connection = dbConnection.Connection)
+                    {
+                        DynamicParameters parameters = new DynamicParameters();
+                        parameters.Add("@Enabled", portalModel.DropOffServiceTypeEnabled);
+                        parameters.Add("@Cost", portalModel.DropOffServiceTypeCost);
+                        parameters.Add("@PortalId", portalId);
+                        parameters.Add("@Type", Convert.ToInt16(WebsiteEnums.ServiceTypes.DropOff));
 
-                _CIRDbContext.PortalServiceTypes.AddRange(serviceTypes);
-                await _CIRDbContext.SaveChangesAsync();
-                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Portal") });
+                        result = connection.Execute("spAddServiceTypes", parameters, commandType: CommandType.StoredProcedure);
+                    }
+                    if (result == 0)
+                    {
+                        return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute() });
+                    }
+                }
+
+                using (DbConnection dbConnection = new DbConnection())
+                {
+                    using (var connection = dbConnection.Connection)
+                    {
+                        DynamicParameters parameters = new DynamicParameters();
+                        parameters.Add("@Enabled", portalModel.CollectionServiceTypeEnabled);
+                        parameters.Add("@Cost", portalModel.CollectionServiceTypeCost);
+                        parameters.Add("@PortalId", portalId);
+                        parameters.Add("@Type", Convert.ToInt16(WebsiteEnums.ServiceTypes.Collection));
+
+                        result = connection.Execute("spAddServiceTypes", parameters, commandType: CommandType.StoredProcedure);
+                    }
+                    if (result == 0)
+                    {
+                        return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute() });
+                    }
+                }
+                var portalIdObj = new Dictionary<string, object>
+                {
+                    { "Id", portalId }
+                };
+                return new JsonResult(new CustomResponse<Dictionary<string, object>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = portalIdObj });
             }
+
             catch (Exception ex)
             {
                 return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
@@ -143,53 +160,69 @@ namespace CIR.Data.Data.Website
         }
 
         /// <summary>
-        /// This method is used by CreateOrUpdate method of portal repository
+        /// This method is used by Update method of portal controller
         /// </summary>
         /// <param name="portalModel"></param>
-        /// <param name="clientId"></param>
         /// <returns></returns>
-        public async Task<IActionResult> UpdatePortal(PortalModel portalModel, long clientId)
+        public async Task<IActionResult> UpdatePortal(PortalModel portalModel)
         {
             try
             {
-                var existingClient = _CIRDbContext.Clients.FirstOrDefault(c => c.Id == clientId);
+                var result = 0;
                 var existingPortal = _CIRDbContext.portals.FirstOrDefault(portal => portal.Id == portalModel.Id);
                 if (existingPortal != null)
                 {
-                    _CIRDbContext.portals.Where(_ => _.Id == portalModel.Id).ToList().ForEach(portal =>
+                    using (DbConnection dbConnection = new DbConnection())
                     {
-                        portal.CreateResponse = portalModel.CreateResponse;
-                        portal.CountReturnIdentifier = portalModel.CountReturnIdentifier;
-                        portal.CountryId = portalModel.CountryId;
-                        portal.CurrencyId = portalModel.CurrencyId;
-                        portal.CultureId = portalModel.CultureId;
-                        portal.IntegrationLevel = portalModel.IntegrationLevel;
-                        portal.ReturnItemsEnabled = false;
-                        portal.ClientId = clientId;
-                        portal.GlobalConfigurationFontId = _CIRDbContext.Fonts.FirstOrDefault(fontId => fontId.IsDefault).Id;
-                        portal.Account = portalModel.Account;
-                        portal.Entity = portalModel.Entity;
-                    });
-                    await _CIRDbContext.SaveChangesAsync();
+                        using (var connection = dbConnection.Connection)
+                        {
+                            DynamicParameters parameters = new DynamicParameters();
+                            parameters.Add("@Id", existingPortal.Id);
+                            parameters.Add("@CreateResponse", portalModel.CreateResponse);
+                            parameters.Add("@CountReturnIdentifier", portalModel.CountReturnIdentifier);
+                            parameters.Add("@CountryId", portalModel.CountryId);
+                            parameters.Add("CurrencyId", portalModel.CurrencyId);
+                            parameters.Add("@CultureId", portalModel.CultureId);
+                            parameters.Add("@IntegrationLevel", portalModel.IntegrationLevel);
+                            parameters.Add("@ReturnItemsEnabled", false);
+                            parameters.Add("@GlobalConfigurationFontId", _CIRDbContext.Fonts.FirstOrDefault(fontId => fontId.IsDefault).Id);
+                            parameters.Add("@Account", portalModel.Account);
+                            parameters.Add("@Entity", portalModel.Entity);
+
+                            result = connection.Execute("spUpdatePortal", parameters, commandType: CommandType.StoredProcedure);
+                        }
+                        if (result == 0)
+                        {
+                            return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute() });
+                        }
+                    }
 
                     var existingSubsite = _CIRDbContext.SubSites.FirstOrDefault(subsite => subsite.PortalId == existingPortal.Id);
                     var existingSubsiteId = existingSubsite.Id;
 
-                    _CIRDbContext.SubSites.Where(_ => _.Id == existingSubsiteId).ToList().ForEach(subsite =>
+                    using (DbConnection dbConnection = new DbConnection())
                     {
-                        subsite.DisplayName = portalModel.DisplayName;
-                        subsite.Directory = portalModel.Directory;
-                        subsite.Domain = _CIRDbContext.SubSites.FirstOrDefault(x => x.Id == existingClient.SubsiteId).Domain;
-                        subsite.Description = portalModel.Description;
-                        subsite.Stopped = portalModel.Stopped;
-                        subsite.EmailStopped = portalModel.EmailStopped;
-                        subsite.SystemEmailFromAddress = portalModel.SystemEmailFromAddress;
-                        subsite.BccEmailAddress = portalModel.BccEmailAddress;
-                        subsite.Enabled = true;
-                        subsite.ShowTax = false;
-                        subsite.PortalId = portalModel.Id;
-                    });
-                    await _CIRDbContext.SaveChangesAsync();
+                        using (var connection = dbConnection.Connection)
+                        {
+                            DynamicParameters parameters = new DynamicParameters();
+                            parameters.Add("@SubsiteId", existingSubsiteId);
+                            parameters.Add("@DisplayName", portalModel.DisplayName);
+                            parameters.Add("@Directory", portalModel.Directory);
+                            parameters.Add("@Description", portalModel.Description);
+                            parameters.Add("@Stopped", portalModel.Stopped);
+                            parameters.Add("@EmailStopped", portalModel.EmailStopped);
+                            parameters.Add("@SystemEmailFromAddress", portalModel.SystemEmailFromAddress);
+                            parameters.Add("@BccEmailAddress", portalModel.BccEmailAddress);
+                            parameters.Add("@Enabled", true);
+                            parameters.Add("@ShowTax", false);
+
+                            result = connection.Execute("spUpdateSubsite", parameters, commandType: CommandType.StoredProcedure);
+                        }
+                        if (result == 0)
+                        {
+                            return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute() });
+                        }
+                    }
 
                     var serviceTypes = _CIRDbContext.PortalServiceTypes.Where(service => service.PortalId == portalModel.Id).ToList();
 
@@ -214,8 +247,24 @@ namespace CIR.Data.Data.Website
                             serviceType.Enabled = portalModel.CollectionServiceTypeEnabled;
                             serviceType.Cost = portalModel.CollectionServiceTypeCost;
                         }
-                        _CIRDbContext.PortalServiceTypes.Update(serviceType);
-                        await _CIRDbContext.SaveChangesAsync();
+                        using (DbConnection dbConnection = new DbConnection())
+                        {
+                            using (var connection = dbConnection.Connection)
+                            {
+                                DynamicParameters parameters = new DynamicParameters();
+                                parameters.Add("@Id", serviceType.Id);
+                                parameters.Add("@Enabled", serviceType.Enabled);
+                                parameters.Add("@Cost", serviceType.Cost);
+                                parameters.Add("@Type", serviceType.Type);
+
+                                result = connection.Execute("spUpdateServiceTypes", parameters, commandType: CommandType.StoredProcedure);
+                            }
+
+                        }
+                    }
+                    if (result == 0)
+                    {
+                        return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute() });
                     }
                     return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataUpdatedSuccessfully, "Portal") });
                 }
@@ -238,11 +287,24 @@ namespace CIR.Data.Data.Website
             {
                 if (portalId > 0)
                 {
+                    var result = 0;
                     var portalSubsite = _CIRDbContext.SubSites.FirstOrDefault(subsite => subsite.PortalId == portalId);
                     if (portalSubsite != null)
                     {
-                        portalSubsite.Enabled = false;
-                        _CIRDbContext.SaveChanges();
+                        using (DbConnection dbConnection = new DbConnection())
+                        {
+                            using (var connection = dbConnection.Connection)
+                            {
+                                DynamicParameters parameters = new DynamicParameters();
+                                parameters.Add("@Id", portalSubsite.Id);
+
+                                result = connection.Execute("spDisablePortal", parameters, commandType: CommandType.StoredProcedure);
+                            }
+                            if (result == 0)
+                            {
+                                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute() });
+                            }
+                        }
                         return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NoContent, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.NoContent.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataDisabledSuccessfully, "Portal") });
                     }
                     return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgIdNotFound, "Portal") });
@@ -268,19 +330,21 @@ namespace CIR.Data.Data.Website
             }
             try
             {
-                var clientPortals = (from portal in _CIRDbContext.portals
-                                     join subsite in _CIRDbContext.SubSites
-                                     on portal.Id equals subsite.PortalId
-                                     select new ClientPortalsModel()
-                                     {
-                                         ClientId = portal.ClientId,
-                                         PortalId = portal.Id,
-                                         PortalName = subsite.DisplayName
-                                     }).Where(x => x.ClientId == clientId).ToList();
+                var clientPortals = new List<ClientPortalsModel>();
+
+                using (DbConnection dbConnection = new DbConnection())
+                {
+                    using (var connection = dbConnection.Connection)
+                    {
+                        DynamicParameters parameters = new DynamicParameters();
+                        parameters.Add("@clientId", clientId);
+                        clientPortals = connection.Query<ClientPortalsModel>("spGetByClientId", parameters, commandType: CommandType.StoredProcedure).ToList();
+                    }
+                }
 
                 if (clientPortals.Count == 0)
                 {
-                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NoContent, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NoContent.GetDescriptionAttribute() });
                 }
                 return new JsonResult(new CustomResponse<List<ClientPortalsModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = clientPortals });
             }
@@ -313,39 +377,22 @@ namespace CIR.Data.Data.Website
                 PortalServiceTypes dropOffServiceTypeDetail = GetServiceTypeDetails(serviceTypes, WebsiteEnums.ServiceTypes.DropOff);
                 PortalServiceTypes collectionServiceTypeDetail = GetServiceTypeDetails(serviceTypes, WebsiteEnums.ServiceTypes.Collection);
 
-                var portalDetail = (from portal in _CIRDbContext.portals
-                                    join subsite in _CIRDbContext.SubSites
-                                    on portal.Id equals subsite.PortalId
-                                    join servicetype in _CIRDbContext.PortalServiceTypes
-                                    on portal.Id equals servicetype.PortalId
-                                    select new PortalModel()
-                                    {
-                                        Id = portal.Id,
-                                        ClientId = portal.ClientId,
-                                        DisplayName = subsite.DisplayName,
-                                        Directory = subsite.Directory,
-                                        Domain = subsite.Domain,
-                                        Description = subsite.Description,
-                                        Stopped = subsite.Stopped,
-                                        EmailStopped = subsite.EmailStopped,
-                                        CreateResponse = portal.CreateResponse,
-                                        CountReturnIdentifier = portal.CountReturnIdentifier,
-                                        SystemEmailFromAddress = subsite.SystemEmailFromAddress,
-                                        BccEmailAddress = subsite.BccEmailAddress,
-                                        CurrencyId = portal.CurrencyId,
-                                        CountryId = portal.CountryId,
-                                        CultureId = portal.CultureId,
-                                        IntegrationLevel = portal.IntegrationLevel,
-                                        Entity = portal.Entity,
-                                        Account = portal.Account,
-                                        PostalServiceTypeEnabled = postalServiceTypeDetail.Enabled,
-                                        PostalServiceTypeCost = postalServiceTypeDetail.Cost,
-                                        DropOffServiceTypeEnabled = dropOffServiceTypeDetail.Enabled,
-                                        DropOffServiceTypeCost = dropOffServiceTypeDetail.Cost,
-                                        CollectionServiceTypeEnabled = collectionServiceTypeDetail.Enabled,
-                                        CollectionServiceTypeCost = collectionServiceTypeDetail.Cost
-                                    }).Where(x => x.Id == portalId).FirstOrDefault();
-
+                var portalDetail = new PortalModel();
+                using (DbConnection dbConnection = new DbConnection())
+                {
+                    using (var connection = dbConnection.Connection)
+                    {
+                        DynamicParameters parameters = new DynamicParameters();
+                        parameters.Add("@portalId", portalId);
+                        portalDetail = connection.QueryFirst<PortalModel>("spGetPortalById", parameters, commandType: CommandType.StoredProcedure);
+                    }
+                }
+                portalDetail.PostalServiceTypeEnabled = postalServiceTypeDetail.Enabled;
+                portalDetail.PostalServiceTypeCost = postalServiceTypeDetail.Cost;
+                portalDetail.DropOffServiceTypeEnabled = dropOffServiceTypeDetail.Enabled;
+                portalDetail.DropOffServiceTypeCost = dropOffServiceTypeDetail.Cost;
+                portalDetail.CollectionServiceTypeEnabled = collectionServiceTypeDetail.Enabled;
+                portalDetail.CollectionServiceTypeCost = collectionServiceTypeDetail.Cost;
                 if (portalDetail == null)
                 {
                     return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });

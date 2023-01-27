@@ -12,11 +12,6 @@ namespace CIR.Application.Services.Website
             _portalRepository = portalRepository;
         }
 
-        public async Task<IActionResult> CreateorUpdatePortal(PortalModel portalModel, long clientId)
-        {
-            return await _portalRepository.CreateorUpdatePortal(portalModel, clientId);
-        }
-
         public async Task<IActionResult> DisablePortal(long portalId)
         {
             return await _portalRepository.DisablePortal(portalId);
@@ -30,6 +25,16 @@ namespace CIR.Application.Services.Website
         public async Task<IActionResult> GetByClientId(int clientId)
         {
             return await _portalRepository.GetByClientId(clientId);
+        }
+
+        public async Task<IActionResult> CreatePortal(PortalModel portalModel, long clientId)
+        {
+            return await _portalRepository.CreatePortal(portalModel, clientId);
+        }
+
+        public async Task<IActionResult> UpdatePortal(PortalModel portalModel)
+        {
+            return await _portalRepository.UpdatePortal(portalModel);
         }
     }
 }
