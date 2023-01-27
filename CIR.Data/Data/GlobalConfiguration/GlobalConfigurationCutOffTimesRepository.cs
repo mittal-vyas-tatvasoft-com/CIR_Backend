@@ -1,12 +1,16 @@
 ﻿using CIR.Common.Data;
 using CIR.Common.Enums;
 using CIR.Common.Helper;
+using CIR.Core.Entities;
 using CIR.Core.Entities.GlobalConfiguration;
+using CIR.Core.Entities.Users;
 using CIR.Core.Interfaces.GlobalConfiguration;
 using CIR.Core.ViewModel.GlobalConfiguration;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Data;
 
 namespace CIR.Data.Data.GlobalConfiguration
 {
@@ -38,19 +42,21 @@ namespace CIR.Data.Data.GlobalConfiguration
         {
             try
             {
-                var checkCountryIdData = await _cIRDbContext.GlobalConfigurationCutOffTimes.Where(x => x.CountryId == countryId).FirstOrDefaultAsync();
-
-                if (checkCountryIdData != null)
+                GlobalConfigurationCutOffTime? cutOffTime = new();
+                using (DbConnection dbConnection = new DbConnection())
                 {
-                    GlobalConfigurationCutOffTimeModel cutOffTime = new()
+                    using (var connection = dbConnection.Connection)
                     {
-                        Id = checkCountryIdData.Id,
-                        CountryId = checkCountryIdData.CountryId,
-                        CutOffTime = checkCountryIdData.CutOffTime.ToString(),
-                        CutOffDay = checkCountryIdData.CutOffDay
-                    };
-					return new JsonResult(new CustomResponse<GlobalConfigurationCutOffTimeModel>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = cutOffTime });
-				}
+                        DynamicParameters parameters = new DynamicParameters();
+                        parameters.Add("@CountryId", countryId);
+                        cutOffTime = connection.Query<GlobalConfigurationCutOffTime>("spGetGlobalConfigurationCutOffTimesByCountryId", parameters, commandType: CommandType.StoredProcedure).ToList().FirstOrDefault();
+                    }
+                }
+
+                if (cutOffTime != null)
+                {
+                    return new JsonResult(new CustomResponse<GlobalConfigurationCutOffTime>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = cutOffTime });
+                }
                 else
                 {
                     GlobalConfigurationCutOffTimeModel cutOffTimeModel = new()
@@ -59,13 +65,13 @@ namespace CIR.Data.Data.GlobalConfiguration
                         CutOffTime = _configuration.GetSection("StaticCutOffTime").GetSection("CutOffTime").Value,
                         CutOffDay = (int)GlobalConfigurationEnums.CutOffDays.PreviousDay
                     };
-					return new JsonResult(new CustomResponse<GlobalConfigurationCutOffTimeModel>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = cutOffTimeModel });
-				}
+                    return new JsonResult(new CustomResponse<GlobalConfigurationCutOffTimeModel>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = cutOffTimeModel });
+                }
             }
             catch (Exception ex)
             {
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
-			}
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+            }
         }
 
         /// <summary>
@@ -75,40 +81,47 @@ namespace CIR.Data.Data.GlobalConfiguration
         /// <returns></returns>
         public async Task<IActionResult> CreateOrUpdateGlobalConfigurationCutOffTime(GlobalConfigurationCutOffTimeModel globalConfigurationCutOffTimeModel)
         {
+
             try
             {
-                if (globalConfigurationCutOffTimeModel.CutOffTime == null || globalConfigurationCutOffTimeModel.CutOffTime == "string" || globalConfigurationCutOffTimeModel.CountryId == 0)
+                if (globalConfigurationCutOffTimeModel.CutOffTime == null || globalConfigurationCutOffTimeModel.CutOffTime == string.Empty || globalConfigurationCutOffTimeModel.CutOffTime == "string" || globalConfigurationCutOffTimeModel.CountryId == 0)
                 {
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgEnterValidData });
-				}
-                GlobalConfigurationCutOffTime newCutOffTime = new()
-                {
-                    Id = globalConfigurationCutOffTimeModel.Id,
-
-                    CountryId = globalConfigurationCutOffTimeModel.CountryId,
-
-                    CutOffTime = TimeSpan.Parse(globalConfigurationCutOffTimeModel.CutOffTime),
-
-                    CutOffDay = globalConfigurationCutOffTimeModel.CutOffDay
-                };
-
-                if (globalConfigurationCutOffTimeModel.Id > 0)
-                {
-                    _cIRDbContext.GlobalConfigurationCutOffTimes.Update(newCutOffTime);
-                }
-                else
-                {
-                    _cIRDbContext.GlobalConfigurationCutOffTimes.Add(newCutOffTime);
+                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgEnterValidData });
                 }
 
-                await _cIRDbContext.SaveChangesAsync();
+                string result = "";
+                using (DbConnection dbConnection = new DbConnection())
+                {
+                    using (var connection = dbConnection.Connection)
+                    {
+                        DynamicParameters parameters = new DynamicParameters();
+                        parameters.Add("@Id", globalConfigurationCutOffTimeModel.Id);
+                        parameters.Add("@CountryId", globalConfigurationCutOffTimeModel.CountryId);
+                        parameters.Add("@CutOffTime", globalConfigurationCutOffTimeModel.CutOffTime);
+                        parameters.Add("@CutOffDay", globalConfigurationCutOffTimeModel.CutOffDay);
 
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "GlobalConfiguration CutOfTime") });
-			}
+                        result = Convert.ToString(connection.ExecuteScalar("spCreateOrUpdateGlobalConfigurationCutOffTimes", parameters, commandType: CommandType.StoredProcedure));
+                    }
+                }
+                if (result != "False")
+                {
+                    if (globalConfigurationCutOffTimeModel.Id > 0)
+                    {
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataUpdatedSuccessfully, "GlobalConfiguration CutOffTimes") });
+                    }
+                    else
+                    {
+                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "GlobalConfiguration CutOffTimes") });
+                    }
+                }
+                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute(), Data = SystemMessages.msgBadRequest });
+
+
+            }
             catch (Exception ex)
             {
-				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
-			}
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+            }
         }
         #endregion
     }
