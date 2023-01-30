@@ -132,7 +132,6 @@ namespace CIR.Data.Data.GlobalConfiguration
         public async Task<ActionResult> GetGlobalConfigurationWeekends(int displayLength, int displayStart, string? sortCol, int? filterCountryNameId, int? filterCountryCodeId, string? search, bool sortAscending = true)
         {
             GlobalConfigurationWeekendsModel weekendList = new();
-
             if (string.IsNullOrEmpty(sortCol))
             {
                 sortCol = "Id";

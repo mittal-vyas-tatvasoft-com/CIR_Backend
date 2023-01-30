@@ -127,7 +127,6 @@ namespace CIR.Data.Data.Users
         /// </summary>
         /// <param name="id"></param>
         /// <returns> deleted/disabled user </returns>
-
         public async Task<IActionResult> DeleteUser(int id)
         {
             try
