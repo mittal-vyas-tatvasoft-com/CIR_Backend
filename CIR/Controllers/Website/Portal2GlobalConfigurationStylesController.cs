@@ -2,12 +2,14 @@
 using CIR.Common.Helper;
 using CIR.Core.Entities;
 using CIR.Core.Interfaces.Website;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Controllers.Website
 {
 	[Route("api/[controller]")]
 	[ApiController]
+	[Authorize]
 	public class Portal2GlobalConfigurationStylesController : ControllerBase
 	{
 		#region PROPERTIES
