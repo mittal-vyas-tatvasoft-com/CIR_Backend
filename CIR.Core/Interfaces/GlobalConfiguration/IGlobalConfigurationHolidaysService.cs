@@ -8,7 +8,6 @@ namespace CIR.Core.Interfaces.GlobalConfiguration
         Task<IActionResult> CreateOrUpdateGlobalConfigurationHolidays(Holidays holidays);
         Task<IActionResult> GetGlobalConfigurationHolidays(int displayLength, int displayStart, string? sortCol, string? search, int countryCodeId, int countryNameId, bool sortAscending = true);
         Task<IActionResult> GetHolidayById(long id);
-        Task<IActionResult> UpdateHoliday(Holidays holidayModel);
         Task<IActionResult> DeleteHolidays(long holidayId);
     }
 }

@@ -8,5 +8,6 @@
         public string Description { get; set; }
         public string CountryCode { get; set; }
         public string CountryName { get; set; }
+        public int TotalCount { get; set; }
     }
 }
