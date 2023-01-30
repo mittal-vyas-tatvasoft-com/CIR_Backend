@@ -5,7 +5,11 @@ using CIR.Core.Entities;
 using CIR.Core.Entities.GlobalConfiguration;
 using CIR.Core.Interfaces.Utilities;
 using CIR.Core.ViewModel.Utilities;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq.Expressions;
 
 namespace CIR.Data.Data.Utilities
 {
@@ -37,15 +41,31 @@ namespace CIR.Data.Data.Utilities
 				var cultureData = GetListForUpdatedLanguages(cultureList);
 				if (cultureData != null)
 				{
-
+					var result = 0;
 					foreach (Culture item in cultureData)
 					{
-						_CIRDbContext.Cultures.Update(item);
-						await _CIRDbContext.SaveChangesAsync();
-					}
+                        using (DbConnection dbConnection = new DbConnection())
+                        {
+                            using (var connection = dbConnection.Connection)
+                            {
+                                DynamicParameters parameters = new DynamicParameters();
+                                parameters.Add("@Id", item.Id);
+                                parameters.Add("@ParentId", item.ParentId);
+                                parameters.Add("@Name", item.Name);
+                                parameters.Add("@DisplayName", item.DisplayName);
+                                parameters.Add("@Enabled", item.Enabled);
+                                parameters.Add("@NativeName", item.NativeName);
+                                result = connection.Execute("spUpdateSystemSettingsLanguage", parameters, commandType: CommandType.StoredProcedure);
 
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataUpdatedSuccessfully, "Language") });
-				}
+                            }
+                        }
+                    }
+					if (result != 0)
+					{
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataUpdatedSuccessfully, "Language") });
+					}
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute() });
+                }
 				else
 				{
 					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgIdNotFound, "Language") });
@@ -66,14 +86,26 @@ namespace CIR.Data.Data.Utilities
         public List<Culture> GetListForUpdatedLanguages(List<CulturesModel> culturesModels)
         {
             List<Culture> list = new List<Culture>();
+            
             foreach (CulturesModel item in culturesModels)
             {
-                var culture = _CIRDbContext.Cultures.FirstOrDefault(x => x.Id == item.Id);
-                if (culture != null)
+                using (DbConnection dbConnection = new DbConnection())
                 {
-                    culture.Enabled = item.Enabled;
-                    list.Add(culture);
+                    using (var connection = dbConnection.Connection)
+                    {
+                        DynamicParameters parameters = new DynamicParameters();
+                        parameters.Add("@Id", item.Id);
+                        List<Culture> culture = connection.Query<Culture>("spGetListForUpdatedLanguages", parameters, commandType: CommandType.StoredProcedure).ToList();
+
+						if (culture != null)
+                        {
+							culture.FirstOrDefault().Enabled = item.Enabled;
+							list.Add(culture.FirstOrDefault());
+						}
+
+                    }
                 }
+                
             }
             return list;
 
