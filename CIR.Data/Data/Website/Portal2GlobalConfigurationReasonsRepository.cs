@@ -1,152 +1,195 @@
 ﻿using CIR.Common.Data;
 using CIR.Common.Enums;
 using CIR.Common.Helper;
-using CIR.Core.Entities.GlobalConfiguration;
-using CIR.Core.Entities.Websites;
 using CIR.Core.Interfaces.Websites;
 using CIR.Core.ViewModel.Websites;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
+using DbConnection = CIR.Common.Data.DbConnection;
 
 namespace CIR.Data.Data.Websites
 {
-    public class Portal2GlobalConfigurationReasonsRepository : IPortal2GlobalConfigurationReasonsRepository
-    {
+	public class Portal2GlobalConfigurationReasonsRepository : IPortal2GlobalConfigurationReasonsRepository
+	{
 
-        #region PROPERTIES
-        private readonly CIRDbContext _CIRDbContext;
-        #endregion
+		#region PROPERTIES
+		private readonly CIRDbContext _CIRDbContext;
+		#endregion
 
-        #region CONSTRUCTOR
-        public Portal2GlobalConfigurationReasonsRepository(CIRDbContext CIRDbContext)
-        {
-            _CIRDbContext = CIRDbContext ??
-                throw new ArgumentNullException(nameof(CIRDbContext));
-        }
-        #endregion
+		#region CONSTRUCTOR
+		public Portal2GlobalConfigurationReasonsRepository(CIRDbContext CIRDbContext)
+		{
+			_CIRDbContext = CIRDbContext ??
+				throw new ArgumentNullException(nameof(CIRDbContext));
+		}
+		#endregion
 
-        #region METHODS
+		#region METHODS
 
-        /// <summary>
-        /// This method will be used by create method of Reasons controller
-        /// </summary>
-        /// <param name="reasonsModel"></param>
-        /// <returns>return Ok if successful else returns bad request</returns>
+		/// <summary>
+		/// This method will be used by create method of Reasons controller
+		/// </summary>
+		/// <param name="reasonsModel"></param>
+		/// <returns>return Ok if successful else returns bad request</returns>
 
-        public async Task<IActionResult> CreateReason(List<Portal2GlobalConfigurationReasonsModel> reasonsModel)
-        {
-            try
-            {
-                if (reasonsModel.Any(x => x.Id < 0 || x.OficeIdPK < 0 || x.PortalIdPK < 0))
-                {
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgAddingDataError, "Reasons") });
-                }
-                if (reasonsModel != null)
-                {
-                    foreach (var item in reasonsModel)
-                    {
-                        var newOffice = new Offices()
-                        {
-                            AddressLine1 = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).AddressLine1,
-                            TownCity = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).TownCity,
-                            CountryCode = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).CountryCode,
-                            CreatedOn = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).CreatedOn,
-                            Enabled = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).Enabled,
-                            Latitude = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).Latitude,
-                            Longitude = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).Longitude,
-                            AddressType = _CIRDbContext.offices.FirstOrDefault(x => x.IsDefault == true).AddressType
-                        };
-                        _CIRDbContext.offices.Add(newOffice);
-                        _CIRDbContext.SaveChanges();
+		public async Task<IActionResult> CreateReason(List<Portal2GlobalConfigurationReasonsModel> reasonsModel)
+		{
+			try
+			{
+				var result = 0;
+				//offices 
+				using (DbConnection dbConnection = new DbConnection())
+				{
+					using (var connection = dbConnection.Connection)
+					{
+						foreach (var item in reasonsModel)
+						{
+							DynamicParameters parameters = new DynamicParameters();
+							parameters.Add("@AddressLine1", item.AddressLine1);
+							parameters.Add("@TownCity", item.TownCity);
+							parameters.Add("@CountryCode", item.CountryCode);
+							parameters.Add("@CreatedOn", item.CreatedOn);
+							parameters.Add("@Enabled", item.Enabled);
+							parameters.Add("@Latitude", item.Latitude);
+							parameters.Add("@Longitude", item.Longitude);
+							parameters.Add("@AddressType", item.AddressType);
+							result = connection.Execute("spPToGReasonsCreateOffice", parameters, commandType: CommandType.StoredProcedure);
+						}
+					}
+					if (result == 0)
+					{
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute(), Data = "Something went wrong!" });
+					}
+				}
+				var officeId = _CIRDbContext.offices.OrderByDescending(x => x.Id).FirstOrDefault().Id;
 
-                        var officeId = newOffice.Id;
+				//Portals
+				using (DbConnection dbConnection = new DbConnection())
+				{
+					using (var connection = dbConnection.Connection)
+					{
+						foreach (var item in reasonsModel)
+						{
+							DynamicParameters parameters = new DynamicParameters();
+							parameters.Add("@ClientId", item.ClientId);
+							parameters.Add("@CurrencyId", item.CurrencyId);
+							parameters.Add("@CountryId", item.CountryId);
+							parameters.Add("@CultureId", item.CultureId);
+							parameters.Add("@IntegrationLevel", item.IntegrationLevel);
+							parameters.Add("@ReturnItemsEnabled", item.ReturnItemsEnabled);
+							parameters.Add("@CreateResponse", item.CreateResponse);
+							parameters.Add("@CountReturnIdentifier", item.CountReturnIdentifier);
+							result = connection.Execute("spPToGReasonsCreatePortal", parameters, commandType: CommandType.StoredProcedure);
+						}
+					}
+					if (result == 0)
+					{
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute(), Data = "Something went wrong!" });
+					}
+				}
+				var portalId = _CIRDbContext.portals.OrderByDescending(x => x.Id).FirstOrDefault().Id;
 
-                        var newPortal = new Portals()
-                        {
-                            ClientId = item.ClientId,
-                            CurrencyId = item.CurrencyId,
-                            CountryId = item.CountryId,
-                            CultureId = item.CultureId,
-                            IntegrationLevel = item.IntegrationLevel,
-                            ReturnItemsEnabled = item.ReturnItemsEnabled,
-                            CreateResponse = item.CreateResponse,
-                            CountReturnIdentifier = item.CountReturnIdentifier
-                        };
-                        _CIRDbContext.portals.Add(newPortal);
-                        _CIRDbContext.SaveChanges();
+				//GlobalReasons
+				using (DbConnection dbConnection = new DbConnection())
+				{
+					using (var connection = dbConnection.Connection)
+					{
+						foreach (var item in reasonsModel)
+						{
+							DynamicParameters parameters = new DynamicParameters();
+							parameters.Add("@Content", item.Content);
+							parameters.Add("@Enabled", item.Enabled);
+							parameters.Add("@Type", item.Type);
+							result = connection.Execute("spPToGReasonsCreateGlobalConfigurationReasons", parameters, commandType: CommandType.StoredProcedure);
+						}
+					}
+					if (result == 0)
+					{
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute(), Data = "Something went wrong!" });
+					}
+				}
+				var globalReasonId = _CIRDbContext.GlobalConfigurationReasons.OrderByDescending(x => x.Id).FirstOrDefault().Id;
 
-                        var portalId = newPortal.Id;
+				//Portal2GlobalConfigurationReasons
+				using (DbConnection dbConnection = new DbConnection())
+				{
+					using (var connection = dbConnection.Connection)
+					{
+						foreach (var item in reasonsModel)
+						{
+							DynamicParameters parameters = new DynamicParameters();
+							parameters.Add("@Content", item.Content);
+							parameters.Add("@Enabled", item.Enabled);
+							parameters.Add("@Type", item.Type);
+							result = connection.Execute("spPToGReasonsCreateGlobalConfigurationReasons", parameters, commandType: CommandType.StoredProcedure);
+						}
+					}
+					if (result == 0)
+					{
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute(), Data = "Something went wrong!" });
+					}
+				}
+				//Portal2GlobalConfigurationReasons
+				using (DbConnection dbConnection = new DbConnection())
+				{
+					using (var connection = dbConnection.Connection)
+					{
+						foreach (var item in reasonsModel)
+						{
+							DynamicParameters parameters = new DynamicParameters();
+							parameters.Add("@contentOverride", item.ContentOverride);
+							parameters.Add("@officeId", officeId);
+							parameters.Add("@countReturnIdentifier", item.Enabled);
+							parameters.Add("@globalReasonId", globalReasonId);
+							parameters.Add("@portalId", portalId);
+							result = connection.Execute("spPToGReasonsCreatePortal2GlobalConfigurationReasons", parameters, commandType: CommandType.StoredProcedure);
+						}
+					}
+					if (result == 0)
+					{
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute(), Data = "Something went wrong!" });
+					}
+				}
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "GlobalConfiguration Messages") });
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+			}
 
-                        var newGlobalConfigReasons = new GlobalConfigurationReasons()
-                        {
-                            Content = item.Content,
-                            Enabled = item.globalconfidEnabled,
-                            Type = item.Type
-                        };
-                        _CIRDbContext.GlobalConfigurationReasons.Add(newGlobalConfigReasons);
-                        _CIRDbContext.SaveChanges();
+		}
 
-                        var globalConfigReasonId = newGlobalConfigReasons.Id;
+		/// <summary>
+		/// this method will be used by GetAll method of Reasons controller
+		/// </summary>
+		/// <returns>returns list of all the Reasons</returns>
+		public async Task<IActionResult> GetAllReasons()
+		{
+			try
+			{
+				List<Portal2GlobalConfigurationReasonsModel> portal2GlobalConfigurationReasonsModel = new();
 
-                        var globalConfigurationReasons = new Portal2GlobalConfigurationReasons()
-                        {
-                            ContentOverride = item.ContentOverride,
-                            DestinationId = officeId,
-                            Enabled = item.Enabled,
-                            PortalId = portalId,
-                            GlobalConfigurationReasonId = globalConfigReasonId
-                        };
-                        _CIRDbContext.portal2GlobalConfigurationReasons.Add(globalConfigurationReasons);
-                        _CIRDbContext.SaveChanges();
+				using (DbConnection dbConnection = new DbConnection())
+				{
+					using (var connection = dbConnection.Connection)
+					{
+						portal2GlobalConfigurationReasonsModel = connection.Query<Portal2GlobalConfigurationReasonsModel>("spGetAllPortalToGlobalConfigReasons", null, commandType: CommandType.StoredProcedure).ToList();
+					}
+				}
 
-                        return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Reason") });
-                    }
-                }
-                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgAddingDataError, "Reason") });
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
-            }
-        }
-
-        /// <summary>
-        /// this method will be used by GetAll method of Reasons controller
-        /// </summary>
-        /// <returns>returns list of all the Reasons</returns>
-        public async Task<IActionResult> GetAllReasons()
-        {
-            try
-            {
-                var portaltoGLobalReasons = await (from Portal2GlobalConfigurationReason in _CIRDbContext.portal2GlobalConfigurationReasons
-                                                   join Office in _CIRDbContext.offices
-                                                   on Portal2GlobalConfigurationReason.DestinationId equals Office.Id
-                                                   join Portal in _CIRDbContext.portals
-                                                   on Portal2GlobalConfigurationReason.PortalId equals Portal.Id
-                                                   join GlobalConfigurationReasons in _CIRDbContext.GlobalConfigurationReasons
-                                                   on Portal2GlobalConfigurationReason.GlobalConfigurationReasonId equals GlobalConfigurationReasons.Id
-
-                                                   select new Portal2GlobalConfigurationReasonsModel()
-                                                   {
-                                                       Id = Portal2GlobalConfigurationReason.Id,
-                                                       ContentOverride = Portal2GlobalConfigurationReason.ContentOverride,
-                                                       DestinationId = Portal2GlobalConfigurationReason.DestinationId,
-                                                       Enabled = Portal2GlobalConfigurationReason.Enabled,
-                                                       GlobalConfigurationReasonId = Portal2GlobalConfigurationReason.GlobalConfigurationReasonId,
-                                                       PortalId = Portal2GlobalConfigurationReason.PortalId
-                                                   }).ToListAsync();
-
-                if (portaltoGLobalReasons.Count == 0)
-                {
-                    return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationReasonsModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
-                }
-                return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationReasonsModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = portaltoGLobalReasons });
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
-            }
-        }
-        #endregion
-    }
+				if (portal2GlobalConfigurationReasonsModel.Count == 0)
+				{
+					return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationReasonsModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
+				}
+				return new JsonResult(new CustomResponse<List<Portal2GlobalConfigurationReasonsModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = portal2GlobalConfigurationReasonsModel });
+			}
+			catch (Exception ex)
+			{
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+			}
+		}
+		#endregion
+	}
 }
