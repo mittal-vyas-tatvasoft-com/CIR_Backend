@@ -15,4 +15,10 @@ namespace CIR.Core.ViewModel.Website
         public bool Stopped { get; set; }
         public bool EmailStopped { get; set; }
     }
+
+    public class ClientSubModel
+    {
+        public long Id { get; set; }
+        public string Name { get; set; }
+    }
 }
