@@ -155,9 +155,17 @@ namespace CIR.Data.Data.GlobalConfiguration
                         sortWeekendData = connection.Query<WeekendModel>("spGetGlobalConfigurationWeekends", parameters, commandType: CommandType.StoredProcedure).ToList();
                     }
                 }
-                sortWeekendData = sortWeekendData.ToList();
-                weekendList.Count = sortWeekendData[0].TotalCount;
-                weekendList.WeekendsList = sortWeekendData;
+                if (sortWeekendData.Count > 0)
+                {
+                    sortWeekendData = sortWeekendData.ToList();
+                    weekendList.Count = sortWeekendData[0].TotalCount;
+                    weekendList.WeekendsList = sortWeekendData;
+                }
+                else
+                {
+                    weekendList.Count = 0;
+                    weekendList.WeekendsList = sortWeekendData;
+                }
                 return new JsonResult(new CustomResponse<GlobalConfigurationWeekendsModel>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = weekendList });
             }
             catch (Exception ex)
