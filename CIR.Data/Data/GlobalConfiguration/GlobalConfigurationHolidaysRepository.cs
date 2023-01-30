@@ -98,9 +98,18 @@ namespace CIR.Data.Data.GlobalConfiguration
                         sortedHolidays = connection.Query<HolidayModel>("spGetGlobalConfigurationHolidays", parameters, commandType: CommandType.StoredProcedure).ToList();
                     }
                 }
-                sortedHolidays = sortedHolidays.ToList();
-                holidayList.Count = sortedHolidays[0].TotalCount;
-                holidayList.HolidayList = sortedHolidays;
+                if (sortedHolidays.Count > 0)
+                {
+                    sortedHolidays = sortedHolidays.ToList();
+                    holidayList.Count = sortedHolidays[0].TotalCount;
+                    holidayList.HolidayList = sortedHolidays;
+                }
+                else
+                {
+                    holidayList.Count = 0;
+                    holidayList.HolidayList = sortedHolidays;
+                }
+
                 return new JsonResult(new CustomResponse<HolidayViewModel>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = holidayList });
             }
             catch (Exception ex)
