@@ -4,9 +4,11 @@ using CIR.Common.Helper;
 using CIR.Core.Entities.Website;
 using CIR.Core.Interfaces.Website;
 using CIR.Core.ViewModel.Website;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using System.Data;
 
 namespace CIR.Data.Data.Website
 {
@@ -34,20 +36,21 @@ namespace CIR.Data.Data.Website
 		{
 			try
 			{
-				var emailRecords = (from portal2GlobalConfigurationEmails in _CIRDBContext.Portal2GlobalConfigurationEmails
-									select new PortalToGlobalConfigurationEmailsGetModel()
-									{
-										Id = portal2GlobalConfigurationEmails.Id,
-										PortalId = portal2GlobalConfigurationEmails.PortalId,
-										GlobalConfigurationEmailId = portal2GlobalConfigurationEmails.GlobalConfigurationEmailId,
-										ContentOverride = portal2GlobalConfigurationEmails.ContentOverride,
-										SubjectOverride = portal2GlobalConfigurationEmails.SubjectOverride,
-
-									}).Where(x => x.Id == id).ToList();
-				if (emailRecords.Count == 0)
+				List<PortalToGlobalConfigurationEmailsGetModel> portalToGlobalConfigurationEmailsGetModel = new();
+				using (DbConnection dbConnection = new DbConnection())
+				{
+					using (var connection = dbConnection.Connection)
+					{
+						DynamicParameters parameters = new DynamicParameters();
+						parameters.Add("id", id);
+						portalToGlobalConfigurationEmailsGetModel = connection.Query<PortalToGlobalConfigurationEmailsGetModel>("spGetEmailIdById", parameters, commandType: CommandType.StoredProcedure).ToList();
+					}
+				}
+				if (portalToGlobalConfigurationEmailsGetModel.Count == 0)
 				{
 					return new JsonResult(new CustomResponse<List<PortalToGlobalConfigurationEmailsGetModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
 				}
+
 
 				var emailId = await _CIRDBContext.Portal2GlobalConfigurationEmails.Where(x => x.Id == id).FirstOrDefaultAsync();
 				var serializedEmail = JsonConvert.SerializeObject(emailId);
@@ -93,8 +96,8 @@ namespace CIR.Data.Data.Website
 				{
 					email.BookingURL = true;
 				}
-				if (emailRecords != null)
-					return new JsonResult(new CustomResponse<List<PortalToGlobalConfigurationEmailsGetModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = emailRecords });
+				if (portalToGlobalConfigurationEmailsGetModel != null)
+					return new JsonResult(new CustomResponse<List<PortalToGlobalConfigurationEmailsGetModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = portalToGlobalConfigurationEmailsGetModel });
 				else
 					return new JsonResult(new CustomResponse<List<PortalToGlobalConfigurationEmailsGetModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
 
@@ -113,46 +116,32 @@ namespace CIR.Data.Data.Website
 		{
 			try
 			{
-				if (portalToGlobalConfigurationEmails.Any(x => x.Id == 0))
-				{
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgBadRequest });
-				}
 				if (portalToGlobalConfigurationEmails != null)
 				{
-					foreach (var item in portalToGlobalConfigurationEmails)
+					var result = 0;
+					using (DbConnection dbConnection = new DbConnection())
 					{
-						if (item.Id != 0)
+						using (var connection = dbConnection.Connection)
 						{
-							var emailsCheck = _CIRDBContext.Portal2GlobalConfigurationEmails.FirstOrDefault(x => x.Id == item.Id);
-							if (emailsCheck != null)
+							foreach (var item in portalToGlobalConfigurationEmails)
 							{
-								emailsCheck.PortalId = item.PortalId;
-								emailsCheck.GlobalConfigurationEmailId = item.GlobalConfigurationEmailId;
-								emailsCheck.ContentOverride = item.ContentOverride;
-								emailsCheck.SubjectOverride = item.SubjectOverride;
-							}
-							else
-							{
-								return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgBadRequest });
+								DynamicParameters parameters = new DynamicParameters();
+								parameters.Add("@Id", item.Id);
+								parameters.Add("@PortalId", item.PortalId);
+								parameters.Add("@GlobalConfigurationEmailId", item.GlobalConfigurationEmailId);
+								parameters.Add("@ContentOverride", item.ContentOverride);
+								parameters.Add("@SubjectOverride", item.SubjectOverride);
+								result = connection.Execute("spCreateUpdatePortaltoGlobalConfigEmails", parameters, commandType: CommandType.StoredProcedure);
 							}
 						}
-						else
+						if (result != 0)
 						{
-							PortalToGlobalConfigurationEmails email = new PortalToGlobalConfigurationEmails()
-							{
-								Id = item.Id,
-								PortalId = item.PortalId,
-								GlobalConfigurationEmailId = item.GlobalConfigurationEmailId,
-								ContentOverride = item.ContentOverride,
-								SubjectOverride = item.SubjectOverride
-							};
-							_CIRDBContext.Portal2GlobalConfigurationEmails.Add(email);
+							return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Portal2GlobalConfiguration Emails") });
 						}
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute(), Data = "Something went wrong!" });
 					}
-					await _CIRDBContext.SaveChangesAsync();
-					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Portal To Global Configuration Email") });
 				}
-				return new JsonResult(new CustomResponse<List<PortalToGlobalConfigurationEmails>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgBadRequest });
 			}
 			catch (Exception ex)
 			{
