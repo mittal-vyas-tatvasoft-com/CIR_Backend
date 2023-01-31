@@ -127,6 +127,10 @@ namespace CIR.Data.Data.GlobalConfiguration
         {
             try
             {
+                if (id == null)
+                {
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute() });
+                }
                 Holidays holidayDetail;
                 using (DbConnection dbConnection = new DbConnection())
                 {
@@ -158,6 +162,10 @@ namespace CIR.Data.Data.GlobalConfiguration
         {
             try
             {
+                if (holidayId == null)
+                {
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute() });
+                }
                 var result = 0;
                 using (DbConnection dbConnection = new DbConnection())
                 {

@@ -361,7 +361,7 @@ namespace CIR.Data.Data.Website
         /// <returns></returns>
         public async Task<IActionResult> GetById(int portalId)
         {
-            if (portalId == null)
+            if (portalId == null && (!_CIRDbContext.portals.Any(x => x.Id == portalId)))
             {
                 return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute() });
             }
