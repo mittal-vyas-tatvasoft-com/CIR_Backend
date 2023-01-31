@@ -88,13 +88,13 @@ namespace CIR.Data.Data.GlobalConfiguration
                     using (var connection = dbConnection.Connection)
                     {
                         DynamicParameters parameters = new DynamicParameters();
-                        parameters.Add("DisplayLength", displayLength);
-                        parameters.Add("DisplayStart", displayStart);
-                        parameters.Add("SortCol", sortCol);
-                        parameters.Add("Search", search);
-                        parameters.Add("SortDir", sortAscending);
-                        parameters.Add("CountryCodeId", countryCodeId);
-                        parameters.Add("CountryNameId", countryNameId);
+                        parameters.Add("@DisplayLength", displayLength);
+                        parameters.Add("@DisplayStart", displayStart);
+                        parameters.Add("@SortCol", sortCol);
+                        parameters.Add("@Search", search);
+                        parameters.Add("@SortDir", sortAscending);
+                        parameters.Add("@CountryCodeId", countryCodeId);
+                        parameters.Add("@CountryNameId", countryNameId);
                         sortedHolidays = connection.Query<HolidayModel>("spGetGlobalConfigurationHolidays", parameters, commandType: CommandType.StoredProcedure).ToList();
                     }
                 }
