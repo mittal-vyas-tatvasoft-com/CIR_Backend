@@ -25,10 +25,6 @@ namespace CIR.Application.Services.GlobalConfiguration
         {
             return await _globalConfigurationHolidaysService.GetHolidayById(id);
         }
-        public async Task<IActionResult> UpdateHoliday(Holidays holidayModel)
-        {
-            return await _globalConfigurationHolidaysService.UpdateHoliday(holidayModel);
-        }
         public async Task<IActionResult> DeleteHolidays(long holidayId)
         {
             return await _globalConfigurationHolidaysService.DeleteHolidays(holidayId);
