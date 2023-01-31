@@ -19,9 +19,9 @@ namespace CIR.Application.Services.GlobalConfiguration
         {
             return await _globalConfigurationEmailsRepository.CreateOrUpdateGlobalConfigurationEmails(globalConfigurationEmails);
         }
-        public async Task<IActionResult> GetGlobalConfigurationEmailsDataList(int id)
+        public async Task<IActionResult> GetGlobalConfigurationEmailsDataList(int cultureId)
         {
-            return await _globalConfigurationEmailsRepository.GetGlobalConfigurationEmailsDataList(id);
+            return await _globalConfigurationEmailsRepository.GetGlobalConfigurationEmailsDataList(cultureId);
 
         }
     }

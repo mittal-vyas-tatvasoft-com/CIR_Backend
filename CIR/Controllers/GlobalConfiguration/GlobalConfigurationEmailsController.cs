@@ -30,8 +30,8 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// </summary>
 		/// <param name="globalConfigurationEmails"></param>
 		/// <returns></returns>
-		[HttpPost("[action]")]
-		public async Task<IActionResult> Post(List<GlobalConfigurationEmails> globalConfigurationEmails)
+		[HttpPut]
+		public async Task<IActionResult> Update(List<GlobalConfigurationEmails> globalConfigurationEmails)
 		{
 			if (ModelState.IsValid)
 			{
@@ -52,12 +52,12 @@ namespace CIR.Controllers.GlobalConfiguration
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
-		[HttpGet("{id}")]
-		public async Task<IActionResult> Get(int id)
+		[HttpGet("{cultureId}")]
+		public async Task<IActionResult> Get(int cultureId)
 		{
 			try
 			{
-				return await _globalConfigurationEmailsService.GetGlobalConfigurationEmailsDataList(id);
+				return await _globalConfigurationEmailsService.GetGlobalConfigurationEmailsDataList(cultureId);
 			}
 			catch (Exception ex)
 			{
