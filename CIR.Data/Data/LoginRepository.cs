@@ -3,9 +3,11 @@ using CIR.Common.Enums;
 using CIR.Common.Helper;
 using CIR.Core.Interfaces;
 using CIR.Core.ViewModel;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RandomStringCreator;
+using System.Data;
 
 namespace CIR.Data.Data
 {
@@ -44,17 +46,37 @@ namespace CIR.Data.Data
 						var userId = (from item in _CIRDBContext.Users where item.Email == model.Email select item.Id);
 						if (userDetails.LoginAttempts < 5)
 						{
-							userDetails.Id = userId.FirstOrDefault();
-							userDetails.LoginAttempts += 1;
-							_CIRDBContext.Entry(userDetails).State = EntityState.Modified;
-							_CIRDBContext.SaveChanges();
+							var result = 0;
+							using (DbConnection dbConnection = new DbConnection())
+							{
+								using (var connection = dbConnection.Connection)
+								{
+									DynamicParameters parameters = new DynamicParameters();
+									parameters.Add("@userId", userId.FirstOrDefault());
+									result = connection.Execute("spIncrementLoginAttempts", parameters, commandType: CommandType.StoredProcedure);
+								}
+							}
+							if (result != 0)
+							{
+								return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgInvalidUserNameOrPassword) });
+							}
 						}
 						else
 						{
-							userDetails.ResetRequired = true;
-							_CIRDBContext.Users.Update(userDetails);
-							_CIRDBContext.SaveChanges();
-							return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Forbidden, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.Forbidden.GetDescriptionAttribute(), Data = SystemMessages.msgAccountIsLocked });
+							var result = 0;
+							using (DbConnection dbConnection = new DbConnection())
+							{
+								using (var connection = dbConnection.Connection)
+								{
+									DynamicParameters parameters = new DynamicParameters();
+									parameters.Add("@userId", userId.FirstOrDefault());
+									result = connection.Execute("spResetRequired", parameters, commandType: CommandType.StoredProcedure);
+								}
+							}
+							if (result >= 1)
+							{
+								return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Forbidden, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.Forbidden.GetDescriptionAttribute(), Data = SystemMessages.msgAccountIsLocked });
+							}
 						}
 					}
 					else
@@ -132,12 +154,22 @@ namespace CIR.Data.Data
 				{
 					if (user.Password == resetPasswordModel.OldPassword)
 					{
-						user.Email = resetPasswordModel.Email;
-						user.Password = resetPasswordModel.NewPassword;
-						user.ResetRequired = false;
-						_CIRDBContext.Users.Update(user);
-						await _CIRDBContext.SaveChangesAsync();
-						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = SystemMessages.msgPasswordChangedSuccessfully });
+						var result = 0;
+						using (DbConnection dbConnection = new DbConnection())
+						{
+							using (var connection = dbConnection.Connection)
+							{
+								DynamicParameters parameters = new DynamicParameters();
+								parameters.Add("@Email", resetPasswordModel.Email);
+								parameters.Add("@Password", resetPasswordModel.NewPassword);
+								parameters.Add("@ResetRequired", false);
+								result = connection.Execute("spResetPassword", parameters, commandType: CommandType.StoredProcedure);
+							}
+						}
+						if (result != 0)
+						{
+							return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Reset Succesfully..") });
+						}
 					}
 					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute(), Data = SystemMessages.msgIncorrectOldPassword });
 				}
