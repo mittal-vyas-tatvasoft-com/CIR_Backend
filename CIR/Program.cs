@@ -133,6 +133,8 @@ builder.Services.AddScoped<IPortal2GlobalConfigurationMessagesService, Portal2Gl
 builder.Services.AddScoped<IPortal2GlobalConfigurationMessagesRepository, Portal2GlobalConfigurationMessagesRepository>();
 builder.Services.AddScoped<IPortal2GlobalConfigurationCutOffTimesRepository, Portal2GlobalConfigurationCutOffTimesRepository>();
 builder.Services.AddScoped<IPortal2GlobalConfigurationCutOffTimesService, Portal2GlobalConfigurationCutOffTimesService>();
+builder.Services.AddScoped<IPortal2GlobalConfigurationStylesRepository, Portal2GlobalConfigurationStylesRepository>();
+builder.Services.AddScoped<IPortal2GlobalConfigurationStylesService, Portal2GlobalConfigurationStylesService>();
 
 
 //allow origin

@@ -105,6 +105,7 @@ namespace CIR.Common.Data
         public DbSet<SystemCode> SystemCodes { get; set; }
         public DbSet<LookupItem> LookupItems { get; set; }
         public DbSet<Portal2GlobalConfigurationCutOffTimes> Portal2GlobalConfigurationCutOffTimes { get; set; }
+        public DbSet<Portal2GlobalConfigurationStyle> Portal2GlobalConfigurationStyles { get; set; }
     }
 }
 
