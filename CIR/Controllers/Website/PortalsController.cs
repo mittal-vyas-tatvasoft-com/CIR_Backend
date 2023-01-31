@@ -44,7 +44,7 @@ namespace CIR.Controllers.Website
             {
                 try
                 {
-                    return await _portalService.CreateorUpdatePortal(portalModel, clientId);
+                    return await _portalService.CreatePortal(portalModel, clientId);
                 }
                 catch (Exception ex)
                 {
@@ -78,14 +78,14 @@ namespace CIR.Controllers.Website
         /// <param name="portalModel"></param>
         /// <param name="clientId"></param>
         /// <returns></returns>
-        [HttpPut("Update/{clientId}")]
-        public async Task<IActionResult> Update(PortalModel portalModel, long clientId)
+        [HttpPut("Update")]
+        public async Task<IActionResult> Update(PortalModel portalModel)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    return await _portalService.CreateorUpdatePortal(portalModel, clientId);
+                    return await _portalService.UpdatePortal(portalModel);
                 }
                 catch (Exception ex)
                 {
