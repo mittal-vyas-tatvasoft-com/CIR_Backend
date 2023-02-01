@@ -18,6 +18,11 @@ namespace CIR.Application.Services.Website
             return await _clientRepository.CreateOrUpdateClient(clientModel);
         }
 
+        public async Task<IActionResult> GetAll()
+        {
+            return await _clientRepository.GetAll();
+        }
+
         public async Task<IActionResult> GetAllClients()
         {
             return await _clientRepository.GetAllClients();
