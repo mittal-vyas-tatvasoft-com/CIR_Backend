@@ -41,7 +41,7 @@ namespace CIR.Data.Data.Website
 					using (var connection = dbConnection.Connection)
 					{
 						DynamicParameters parameters = new DynamicParameters();
-						parameters.Add("portalId", portalId);
+						parameters.Add("@portalId", portalId);
 						portal2GlobalConfigurationCutOffTimesModels = connection.Query<Portal2GlobalConfigurationCutOffTimesModel>("spGetportal2GlobalConfigurationCutOffTimesPortalWise", parameters, commandType: CommandType.StoredProcedure).ToList();
 					}
 				}
