@@ -139,7 +139,7 @@ namespace CIR.Data.Data.Users
 
                 _CIRDBContext.Entry(user).Property(x => x.Enabled).IsModified = true;
                 await _CIRDBContext.SaveChangesAsync();
-                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Deleted, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Deleted.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataDeletedSuccessfully, "User Detail") });
+                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataDeletedSuccessfully, "User Detail") });
             }
             catch
             {

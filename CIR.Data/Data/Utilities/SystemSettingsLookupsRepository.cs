@@ -1,7 +1,6 @@
 ﻿using CIR.Common.Data;
 using CIR.Common.Enums;
 using CIR.Common.Helper;
-using CIR.Core.Entities;
 using CIR.Core.Entities.Utilities;
 using CIR.Core.Interfaces.Utilities;
 using CIR.Core.ViewModel.Utilities;
@@ -42,26 +41,25 @@ namespace CIR.Data.Data.Utilities
 					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgBadRequest });
 				}
 				var result = 0;
-                using (DbConnection dbConnection = new DbConnection())
-                {
-                    using (var connection = dbConnection.Connection)
-                    {
-                        DynamicParameters parameters = new DynamicParameters();
-                        parameters.Add("@Id", lookupItemsTextModel.Id);
-                        parameters.Add("@SystemCodeId", lookupItemsTextModel.SystemCodeId);
-                        parameters.Add("@LookupItemId", lookupItemsTextModel.LookupItemId);
-                        parameters.Add("@CultureId", lookupItemsTextModel.CultureId);
+				using (DbConnection dbConnection = new DbConnection())
+				{
+					using (var connection = dbConnection.Connection)
+					{
+						DynamicParameters parameters = new DynamicParameters();
+						parameters.Add("@Id", lookupItemsTextModel.Id);
+						parameters.Add("@SystemCodeId", lookupItemsTextModel.SystemCodeId);
+						parameters.Add("@LookupItemId", lookupItemsTextModel.LookupItemId);
+						parameters.Add("@CultureId", lookupItemsTextModel.CultureId);
 						parameters.Add("@Text", lookupItemsTextModel.Text);
-                        parameters.Add("@Active", lookupItemsTextModel.Active);
-                        result = connection.Execute("spCreateOrUpdateLookupItem", parameters, commandType: CommandType.StoredProcedure);
-
-                    }
-                }
-                if (result != 0)
-                {
-                    return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Lookup Item") });
-                }
-                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute() });
+						parameters.Add("@Active", lookupItemsTextModel.Active);
+						result = connection.Execute("spCreateOrUpdateLookupItem", parameters, commandType: CommandType.StoredProcedure);
+					}
+				}
+				if (result != 0)
+				{
+					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Lookup Item") });
+				}
+				return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute() });
 			}
 			catch (Exception ex)
 			{
@@ -128,35 +126,22 @@ namespace CIR.Data.Data.Utilities
 		{
 			try
 			{
-				List<LookupItemsText> lookupsItemList = new List<LookupItemsText>();
-				var dictionaryobj = new Dictionary<string, object>
-			{
-					{"CultureId", cultureId},
-					{ "Code", code},
-					{ "SearchLookupItems", searchLookupItems}
-			};
-
-				DataTable lookupItemsDatatable = SQLHelper.ExecuteSqlQueryWithParams("spGetLookupItemList", dictionaryobj);
-				if (lookupItemsDatatable != null)
+				List<LookupItemsText> lookupsItemList = new();
+				using (DbConnection dbConnection = new DbConnection())
 				{
-					foreach (DataRow row in lookupItemsDatatable.Rows)
+					using (var connection = dbConnection.Connection)
 					{
-						LookupItemsText lookupModel = new LookupItemsText
-						{
-							Id = Convert.ToInt64(row["Id"]),
-							Text = Convert.ToString(row["Text"]),
-							LookupItemId = Convert.ToInt64(row["LookupItemId"]),
-							Active = Convert.ToBoolean(row["Active"]),
-							CultureId = Convert.ToInt64(row["CultureId"])
-						};
-						lookupsItemList.Add(lookupModel);
+						DynamicParameters parameters = new DynamicParameters();
+						parameters.Add("@CultureId", cultureId);
+						parameters.Add("@Code", code);
+						parameters.Add("@SearchLookupItems", searchLookupItems);
+						lookupsItemList = connection.Query<LookupItemsText>("spGetLookupItemList", parameters, commandType: CommandType.StoredProcedure).ToList();
 					}
 				}
 				if (lookupsItemList.Count == 0)
 				{
 					return new JsonResult(new CustomResponse<LookupItemsText>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute() });
 				}
-
 				return new JsonResult(new CustomResponse<List<LookupItemsText>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = lookupsItemList });
 			}
 			catch (Exception ex)
@@ -174,31 +159,18 @@ namespace CIR.Data.Data.Utilities
 		/// <returns> filtered list of LookupItemsList </returns>
 		private List<CulturalCodesModel> GetCulturalCodesList(long? cultureId, string code, string searchCultureCode = null)
 		{
-			List<CulturalCodesModel> codeList = new List<CulturalCodesModel>();
-
-			var dictionaryobj = new Dictionary<string, object>
+			List<CulturalCodesModel> codeList = new();
+			using (DbConnection dbConnection = new DbConnection())
 			{
-					{"CultureId", cultureId},
-					{ "Code", code},
-					{ "SearchCultureCode", searchCultureCode},
-			 };
-
-			DataTable cultureCodeDatatable = SQLHelper.ExecuteSqlQueryWithParams("spGetCultureCodeList", dictionaryobj);
-			if (cultureCodeDatatable != null)
-			{
-				foreach (DataRow row in cultureCodeDatatable.Rows)
+				using (var connection = dbConnection.Connection)
 				{
-					CulturalCodesModel culturalCodesModel = new CulturalCodesModel
-					{
-						CultureId = Convert.ToInt64(row["CultureId"]),
-						SystemCodeId = Convert.ToInt64(row["SystemCodeId"]),
-						Code = Convert.ToString(row["Code"]),
-						CultureDisplayText = Convert.ToString(row["DisplayName"])
-					};
-					codeList.Add(culturalCodesModel);
+					DynamicParameters parameters = new DynamicParameters();
+					parameters.Add("@CultureId", cultureId);
+					parameters.Add("@Code", code);
+					parameters.Add("@SearchCultureCode", searchCultureCode);
+					codeList = connection.Query<CulturalCodesModel>("spGetCultureCodeList", parameters, commandType: CommandType.StoredProcedure).ToList();
 				}
 			}
-
 			return codeList;
 		}
 
@@ -210,21 +182,21 @@ namespace CIR.Data.Data.Utilities
 		/// <returns> if LookupItem exists true else false </returns>
 		public async Task<Boolean> LookupItemExists(long cultureId, long lookupItemId)
 		{
-            using (DbConnection dbConnection = new DbConnection())
-            {
-                using (var connection = dbConnection.Connection)
-                {
-                    DynamicParameters parameters = new DynamicParameters();
-                    parameters.Add("@CultureId", cultureId);
-                    parameters.Add("@LookupItemId", lookupItemId);
-                    var checkItemExist = connection.Query("spLookupItemExists", parameters, commandType: CommandType.StoredProcedure);
-                    if (checkItemExist.FirstOrDefault() != null)
-                    {
-                        return true;
-                    }
-                    return false;
-                }
-            }
+			using (DbConnection dbConnection = new DbConnection())
+			{
+				using (var connection = dbConnection.Connection)
+				{
+					DynamicParameters parameters = new DynamicParameters();
+					parameters.Add("@CultureId", cultureId);
+					parameters.Add("@LookupItemId", lookupItemId);
+					var checkItemExist = connection.Query("spLookupItemExists", parameters, commandType: CommandType.StoredProcedure);
+					if (checkItemExist.FirstOrDefault() != null)
+					{
+						return true;
+					}
+					return false;
+				}
+			}
 		}
 
 		/// <summary>
@@ -236,20 +208,20 @@ namespace CIR.Data.Data.Utilities
 		{
 			try
 			{
-                using (DbConnection dbConnection = new DbConnection())
-                {
-                    using (var connection = dbConnection.Connection)
-                    {
-                        DynamicParameters parameters = new DynamicParameters();
-                        parameters.Add("@id", id);
-                        List<LookupItemsTextModel> lookupItem = connection.Query<LookupItemsTextModel>("spGetLookupById", parameters, commandType: CommandType.StoredProcedure).ToList();
-                        if (lookupItem.Count == 0)
-                        {
-                            return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgNotFound, "Lookup Item") });
-                        }
-                        return new JsonResult(new CustomResponse<List<LookupItemsTextModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = lookupItem });
-                    }
-                }				
+				using (DbConnection dbConnection = new DbConnection())
+				{
+					using (var connection = dbConnection.Connection)
+					{
+						DynamicParameters parameters = new DynamicParameters();
+						parameters.Add("@id", id);
+						List<LookupItemsTextModel> lookupItem = connection.Query<LookupItemsTextModel>("spGetLookupById", parameters, commandType: CommandType.StoredProcedure).ToList();
+						if (lookupItem.Count == 0)
+						{
+							return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.NotFound, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.NotFound.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgNotFound, "Lookup Item") });
+						}
+						return new JsonResult(new CustomResponse<List<LookupItemsTextModel>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = lookupItem });
+					}
+				}
 			}
 			catch (Exception ex)
 			{
