@@ -41,7 +41,7 @@ namespace CIR.Data.Data.Website
 					using (var connection = dbConnection.Connection)
 					{
 						DynamicParameters parameters = new DynamicParameters();
-						parameters.Add("portalId", portalId);
+						parameters.Add("@portalId", portalId);
 						portal2GlobalConfigurationCutOffTimesModels = connection.Query<Portal2GlobalConfigurationCutOffTimesModel>("spGetportal2GlobalConfigurationCutOffTimesPortalWise", parameters, commandType: CommandType.StoredProcedure).ToList();
 					}
 				}
@@ -86,11 +86,11 @@ namespace CIR.Data.Data.Website
 					}
 					if (result != 0)
 					{
-						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Portal2Global CutOffTimes") });
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataUpdatedSuccessfully, "Portal2Global CutOffTimes") });
 					}
 					return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute() });
 				}
-				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgAddingDataError, "Portal2Global CutOffTimes") });
+				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgUpdatingDataError, "Portal2Global CutOffTimes") });
 			}
 			catch (Exception ex)
 			{
