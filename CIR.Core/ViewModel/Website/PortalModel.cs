@@ -74,4 +74,10 @@ namespace CIR.Core.ViewModel.Website
         public long PortalId { get; set; }
         public string PortalName { get; set; }
     }
+
+    public class PortalSubModel
+    {
+        public long Id { get; set; }
+        public string DisplayName { get; set; }
+    }
 }
