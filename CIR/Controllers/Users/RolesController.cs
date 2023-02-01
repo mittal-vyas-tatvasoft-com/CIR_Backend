@@ -33,6 +33,7 @@ namespace CIR.Controllers.Users
         /// </summary>
         /// <returns></returns>
         [HttpGet("[action]")]
+        [CustomPermissionFilter(RolePriviledgesEnums.Roles_ViewList)]
         public async Task<IActionResult> GetAllRoles()
         {
             try
@@ -55,6 +56,7 @@ namespace CIR.Controllers.Users
         /// <param name="sortAscending"> 'asc' or 'desc' direction for sort </param>
         /// <returns> filtered list of roles </returns>
         [HttpGet]
+        [CustomPermissionFilter(RolePriviledgesEnums.Roles_ViewList)]
         public async Task<IActionResult> GetRoles(int displayLength, int displayStart, string? sortCol, string? search, bool sortAscending = true)
         {
             try
@@ -75,6 +77,7 @@ namespace CIR.Controllers.Users
         /// <param name="roleId"></param>
         /// <returns></returns>
         [HttpGet("{roleId}")]
+        [CustomPermissionFilter(RolePriviledgesEnums.Roles_ViewDetails)]
         public async Task<IActionResult> Get(int roleId)
         {
             try
@@ -93,6 +96,7 @@ namespace CIR.Controllers.Users
         /// <param name="roles"></param>
         /// <returns></returns>
         [HttpPost("[action]")]
+        [CustomPermissionFilter(RolePriviledgesEnums.Roles_Create)]
         public async Task<IActionResult> Create(RolePermissionModel roles)
         {
             if (ModelState.IsValid)
@@ -123,6 +127,7 @@ namespace CIR.Controllers.Users
         /// <param name="roles"></param>
         /// <returns></returns>
         [HttpPut("[action]")]
+        [CustomPermissionFilter(RolePriviledgesEnums.Roles_Edit)]
         public async Task<IActionResult> Update(RolePermissionModel roles)
         {
             if (ModelState.IsValid)
@@ -153,6 +158,7 @@ namespace CIR.Controllers.Users
         /// <param name="roleId"></param>
         /// <returns></returns>
         [HttpDelete("[action]")]
+        [CustomPermissionFilter(RolePriviledgesEnums.Roles_Delete)]
         public async Task<IActionResult> Delete(long roleId)
         {
             try
