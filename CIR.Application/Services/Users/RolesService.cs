@@ -1,6 +1,5 @@
 ﻿using CIR.Core.Interfaces.Users;
 using CIR.Core.ViewModel;
-using CIR.Core.ViewModel.Usersvm;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CIR.Application.Services.Users
@@ -14,14 +13,14 @@ namespace CIR.Application.Services.Users
             _rolesRepository = rolesRepository;
         }
 
-        public async Task<IActionResult> GetRoles()
+        public async Task<IActionResult> GetAllRoles()
         {
-            return await _rolesRepository.GetRoles();
+            return await _rolesRepository.GetAllRoles();
         }
 
-        public async Task<RolesModel> GetAllRoles(int displayLength, int displayStart, string? sortCol, string search, bool sortAscending = true)
+        public async Task<IActionResult> GetRoles(int displayLength, int displayStart, string? sortCol, string search, bool sortAscending = true)
         {
-            return await _rolesRepository.GetAllRoles(displayLength, displayStart, sortCol, search, sortAscending);
+            return await _rolesRepository.GetRoles(displayLength, displayStart, sortCol, search, sortAscending);
         }
 
         public async Task<Boolean> RoleExists(string roleName, long id)
@@ -46,6 +45,20 @@ namespace CIR.Application.Services.Users
         public async Task<IActionResult> RemoveSection(long groupId)
         {
             return await _rolesRepository.RemoveSection(groupId);
+        }
+
+        public async Task<IActionResult> GetLanguagesListByRole()
+        {
+            return await _rolesRepository.GetLanguagesListByRole();
+        }
+
+        public async Task<IActionResult> GetRolePrivilegesList()
+        {
+            return await _rolesRepository.GetRolePrivilegesList();
+        }
+        public async Task<IActionResult> GetSubSiteList()
+        {
+            return await _rolesRepository.GetSubSiteList();
         }
     }
 }
