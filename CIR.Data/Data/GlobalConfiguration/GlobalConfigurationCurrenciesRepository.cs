@@ -44,7 +44,7 @@ namespace CIR.Data.Data.GlobalConfiguration
                     using (var connection = dbConnection.Connection)
                     {
                         DynamicParameters parameters = new DynamicParameters();
-                        parameters.Add("countryId", countryId);
+                        parameters.Add("@countryId", countryId);
                         globalConfigurationCurrenciesList = connection.Query<GlobalConfigurationCurrencyModel>("spGetGlobalConfigurationCurrenciesCountryWise", parameters, commandType: CommandType.StoredProcedure).ToList();
                     }
                 }

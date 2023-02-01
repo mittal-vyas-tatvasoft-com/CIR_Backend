@@ -15,6 +15,7 @@
 		public static string msgDataUpdatedSuccessfully = "{0} Updated Successfully.";
 		public static string msgIdNotFound = "{0} with given id not found";
 		public static string msgAddingDataError = "An error occurred while adding new {0}.";
+		public static string msgSomethingWentWrong = "Something went wrong!";
 		#endregion
 
 		#region GlobalConfigurationHolidays

@@ -184,13 +184,13 @@ namespace CIR.Data.Data.Users
                     using (var connection = dbConnection.Connection)
                     {
                         DynamicParameters parameters = new DynamicParameters();
-                        parameters.Add("DisplayLength", displayLength);
-                        parameters.Add("DisplayStart", displayStart);
-                        parameters.Add("SortCol", sortCol);
-                        parameters.Add("Search", search);
-                        parameters.Add("SortDir", sortDir);
-                        parameters.Add("RoleId", roleId);
-                        parameters.Add("Enabled", enabled);
+                        parameters.Add("@DisplayLength", displayLength);
+                        parameters.Add("@DisplayStart", displayStart);
+                        parameters.Add("@SortCol", sortCol);
+                        parameters.Add("@Search", search);
+                        parameters.Add("@SortDir", sortDir);
+                        parameters.Add("@RoleId", roleId);
+                        parameters.Add("@Enabled", enabled);
                         sortData = connection.Query<UserModel>("spGetFilteredUsersList", parameters, commandType: CommandType.StoredProcedure).ToList();
                     }
                 }
@@ -242,7 +242,7 @@ namespace CIR.Data.Data.Users
                     using (var connection = dbConnection.Connection)
                     {
                         DynamicParameters parameters = new DynamicParameters();
-                        parameters.Add("Search", search);
+                        parameters.Add("@Search", search);
                         sortData = connection.Query<UserModel>("spGetUserDetailLists", parameters, commandType: CommandType.StoredProcedure).ToList();
                     }
                 }
