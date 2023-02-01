@@ -135,7 +135,8 @@ builder.Services.AddScoped<IPortal2GlobalConfigurationCutOffTimesRepository, Por
 builder.Services.AddScoped<IPortal2GlobalConfigurationCutOffTimesService, Portal2GlobalConfigurationCutOffTimesService>();
 builder.Services.AddScoped<IPortal2GlobalConfigurationStylesRepository, Portal2GlobalConfigurationStylesRepository>();
 builder.Services.AddScoped<IPortal2GlobalConfigurationStylesService, Portal2GlobalConfigurationStylesService>();
-
+builder.Services.AddScoped<IGlobalConfigurationFieldRepository, GlobalConfigurationFieldRepository>();
+builder.Services.AddScoped<IGlobalConfigurationFieldServices, GlobalConfigurationFieldService>();
 
 //allow origin
 builder.Services.AddCors(options => options.AddDefaultPolicy(builder => builder.AllowAnyOrigin()
