@@ -35,7 +35,7 @@
 		public static string msgInvalidUserNameOrPassword = "Invalid username or password.";
 		public static string msgTokenNotGenerated = "Token not generated.";
 		public static string msgEnterValidUserNameAndEmail = "Please enter valid username and email.";
-		public static string msgPasswordChangedSuccessfully = "Password Changed Successfully.";
+		public static string msgPasswordResetSuccessfully = "Password Reset Successfully.";
 		public static string msgIncorrectOldPassword = "Old Password Is InCorrect.";
 		public static string msgInvalidEmailAddress = "Invalid Email Address.";
 		public static string msgSendNewPasswordOnMail = "Successfully send new password on your mail,please check once!";

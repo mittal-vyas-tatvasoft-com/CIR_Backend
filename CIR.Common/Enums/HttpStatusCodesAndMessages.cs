@@ -12,9 +12,6 @@ namespace CIR.Common.Enums
             [Description("Data Created or Updated Successfully")]
             Saved = 201,
 
-            [Description("Data Deleted Successfully")]
-            Deleted = 201,
-
             [Description("No Content")]
             NoContent = 204,
 
