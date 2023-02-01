@@ -42,7 +42,7 @@ namespace CIR.Data.Data.Website
 					using (var connection = dbConnection.Connection)
 					{
 						DynamicParameters parameters = new DynamicParameters();
-						parameters.Add("id", id);
+						parameters.Add("@id", id);
 						portalToGlobalConfigurationEmailsGetModel = connection.Query<PortalToGlobalConfigurationEmailsGetModel>("spGetEmailIdById", parameters, commandType: CommandType.StoredProcedure).ToList();
 					}
 				}
@@ -138,7 +138,7 @@ namespace CIR.Data.Data.Website
 						{
 							return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataSavedSuccessfully, "Portal2GlobalConfiguration Emails") });
 						}
-						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute(), Data = "Something went wrong!" });
+						return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute(), Data = SystemMessages.msgSomethingWentWrong });
 					}
 				}
 				return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgBadRequest });

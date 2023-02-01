@@ -39,7 +39,7 @@ namespace CIR.Data.Data.Website
 					using (var connection = dbConnection.Connection)
 					{
 						DynamicParameters parameters = new DynamicParameters();
-						parameters.Add("portalId", portalId);
+						parameters.Add("@portalId", portalId);
 						portal2GlobalConfigurationMessagesModels = connection.Query<Portal2GlobalConfigurationMessagesModel>("spGetPortalToGlobalConfigurationMessagesPortalWise", parameters, commandType: CommandType.StoredProcedure).ToList();
 					}
 				}

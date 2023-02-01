@@ -41,7 +41,7 @@ namespace CIR.Data.Data.Website
 					using (var connection = dbConnection.Connection)
 					{
 						DynamicParameters parameters = new DynamicParameters();
-						parameters.Add("PortalId", portalId);
+						parameters.Add("@PortalId", portalId);
 						portal2GlobalConfigurationStyles = connection.Query<Portal2GlobalConfigurationStyle>("spGetportal2GlobalConfigurationStylesPortalWise", parameters, commandType: CommandType.StoredProcedure).ToList();
 					}
 				}
@@ -77,10 +77,10 @@ namespace CIR.Data.Data.Website
 							using (var connection = dbConnection.Connection)
 							{
 								DynamicParameters parameters = new DynamicParameters();
-								parameters.Add("Id", item.Id);
-								parameters.Add("PortalId", item.PortalId);
-								parameters.Add("GlobalConfigurationStyleId", item.GlobalConfigurationStyleId);
-								parameters.Add("ValueOverride", item.ValueOverride);
+								parameters.Add("@Id", item.Id);
+								parameters.Add("@PortalId", item.PortalId);
+								parameters.Add("@GlobalConfigurationStyleId", item.GlobalConfigurationStyleId);
+								parameters.Add("@ValueOverride", item.ValueOverride);
 								result = connection.Execute("spUpdatePortalToGlobalConfigurationStyles", parameters, commandType: CommandType.StoredProcedure);
 							}
 						}
