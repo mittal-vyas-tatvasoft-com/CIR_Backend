@@ -11,8 +11,8 @@ namespace CIR.Common.Helper
 {
     public class CustomPermissionFilter : Attribute, IActionFilter
     {
-        private RolePriviledgesEnums _rolePriviledgesEnums;
-        public CustomPermissionFilter(RolePriviledgesEnums rolePriviledgesEnums)
+        private RolePrivilegesEnum _rolePriviledgesEnums;
+        public CustomPermissionFilter(RolePrivilegesEnum rolePriviledgesEnums)
         {
             _rolePriviledgesEnums = rolePriviledgesEnums;
         }

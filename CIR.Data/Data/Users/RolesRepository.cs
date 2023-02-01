@@ -561,13 +561,13 @@ namespace CIR.Data.Data.Users
                 {
                     using (var connection = dbConnection.Connection)
                     {
-                        Array enumValueArray = Enum.GetValues(typeof(RolePriviledgesEnums));
+                        Array enumValueArray = Enum.GetValues(typeof(RolePrivilegesEnum));
                         foreach (int enumValue in enumValueArray)
                         {
                             rolePrivilegesses.Add(new RolePrivilegesMModel()
                             {
-                                Name = Enum.GetName(typeof(RolePriviledgesEnums), enumValue),
-                                DisplayName = ((RolePriviledgesEnums)enumValue).GetDescriptionAttribute(),
+                                Name = Enum.GetName(typeof(RolePrivilegesEnum), enumValue),
+                                DisplayName = ((RolePrivilegesEnum)enumValue).GetDescriptionAttribute(),
                                 Value = enumValue
                             });
                         }
