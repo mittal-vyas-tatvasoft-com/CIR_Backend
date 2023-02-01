@@ -2,7 +2,7 @@
 
 namespace CIR.Common.Enums
 {
-    public enum RolePriviledgesEnums
+    public enum RolePrivilegesEnum
     {
         [Description("Users - View List")]
         User_ViewList = 1,

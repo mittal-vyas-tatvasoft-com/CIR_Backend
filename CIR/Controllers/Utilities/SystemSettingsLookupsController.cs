@@ -25,7 +25,7 @@ namespace CIR.Controllers.Utilities
 
 		#region METHODS
 		[HttpGet("[action]")]
-		[CustomPermissionFilter(RolePriviledgesEnums.Lookups_ViewList)]
+		[CustomPermissionFilter(RolePrivilegesEnum.Lookups_ViewList)]
 		/// <summary>
 		/// This method takes Lookups details and updates the LookupItem
 		/// </summary>
@@ -50,7 +50,7 @@ namespace CIR.Controllers.Utilities
 		}
 
 		[HttpGet("[action]")]
-		[CustomPermissionFilter(RolePriviledgesEnums.Lookups_ViewList)]
+		[CustomPermissionFilter(RolePrivilegesEnum.Lookups_ViewList)]
 		/// <summary>
 		/// This method takes Lookups details and updates the LookupItem
 		/// </summary>
@@ -78,7 +78,7 @@ namespace CIR.Controllers.Utilities
 		/// <param name="lookupItemsTextmodel"></param>
 		/// <returns></returns>
 		[HttpPost("[action]")]
-		[CustomPermissionFilter(RolePriviledgesEnums.Lookups_Create)]
+		[CustomPermissionFilter(RolePrivilegesEnum.Lookups_Create)]
 		public async Task<IActionResult> Create(LookupItemsTextModel lookupItemsTextmodel)
 		{
 			if (ModelState.IsValid)
@@ -110,7 +110,7 @@ namespace CIR.Controllers.Utilities
 		/// <returns> updated LookupItems </returns>
 
 		[HttpPut("[action]")]
-		[CustomPermissionFilter(RolePriviledgesEnums.Lookups_Edit)]
+		[CustomPermissionFilter(RolePrivilegesEnum.Lookups_Edit)]
 		public async Task<IActionResult> Update(LookupItemsTextModel lookupItemsTextmodel)
 		{
 			if (ModelState.IsValid)
@@ -128,7 +128,7 @@ namespace CIR.Controllers.Utilities
 		}
 
 		[HttpGet("[action]/{id}")]
-		[CustomPermissionFilter(RolePriviledgesEnums.Lookups_ViewList)]
+		[CustomPermissionFilter(RolePrivilegesEnum.Lookups_ViewList)]
 		public async Task<IActionResult> GetById(int id)
 		{
 			try
