@@ -141,7 +141,7 @@ namespace CIR.Data.Data.Users
                     using (var connection = dbConnection.Connection)
                     {
                         DynamicParameters parameters = new DynamicParameters();
-                        parameters.Add("Id", id);
+                        parameters.Add("@Id", id);
                         result = connection.Execute("spDeleteUser", parameters, commandType: CommandType.StoredProcedure);
                     }
                 }
@@ -149,7 +149,7 @@ namespace CIR.Data.Data.Users
                 {
                     return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Success, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Success.GetDescriptionAttribute(), Data = string.Format(SystemMessages.msgDataDeletedSuccessfully, "User") });
                 }
-                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute(), Data = "Something went wrong!" });
+                return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.UnprocessableEntity.GetDescriptionAttribute(), Data = SystemMessages.msgSomethingWentWrong });
             }
             catch
             {
