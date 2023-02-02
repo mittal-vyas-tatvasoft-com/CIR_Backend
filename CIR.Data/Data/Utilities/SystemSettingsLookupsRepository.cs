@@ -99,7 +99,7 @@ namespace CIR.Data.Data.Utilities
 					cultureCodeCultureId = cultureId;
 				}
 
-				if (_commonRepository.IsStringNullorEmpty(code) == true)
+				if (_commonRepository.IsStringNullorEmpty(code))
 					code = string.Empty;
 
 				lookupModel.CulturalCodesList = GetCulturalCodesList(cultureCodeCultureId, code, searchCultureCode);

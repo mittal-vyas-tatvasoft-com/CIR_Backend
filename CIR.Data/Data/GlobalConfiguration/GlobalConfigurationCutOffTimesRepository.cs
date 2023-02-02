@@ -84,7 +84,7 @@ namespace CIR.Data.Data.GlobalConfiguration
 
 			try
 			{
-				if (_commonRepository.IsStringNullorEmpty(globalConfigurationCutOffTimeModel.CutOffTime) == true || globalConfigurationCutOffTimeModel.CutOffTime == "string" || globalConfigurationCutOffTimeModel.CountryId == 0)
+				if (_commonRepository.IsStringNullorEmpty(globalConfigurationCutOffTimeModel.CutOffTime) || globalConfigurationCutOffTimeModel.CountryId == 0)
 				{
 					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgEnterValidData });
 				}

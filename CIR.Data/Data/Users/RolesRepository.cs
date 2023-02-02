@@ -143,7 +143,7 @@ namespace CIR.Data.Data.Users
 		{
 			try
 			{
-				if (roles.Name == "" || roles.Name == "string")
+				if (roles.Name == "")
 				{
 					return new JsonResult(new CustomResponse<string>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute(), Data = SystemMessages.msgEnterValidData });
 				}
