@@ -4,6 +4,7 @@ using CIR.Common.Helper;
 using CIR.Core.Entities.Utilities;
 using CIR.Core.Interfaces.Utilities;
 using CIR.Core.ViewModel.Utilities;
+using CIR.Data.Data.Common;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ namespace CIR.Data.Data.Utilities
 	{
 		#region PROPERTIES   
 		private readonly CIRDbContext _CIRDBContext;
+		private readonly CommonRepository _commonRepository;
 		#endregion
 
 		#region CONSTRUCTOR
@@ -22,6 +24,8 @@ namespace CIR.Data.Data.Utilities
 		{
 			_CIRDBContext = context ??
 			   throw new ArgumentNullException(nameof(context));
+
+			_commonRepository = new CommonRepository(context);
 		}
 		#endregion
 
@@ -95,10 +99,8 @@ namespace CIR.Data.Data.Utilities
 					cultureCodeCultureId = cultureId;
 				}
 
-				if (code == string.Empty || code == null)
-				{
+				if (_commonRepository.IsStringNullorEmpty(code))
 					code = string.Empty;
-				}
 
 				lookupModel.CulturalCodesList = GetCulturalCodesList(cultureCodeCultureId, code, searchCultureCode);
 
@@ -127,8 +129,6 @@ namespace CIR.Data.Data.Utilities
 		{
 			try
 			{
-
-
 				List<LookupItemsText> lookupsItemList = new();
 				using (DbConnection dbConnection = new DbConnection())
 				{
