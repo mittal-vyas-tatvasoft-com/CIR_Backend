@@ -148,7 +148,7 @@ namespace CIR.Data.Data.Website
                 }
                 var portalIdObj = new Dictionary<string, object>
                 {
-                    { "Id", portalId }
+                    { "id", portalId }
                 };
                 return new JsonResult(new CustomResponse<Dictionary<string, object>>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.Saved, Result = true, Message = HttpStatusCodesAndMessages.HttpStatus.Saved.GetDescriptionAttribute(), Data = portalIdObj });
             }
@@ -432,6 +432,74 @@ namespace CIR.Data.Data.Website
                 Cost = serviceTypes.FirstOrDefault().Cost
             };
             return serviceType;
+        }
+
+        /// <summary>
+        /// This method will make a new portal using existing portal.
+        /// </summary>
+        /// <param name="portalId"></param>
+        /// <param name="languageId"></param>
+        /// <param name="destionationDirectory"></param>
+        /// <param name="destinationClientId"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> ClonePortal(long portalId, long languageId, string destionationDirectory, long destinationClientId)
+        {
+            try
+            {
+                var existingPortal = _CIRDbContext.portals.FirstOrDefault(x => x.Id == portalId);
+                var existingPortalSubsite = _CIRDbContext.SubSites.FirstOrDefault(x => x.PortalId == portalId);
+                var existingPortalServiceTypes = _CIRDbContext.PortalServiceTypes.Where(x => x.PortalId == portalId).ToList();
+
+                if (existingPortal == null || existingPortalSubsite == null || existingPortalServiceTypes == null)
+                {
+                    return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.BadRequest, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.BadRequest.GetDescriptionAttribute() });
+                }
+
+                var portalModel = new PortalModel()
+                {
+                    DisplayName = destionationDirectory,
+                    ClientId = destinationClientId,
+                    Directory = existingPortalSubsite.Directory,
+                    Description = existingPortalSubsite.Description,
+                    Stopped = existingPortalSubsite.Stopped,
+                    EmailStopped = existingPortalSubsite.EmailStopped,
+                    CreateResponse = existingPortal.CreateResponse,
+                    CountReturnIdentifier = existingPortal.CountReturnIdentifier,
+                    SystemEmailFromAddress = existingPortalSubsite.SystemEmailFromAddress,
+                    BccEmailAddress = existingPortalSubsite.BccEmailAddress,
+                    CurrencyId = existingPortal.CurrencyId,
+                    CountryId = existingPortal.CountryId,
+                    CultureId = languageId,
+                    IntegrationLevel = existingPortal.IntegrationLevel,
+                    Account = existingPortal.Account,
+                    Entity = existingPortal.Entity
+                };
+                foreach (var serviceType in existingPortalServiceTypes)
+                {
+                    switch (serviceType.Type)
+                    {
+                        case 0:
+                            portalModel.PostalServiceTypeEnabled = serviceType.Enabled;
+                            portalModel.PostalServiceTypeCost = serviceType.Cost;
+                            break;
+
+                        case 1:
+                            portalModel.DropOffServiceTypeEnabled = serviceType.Enabled;
+                            portalModel.DropOffServiceTypeCost = serviceType.Cost;
+                            break;
+
+                        case 2:
+                            portalModel.CollectionServiceTypeEnabled = serviceType.Enabled;
+                            portalModel.CollectionServiceTypeCost = serviceType.Cost;
+                            break;
+                    }
+                }
+                return await CreatePortal(portalModel, destinationClientId);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+            }
         }
         #endregion
     }

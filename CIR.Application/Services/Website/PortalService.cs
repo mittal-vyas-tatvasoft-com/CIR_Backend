@@ -36,5 +36,10 @@ namespace CIR.Application.Services.Website
         {
             return await _portalRepository.UpdatePortal(portalModel);
         }
+
+        public async Task<IActionResult> ClonePortal(long portalId, long languageId, string destionationDirectory, long destinationClientId)
+        {
+            return await _portalRepository.ClonePortal(portalId, languageId, destionationDirectory, destinationClientId);
+        }
     }
 }

@@ -11,5 +11,6 @@ namespace CIR.Core.Interfaces.Website
         Task<IActionResult> GetById(int portalId);
         Task<IActionResult> CreatePortal(PortalModel portalModel, long clientId);
         Task<IActionResult> UpdatePortal(PortalModel portalModel);
+        Task<IActionResult> ClonePortal(long portalId, long languageId, string destionationDirectory, long destinationClientId);
     }
 }
