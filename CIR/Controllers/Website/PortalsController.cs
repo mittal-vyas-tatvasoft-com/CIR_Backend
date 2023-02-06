@@ -131,6 +131,27 @@ namespace CIR.Controllers.Website
             }
         }
 
+        /// <summary>
+        /// This portal will make clone a new portal and return its Id
+        /// </summary>
+        /// <param name="portalId"></param>
+        /// <param name="cultureId"></param>
+        /// <param name="destionationDirectory"></param>
+        /// <param name="destinationClientId"></param>
+        /// <returns></returns>
+        [HttpPost("Clone")]
+        public async Task<IActionResult> Clone(long portalId, long cultureId, string destionationDirectory, long destinationClientId)
+        {
+            try
+            {
+                return await _portalService.ClonePortal(portalId, cultureId, destionationDirectory, destinationClientId);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CustomResponse<Exception>() { StatusCode = (int)HttpStatusCodesAndMessages.HttpStatus.InternalServerError, Result = false, Message = HttpStatusCodesAndMessages.HttpStatus.InternalServerError.GetDescriptionAttribute(), Data = ex });
+            }
+        }
+
         #endregion
     }
 }
