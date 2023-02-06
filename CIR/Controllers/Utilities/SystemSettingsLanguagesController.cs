@@ -31,7 +31,7 @@ namespace CIR.Controllers.Utilities
 		/// <param name="culture"> this object contains different parameters as details of a Languages </param>
 		/// <returns ></returns>
 		[HttpPut("[action]")]
-		[CustomPermissionFilter(RolePriviledgesEnums.Language_Change)]
+		[CustomPermissionFilter(RolePrivilegesEnum.Language_Change)]
 		public async Task<IActionResult> Update([FromBody] List<CulturesModel> culture)
 		{
 			try

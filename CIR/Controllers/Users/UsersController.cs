@@ -33,7 +33,7 @@ namespace CIR.Controllers.Users
 		/// <returns> user </returns> 
 
 		[HttpGet("{id}")]
-		[CustomPermissionFilter(RolePriviledgesEnums.Users_ViewDetails)]
+		[CustomPermissionFilter(RolePrivilegesEnum.Users_ViewDetails)]
 		public async Task<IActionResult> GetUserById(int id)
 		{
 			try
@@ -53,7 +53,7 @@ namespace CIR.Controllers.Users
 		/// <returns > created user </returns>
 
 		[HttpPost("[action]")]
-		[CustomPermissionFilter(RolePriviledgesEnums.User_Create)]
+		[CustomPermissionFilter(RolePrivilegesEnum.User_Create)]
 		public async Task<IActionResult> Create([FromBody] User user)
 		{
 			if (ModelState.IsValid)
@@ -86,7 +86,7 @@ namespace CIR.Controllers.Users
 		/// <returns> updated user </returns>
 
 		[HttpPut("[action]")]
-		[CustomPermissionFilter(RolePriviledgesEnums.User_Edit)]
+		[CustomPermissionFilter(RolePrivilegesEnum.User_Edit)]
 		public async Task<IActionResult> Update([FromBody] User user)
 		{
 			if (ModelState.IsValid)
@@ -118,7 +118,7 @@ namespace CIR.Controllers.Users
 		/// <returns> disabled user </returns>
 
 		[HttpDelete("[action]")]
-		[CustomPermissionFilter(RolePriviledgesEnums.User_Delete)]
+		[CustomPermissionFilter(RolePrivilegesEnum.User_Delete)]
 		public async Task<IActionResult> Delete(int id)
 		{
 			if (ModelState.IsValid)
@@ -147,7 +147,7 @@ namespace CIR.Controllers.Users
 		/// <param name="enabled">sorting enable wise</param>
 		/// <returns></returns>
 		[HttpGet("[action]")]
-		[CustomPermissionFilter(RolePriviledgesEnums.User_ViewList)]
+		[CustomPermissionFilter(RolePrivilegesEnum.User_ViewList)]
 		public async Task<IActionResult> GetAllUsersDetailBySP(int displayLength, int displayStart, string? sortCol, string? search, string? sortDir, int roleId, bool? enabled = null)
 		{
 			try
@@ -173,7 +173,7 @@ namespace CIR.Controllers.Users
 		/// <returns></returns>
 
 		[HttpGet]
-		[CustomPermissionFilter(RolePriviledgesEnums.User_ViewList)]
+		[CustomPermissionFilter(RolePrivilegesEnum.User_ViewList)]
 		public async Task<IActionResult> UsersLinq(int displayLength, int displayStart, string? sortCol, string? search, int roleId, bool? enabled = null, bool sortAscending = true)
 		{
 			try

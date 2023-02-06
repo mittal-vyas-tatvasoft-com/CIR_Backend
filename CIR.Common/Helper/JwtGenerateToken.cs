@@ -33,7 +33,7 @@ namespace CIR.Common.Helper
                         new Claim("LastName", user.LastName),
                         new Claim("RoleId", user.RoleId.ToString())
                     }),
-                    Expires = DateTime.UtcNow.AddMinutes(20),
+                    Expires = DateTime.UtcNow.AddDays(1),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
                 };
                 var token = tokenHandler.CreateToken(tokenDescriptor);

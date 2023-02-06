@@ -11,10 +11,10 @@ namespace CIR.Common.Helper
 {
     public class CustomPermissionFilter : Attribute, IActionFilter
     {
-        private RolePriviledgesEnums _rolePriviledgesEnums;
-        public CustomPermissionFilter(RolePriviledgesEnums rolePriviledgesEnums)
+        private RolePrivilegesEnum _rolePrivilegesEnum;
+        public CustomPermissionFilter(RolePrivilegesEnum rolePriviledgesEnums)
         {
-            _rolePriviledgesEnums = rolePriviledgesEnums;
+            _rolePrivilegesEnum = rolePriviledgesEnums;
         }
         public void OnActionExecuted(ActionExecutedContext context)
         {
@@ -36,7 +36,7 @@ namespace CIR.Common.Helper
                 }
                 else
                 {
-                    if (roleData.Result.Roles.Any(x => x.site.Any(x => x.Languages.Any(x => x.Privileges.Any(x => x.PrivilegesId == (int)_rolePriviledgesEnums)))))
+                    if (roleData.Result.Roles.Any(x => x.site.Any(x => x.Languages.Any(x => x.Privileges.Any(x => x.PrivilegesId == (int)_rolePrivilegesEnum)))))
                     {
                         return;
                     }

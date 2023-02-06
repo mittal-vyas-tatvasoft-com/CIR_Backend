@@ -552,27 +552,27 @@ namespace CIR.Data.Data.Users
 			}
 		}
 
-		public async Task<IActionResult> GetRolePrivilegesList()
-		{
-			try
-			{
-				List<RolePrivilegesMModel> rolePrivilegesses = new();
-				using (DbConnection dbConnection = new DbConnection())
-				{
-					using (var connection = dbConnection.Connection)
-					{
-						Array enumValueArray = Enum.GetValues(typeof(RolePriviledgesEnums));
-						foreach (int enumValue in enumValueArray)
-						{
-							rolePrivilegesses.Add(new RolePrivilegesMModel()
-							{
-								Name = Enum.GetName(typeof(RolePriviledgesEnums), enumValue),
-								DisplayName = ((RolePriviledgesEnums)enumValue).GetDescriptionAttribute(),
-								Value = enumValue
-							});
-						}
-					}
-				}
+        public async Task<IActionResult> GetRolePrivilegesList()
+        {
+            try
+            {
+                List<RolePrivilegesMModel> rolePrivilegesses = new();
+                using (DbConnection dbConnection = new DbConnection())
+                {
+                    using (var connection = dbConnection.Connection)
+                    {
+                        Array enumValueArray = Enum.GetValues(typeof(RolePrivilegesEnum));
+                        foreach (int enumValue in enumValueArray)
+                        {
+                            rolePrivilegesses.Add(new RolePrivilegesMModel()
+                            {
+                                Name = Enum.GetName(typeof(RolePrivilegesEnum), enumValue),
+                                DisplayName = ((RolePrivilegesEnum)enumValue).GetDescriptionAttribute(),
+                                Value = enumValue
+                            });
+                        }
+                    }
+                }
 
 				if (rolePrivilegesses.Count == 0)
 				{
